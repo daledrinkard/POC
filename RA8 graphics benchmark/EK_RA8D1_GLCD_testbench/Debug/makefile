@@ -98,11 +98,16 @@ EK_RA8D1_GLCD_testbench.siz \
 
 
 # All Target
-all: EK_RA8D1_GLCD_testbench.elf secondary-outputs
+all:
+	$(MAKE) --no-print-directory main-build
+	$(MAKE) --no-print-directory post-build
+
+# Main-build Target
+main-build: EK_RA8D1_GLCD_testbench.elf secondary-outputs
 
 # Tool invocations
 EK_RA8D1_GLCD_testbench.elf: $(OBJS) $(USER_OBJS) $(LINKER_SCRIPT)
-	$(file > EK_RA8D1_GLCD_testbench.elf.in,-mthumb -mfloat-abi=hard -march=armv8.1-m.main+mve.fp+fp.dp -O2 -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -Wunused -Wuninitialized -Wall -Wextra -Wmissing-declarations -Wconversion -Wpointer-arith -Wshadow -Wlogical-op -Waggregate-return -Wfloat-equal -g -gdwarf-4 -T "fsp.ld" -Xlinker --gc-sections -L "C:\\Users\\daled\\e2_studio\\workspace\\EK_RA8D1_GLCD_testbench/script" -Wl,-Map,"EK_RA8D1_GLCD_testbench.map" --specs=nano.specs -u _printf_float -o "EK_RA8D1_GLCD_testbench.elf" -Wl,--start-group $(OBJS) $(USER_OBJS) $(LIBS) -Wl,--end-group)
+	$(file > EK_RA8D1_GLCD_testbench.elf.in,-mthumb -mfloat-abi=hard -march=armv8.1-m.main+mve.fp+fp.dp -O2 -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -Wunused -Wuninitialized -Wall -Wextra -Wmissing-declarations -Wconversion -Wpointer-arith -Wshadow -Wlogical-op -Waggregate-return -Wfloat-equal -g -gdwarf-4 -T "fsp.ld" -Xlinker --gc-sections -L "C:\\Projects\\Projects (repos)\\RA8 graphics benchmark\\EK_RA8D1_GLCD_testbench/script" -Wl,-Map,"EK_RA8D1_GLCD_testbench.map" --specs=nano.specs -u _printf_float -o "EK_RA8D1_GLCD_testbench.elf" -Wl,--start-group $(OBJS) $(USER_OBJS) $(LIBS) -Wl,--end-group)
 	@echo Building target: $@ && arm-none-eabi-gcc @"EK_RA8D1_GLCD_testbench.elf.in"
 EK_RA8D1_GLCD_testbench.hex: EK_RA8D1_GLCD_testbench.elf
 	arm-none-eabi-objcopy -O ihex "EK_RA8D1_GLCD_testbench.elf"  "EK_RA8D1_GLCD_testbench.hex"
@@ -116,8 +121,12 @@ clean:
 	-$(RM)  EK_RA8D1_GLCD_testbench.elf
 	-@echo ' '
 
+post-build:
+	-sed -n '/.bss._SEGGER_RTT/{p;n;p;n;p}' EK_RA8D1_GLCD_testbench.map
+	-@echo ' '
+
 secondary-outputs: $(SECONDARY_FLASH) $(SECONDARY_SIZE)
 
-.PHONY: all clean dependents
+.PHONY: all clean dependents post-build
 
 -include ../makefile.targets
