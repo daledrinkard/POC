@@ -24,8 +24,8 @@ extern const mipi_phy_cfg_t g_mipi_phy0_cfg;
 extern mipi_dsi_instance_ctrl_t g_mipi_dsi0_ctrl;
 extern const mipi_dsi_cfg_t g_mipi_dsi0_cfg;
 
-#ifndef mipi_dsi_callback
-void mipi_dsi_callback(mipi_dsi_callback_args_t *p_args);
+#ifndef mipi_dsi0_callback
+void mipi_dsi0_callback(mipi_dsi_callback_args_t *p_args);
 #endif
 #define GLCDC_CFG_LAYER_1_ENABLE (true)
 #define GLCDC_CFG_LAYER_2_ENABLE (false)

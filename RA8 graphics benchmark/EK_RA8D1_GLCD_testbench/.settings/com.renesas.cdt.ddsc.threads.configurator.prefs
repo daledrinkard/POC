@@ -1,5 +1,5 @@
 collapse/module.driver.display_on_glcdc.1920954786=false
 collapse/module.driver.drw.1672704525=false
 collapse/module.driver.mipi_dsi.204494690=false
-collapse/module.driver.uart_on_sci_b_uart.1093961664=false
+collapse/module.driver.uart_on_sci_b_uart.1093961664=true
 eclipse.preferences.version=1
