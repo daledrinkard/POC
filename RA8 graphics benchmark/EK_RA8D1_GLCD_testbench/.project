@@ -35,4 +35,11 @@
 		<nature>com.renesas.cdt.ddsc.contentgen.ddscNature</nature>
 		<nature>com.renesas.cdt.ra.contentgen.raNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>src/printf_redirect</name>
+			<type>2</type>
+			<location>C:/Projects/Projects (repos)/RA_ALL_printf_redirect/printf_redirect</location>
+		</link>
+	</linkedResources>
 </projectDescription>

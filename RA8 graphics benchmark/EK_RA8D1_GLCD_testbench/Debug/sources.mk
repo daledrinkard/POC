@@ -65,7 +65,6 @@ ra/fsp/src/r_mipi_phy \
 ra/fsp/src/r_sci_b_uart \
 ra/tes/dave2d/src \
 ra_gen \
-src/SCI_debug_print \
 src/draw_core \
 src \
 src/test_core \

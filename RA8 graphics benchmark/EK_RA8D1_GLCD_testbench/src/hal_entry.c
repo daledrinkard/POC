@@ -37,14 +37,18 @@ volatile uint32_t fxmode = 0;
 volatile uint32_t aux_timer = 0;
 void R_BSP_WarmStart(bsp_warm_start_event_t event);
 void polly(void);
+extern volatile uint8_t g_vsync_flag;
+
 
 /*
  *    PRIVATE
  */
-static void rbg_render565(void);
+static void rbg_render565(uint8_t);
 static void test1(void);
 static void setup_LCD(void);
 static void open_timers(void);
+
+
 /*
  *   ENTRY
  */
@@ -58,7 +62,7 @@ static void open_timers(void);
  * @param[in]  event    Where at in the start up process the code is currently at
  **********************************************************************************************************************/
 
-
+#define BYTES_PER_PIXEL (2)
 void hal_entry (void)
 /*******************************************************************************************************************//**
  * @brief  Blinky example application
@@ -74,6 +78,7 @@ void hal_entry (void)
     R_BSP_NonSecureEnter();
 #endif
     volatile uint32_t tempA,tempB;
+    uint32_t * p_framebuffer = NULL;
     volatile fsp_err_t           err     = FSP_SUCCESS;
     volatile uint32_t u32_temp;
     /* Initialize SDRAM */
@@ -81,18 +86,16 @@ void hal_entry (void)
 
     bsp_sdram_init();
     memset(&g_framebuffer[0],0,(1024*1024));
-    rbg_render565();
+    rbg_render565(0);
     setup_LCD();
     p_display_config = &g_display0.p_cfg->input[0];
     open_timers();
-    {
-        DrawCore_cfg.fb0 = (uint16_t *)g_framebuffer[0];
-        DrawCore_cfg.horz = p_display_config->hsize;
-        DrawCore_cfg.vert = p_display_config->vsize;
-    }
+    DrawCore_cfg.fb0 = (uint16_t *)g_framebuffer[0];
+    DrawCore_cfg.horz = p_display_config->hsize;
+    DrawCore_cfg.vert = p_display_config->vsize;
     draw_core_init(&DrawCore_cfg);
 
-Printf("\r\n");
+printf("\r\n");
 
     Core.p_fb = (uint16_t *)g_framebuffer[0];
     Core.xp_fb= (uint32_t *)g_framebuffer[0];
@@ -103,16 +106,36 @@ Printf("\r\n");
 //    horz_size = 1280;
 //    vert_size = 720;
     sprintf(buffer1,"horz = %d\r\nvert = %d\r\npixels = %d\r\n",horz_size,vert_size,(horz_size*vert_size));
-    Printf(buffer1);
-    Printf("Calibrate free run timer..");
+    printf(buffer1);
+    printf("Calibrate free run timer..");
     Core.code_timer_done = 0;
     err = R_GPT_Start(&g_one_second_timer_ctrl);
     err = R_GPT_Start(&g_freerun_timer_ctrl);
     while (Core.code_timer_done == 0);
     err = R_GPT_Stop(&g_freerun_timer_ctrl);
-    sprintf(buffer1,"counts = %d\r\n",g_freerun_timer_ctrl.p_reg->GTCNT);
-    Printf(buffer1);
+    sprintf(buffer1,"counts = %ld\r\n",g_freerun_timer_ctrl.p_reg->GTCNT);
+    printf(buffer1);
+
+
+
+
+
+
+
+
+
+
+
+    draw_core_run(0);
+    while(1);
+
     err = R_GLCDC_Start(&g_display0_ctrl);
+
+
+
+
+
+
 //test_run(NULL);
 #if 0 //DMA
     transfer_addr_mode_t f;
@@ -133,7 +156,7 @@ Printf("\r\n");
          *     SDRAM address space 0x6800_0000
          */
         switch(current_test) {
-            case 0: Printf("-------------------------------\r\nstartup()\r\n");
+            case 0: printf("-------------------------------\r\nstartup()\r\n");
             for(uint32_t jj=0;jj<2;jj++)
             {
                 Core.capture32_idx = 0;
@@ -147,10 +170,10 @@ Printf("\r\n");
                 tempB = (16*1024*1024) / 1024;
                 tempA = (tempB*10000)/tempA;
                 sprintf(buffer1," BW: %d.%d\r\n",(tempA/100),(tempA%100));
-                Printf(buffer1);
+                printf(buffer1);
                 if(0 == jj)
                 {
-                    Printf("Starting GLCD\r\n");
+                    printf("Starting GLCD\r\n");
                     err = R_GLCDC_Start(&g_display0_ctrl);
                     R_BSP_SoftwareDelay(500, BSP_DELAY_UNITS_MILLISECONDS);
                     R_GPT_Reset(&g_aux_timer_ctrl);
@@ -160,15 +183,15 @@ Printf("\r\n");
                     while(aux_timer < 1);
                     R_GPT_Stop(&g_aux_timer_ctrl);
                     sprintf(buffer1,"fps = %d\r\n",fxmode);
-                    Printf(buffer1);
+                    printf(buffer1);
                 }
             }
-            Printf("Stopping GLCD\r\n");
+            printf("Stopping GLCD\r\n");
             err = R_GLCDC_Stop(&g_display0_ctrl);
             R_BSP_SoftwareDelay(500, BSP_DELAY_UNITS_MILLISECONDS);
 
             break;
-            case 1: Printf("memcpy(from Flash)\r\n");
+            case 1: printf("memcpy(from Flash)\r\n");
                     Core.capture32_idx = 0;
                     test_run(1);
                     tempB = Core.code_timer_counts * Core.image_size; // how many clocks it should take
@@ -177,25 +200,25 @@ Printf("\r\n");
                     tempB = tempB / 1024;
                     tempA = (tempB*10000)/tempA;
                     sprintf(buffer1," BW: %d.%d\r\n",(tempA/100),(tempA%100));
-                    Printf(buffer1);
+                    printf(buffer1);
                     break;
-            case 2: Printf("for(pixel loop) const\r\n"); break;
-            case 3: Printf("for(pixel loop) from Flash\r\n"); break;
-            case 4: Printf("megabyte \r\n"); break;
-            case 5: Printf("DMAC\r\n"); break;
+            case 2: printf("for(pixel loop) const\r\n"); break;
+            case 3: printf("for(pixel loop) from Flash\r\n"); break;
+            case 4: printf("megabyte \r\n"); break;
+            case 5: printf("DMAC\r\n"); break;
             case 6:
-                Printf("GLCD started\r\n");
+                printf("GLCD started\r\n");
                 err = R_GLCDC_Start(&g_display0_ctrl);
                 R_BSP_SoftwareDelay(500, BSP_DELAY_UNITS_MILLISECONDS);
-                Printf("draw\r\n");
+                printf("draw\r\n");
 //                draw_core_run(0);
                 break;
         }
 
 //        sprintf(buffer1,"counts = %d",Core.code_timer_counts);
-//        Printf(buffer1);
+//        printf(buffer1);
 //        sprintf(buffer1,"\r\n  time = %d\r\n",(g_freerun_timer_ctrl.p_reg->GTCNT/120));
-//        Printf(buffer1);
+//        printf(buffer1);
         switch (current_test) {
             case 0: current_test = 6; break;
             case 6: current_test = 100; break;
@@ -205,7 +228,7 @@ Printf("\r\n");
                 current_test = 1;
                 if (1 == loop_counter)
                 {
-                    Printf("GLCD started\r\n");
+                    printf("GLCD started\r\n");
                     err = R_GLCDC_Start(&g_display0_ctrl);
                     R_BSP_SoftwareDelay(500, BSP_DELAY_UNITS_MILLISECONDS);
                     R_GPT_Reset(&g_aux_timer_ctrl);
@@ -214,7 +237,7 @@ Printf("\r\n");
                     fxmode = 0;
                     while(aux_timer < 1);
                     sprintf(buffer1,"fps = %ld\r\n",fxmode);
-                    Printf(buffer1);
+                    printf(buffer1);
 
                 }
                 break;
@@ -255,7 +278,7 @@ void R_BSP_WarmStart (bsp_warm_start_event_t event)
 /*
  *   PRIVATE FUNCTIONS
  */
-static void rbg_render565(void)
+static void rbg_render565(uint8_t buf_idx)
 {
     /* generate the rendered image */
 
@@ -263,7 +286,7 @@ static void rbg_render565(void)
     display_input_cfg_t const *p_input = &g_display0.p_cfg->input[0];
 
     //pointer to frame buffer
-    uint16_t * buf_ptr = (uint16_t *)g_framebuffer[0];
+    uint16_t * buf_ptr = (uint16_t *)g_framebuffer[buf_idx];
 
     uint16_t bar_width = p_input->vsize/7;
 
@@ -339,7 +362,7 @@ static void setup_LCD(void)
 
     /* NOTE: cannot send commands for 5 ms after HW reset */
     R_BSP_SoftwareDelay(5, BSP_DELAY_UNITS_MILLISECONDS);
-
+    mipi_dsi_push_table(g_lcd_init_focuslcd);
     /* Note: When video is started, timing of any further messages must carefully controlled to not interfere with transmission. */
     err = R_GLCDC_Start(&g_display0_ctrl);
     APP_ERR_TRAP(err);

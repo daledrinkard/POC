@@ -1080,7 +1080,7 @@ FSP Configuration
         Interrupts: Video Mode Interrupt Enable: Video Buffer Underflow Error, Video Buffer Overflow Error
         Interrupts: Sequence Channel 0 Interrupt Enable: All Actions Finish, All Descriptors Finish, Tx Internal Bus Error, Receive Fatal Error, Receive Fail, Receive Packet Data Fail, Receive Correctable Error Interrupt, Receive Acknowledge and Error Report Packet
         Interrupts: Sequence Channel 1 Interrupt Enable: All Actions Finish, All Descriptors Finish, Packet Size Error, Tx Internal Bus Error, Receive Fatal Error, Receive Fail, Receive Packet Data Fail, Receive Correctable Error Interrupt, Receive Acknowledge and Error Report Packet
-        Interrupts: Callback: mipi_dsi0_callback
+        Interrupts: Callback: mipi_dsi_callback
         Interrupts: Callback Context: NULL
         Options: Data Scramble Enable: Disable
         Options: EoTP Enable: Enable

@@ -4,19 +4,16 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../src/dsi_configuration_data.c \
-../src/dsi_layer.c \
-../src/hal_entry.c 
+../src/hal_entry.c \
+../src/printf_redirect.c 
 
 C_DEPS += \
-./src/dsi_configuration_data.d \
-./src/dsi_layer.d \
-./src/hal_entry.d 
+./src/hal_entry.d \
+./src/printf_redirect.d 
 
 OBJS += \
-./src/dsi_configuration_data.o \
-./src/dsi_layer.o \
-./src/hal_entry.o 
+./src/hal_entry.o \
+./src/printf_redirect.o 
 
 SREC += \
 EK_RA8D1_GLCD_testbench.srec 

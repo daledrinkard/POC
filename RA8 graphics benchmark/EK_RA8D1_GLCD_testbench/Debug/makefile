@@ -13,7 +13,6 @@ RM := rm -rf
 -include src/test_resolutions/subdir.mk
 -include src/test_core/subdir.mk
 -include src/draw_core/subdir.mk
--include src/SCI_debug_print/subdir.mk
 -include src/subdir.mk
 -include ra_gen/subdir.mk
 -include ra/tes/dave2d/src/subdir.mk

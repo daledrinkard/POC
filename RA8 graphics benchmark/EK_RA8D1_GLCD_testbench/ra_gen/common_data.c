@@ -130,7 +130,7 @@ const mipi_dsi_cfg_t g_mipi_dsi0_cfg =
           .eotp_enable = (1),
 
           .p_extend = &g_mipi_dsi0_extended_cfg,
-          .p_callback = mipi_dsi0_callback,
+          .p_callback = mipi_dsi_callback,
           .p_context = NULL, };
 
 /* Instance structure to use this module. */
