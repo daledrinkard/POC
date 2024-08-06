@@ -117,7 +117,7 @@ FSP Configuration
     PLL2R Div /2
     Clock Src: PLL1P
     CLKOUT Disabled
-    SCICLK Disabled
+    SCICLK Src: PLL1Q
     SPICLK Disabled
     CANFDCLK Disabled
     LCDCLK Src: PLL1P
@@ -618,6 +618,12 @@ FSP Configuration
     Parameter Checking: Default (BSP)
     
   Module "MIPI Physical Layer (r_mipi_phy)"
+  Module "UART (r_sci_b_uart)"
+    Parameter Checking: Default (BSP)
+    FIFO Support: Disable
+    DTC Support: Disable
+    Flow Control Support: Disable
+    
   HAL
     Instance "g_ioport I/O Port (r_ioport)"
       Name: g_ioport
@@ -878,3 +884,29 @@ FSP Configuration
           Timing: THSEXIT: ns: 100
           Timing: THSEXIT: UI: 0
           
+    Instance "g_printf_uart UART (r_sci_b_uart)"
+      General: Name: g_printf_uart
+      General: Channel: 9
+      General: Data Bits: 8bits
+      General: Parity: None
+      General: Stop Bits: 1bit
+      Baud: Baud Rate: 115200
+      Baud: Baud Rate Modulation: Disabled
+      Baud: Max Error (%): 5
+      Flow Control: CTS/RTS Selection: Hardware RTS
+      Flow Control: Software RTS Port: Disabled
+      Flow Control: Software RTS Pin: Disabled
+      Extra: Clock Source: Internal Clock
+      Extra: Start bit detection: Falling Edge
+      Extra: Noise Filter: Disable
+      Extra: Receive FIFO Trigger Level: Max
+      Extra: RS-485: DE Pin: Disable
+      Extra: RS-485: DE Pin Polarity: Active High
+      Extra: RS-485: DE Pin Assertion Time: 1
+      Extra: RS-485: DE Pin Negation Time: 1
+      Interrupts: Callback: NULL
+      Interrupts: Receive Interrupt Priority: Priority 12
+      Interrupts: Transmit Data Empty Interrupt Priority: Priority 12
+      Interrupts: Transmit End Interrupt Priority: Priority 12
+      Interrupts: Error Interrupt Priority: Priority 12
+      

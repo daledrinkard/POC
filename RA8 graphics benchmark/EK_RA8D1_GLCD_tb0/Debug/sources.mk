@@ -61,8 +61,10 @@ ra/fsp/src/r_glcdc \
 ra/fsp/src/r_ioport \
 ra/fsp/src/r_mipi_dsi \
 ra/fsp/src/r_mipi_phy \
+ra/fsp/src/r_sci_b_uart \
 ra/tes/dave2d/src \
 ra_gen \
 src \
+src/SCI_RTT \
 src/SEGGER_RTT \
 

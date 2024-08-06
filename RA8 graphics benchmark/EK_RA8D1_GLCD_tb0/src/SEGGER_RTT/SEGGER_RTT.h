@@ -42,7 +42,7 @@
 *                                                                    *
 **********************************************************************
 *                                                                    *
-*       RTT version: 7.94g                                           *
+*       RTT version: 7.88n                                           *
 *                                                                    *
 **********************************************************************
 
@@ -375,17 +375,41 @@ int          SEGGER_RTT_ConfigUpBuffer          (unsigned BufferIndex, const cha
 int          SEGGER_RTT_ConfigDownBuffer        (unsigned BufferIndex, const char* sName, void* pBuffer, unsigned BufferSize, unsigned Flags);
 int          SEGGER_RTT_GetKey                  (void);
 unsigned     SEGGER_RTT_HasData                 (unsigned BufferIndex);
+
+#if defined(__ICCARM__)
 int          SEGGER_RTT_HasKey                  (void);
+ #pragma weak SEGGER_RTT_HasKey
+#elif defined(__GNUC__) || defined(__ARMCC_VERSION)
+int          SEGGER_RTT_HasKey                  (void) __attribute__((weak));
+#endif
+//@@int          SEGGER_RTT_HasKey                  (void);
+
 unsigned     SEGGER_RTT_HasDataUp               (unsigned BufferIndex);
 void         SEGGER_RTT_Init                    (void);
+
+#if defined(__ICCARM__)
 unsigned     SEGGER_RTT_Read                    (unsigned BufferIndex,       void* pBuffer, unsigned BufferSize);
+ #pragma weak SEGGER_RTT_Read
+#elif defined(__GNUC__) || defined(__ARMCC_VERSION)
+unsigned     SEGGER_RTT_Read                    (unsigned BufferIndex,       void* pBuffer, unsigned BufferSize) __attribute__((weak));
+#endif
+//@@unsigned     SEGGER_RTT_Read                    (unsigned BufferIndex,       void* pBuffer, unsigned BufferSize);
+
 unsigned     SEGGER_RTT_ReadNoLock              (unsigned BufferIndex,       void* pData,   unsigned BufferSize);
 int          SEGGER_RTT_SetNameDownBuffer       (unsigned BufferIndex, const char* sName);
 int          SEGGER_RTT_SetNameUpBuffer         (unsigned BufferIndex, const char* sName);
 int          SEGGER_RTT_SetFlagsDownBuffer      (unsigned BufferIndex, unsigned Flags);
 int          SEGGER_RTT_SetFlagsUpBuffer        (unsigned BufferIndex, unsigned Flags);
 int          SEGGER_RTT_WaitKey                 (void);
+
+#if defined(__ICCARM__)
 unsigned     SEGGER_RTT_Write                   (unsigned BufferIndex, const void* pBuffer, unsigned NumBytes);
+ #pragma weak SEGGER_RTT_Write
+#elif defined(__GNUC__) || defined(__ARMCC_VERSION)
+unsigned     SEGGER_RTT_Write                   (unsigned BufferIndex, const void* pBuffer, unsigned NumBytes) __attribute__((weak));
+#endif
+//@@unsigned     SEGGER_RTT_Write                   (unsigned BufferIndex, const void* pBuffer, unsigned NumBytes);
+
 unsigned     SEGGER_RTT_WriteNoLock             (unsigned BufferIndex, const void* pBuffer, unsigned NumBytes);
 unsigned     SEGGER_RTT_WriteSkipNoLock         (unsigned BufferIndex, const void* pBuffer, unsigned NumBytes);
 unsigned     SEGGER_RTT_ASM_WriteSkipNoLock     (unsigned BufferIndex, const void* pBuffer, unsigned NumBytes);
@@ -399,7 +423,7 @@ unsigned     SEGGER_RTT_GetBytesInBuffer        (unsigned BufferIndex);
 //
 // Function macro for performance optimization
 //
-#define      SEGGER_RTT_HASDATA(n)       (((SEGGER_RTT_BUFFER_DOWN*)((uintptr_t)&_SEGGER_RTT.aDown[n] + SEGGER_RTT_UNCACHED_OFF))->WrOff - ((SEGGER_RTT_BUFFER_DOWN*)((uintptr_t)&_SEGGER_RTT.aDown[n] + SEGGER_RTT_UNCACHED_OFF))->RdOff)
+#define      SEGGER_RTT_HASDATA(n)       (((SEGGER_RTT_BUFFER_DOWN*)((uintptr_t)&_SEGGER_RTT.aDown[n] + SEGGER_RTT_UNCACHED_OFF))->WrOff - ((SEGGER_RTT_BUFFER_DOWN*)((char*)&_SEGGER_RTT.aDown[n] + SEGGER_RTT_UNCACHED_OFF))->RdOff)
 
 #if RTT_USE_ASM
   #define SEGGER_RTT_WriteSkipNoLock  SEGGER_RTT_ASM_WriteSkipNoLock
@@ -416,7 +440,7 @@ unsigned     SEGGER_RTT_ReadUpBufferNoLock      (unsigned BufferIndex, void* pDa
 unsigned     SEGGER_RTT_WriteDownBuffer         (unsigned BufferIndex, const void* pBuffer, unsigned NumBytes);
 unsigned     SEGGER_RTT_WriteDownBufferNoLock   (unsigned BufferIndex, const void* pBuffer, unsigned NumBytes);
 
-#define      SEGGER_RTT_HASDATA_UP(n)    (((SEGGER_RTT_BUFFER_UP*)((uintptr_t)&_SEGGER_RTT.aUp[n] + SEGGER_RTT_UNCACHED_OFF))->WrOff - ((SEGGER_RTT_BUFFER_UP*)((uintptr_t)&_SEGGER_RTT.aUp[n] + SEGGER_RTT_UNCACHED_OFF))->RdOff)   // Access uncached to make sure we see changes made by the J-Link side and all of our changes go into HW directly
+#define      SEGGER_RTT_HASDATA_UP(n)    (((SEGGER_RTT_BUFFER_UP*)((uintptr_t)&_SEGGER_RTT.aUp[n] + SEGGER_RTT_UNCACHED_OFF))->WrOff - ((SEGGER_RTT_BUFFER_UP*)((char*)&_SEGGER_RTT.aUp[n] + SEGGER_RTT_UNCACHED_OFF))->RdOff)   // Access uncached to make sure we see changes made by the J-Link side and all of our changes go into HW directly
 
 /*********************************************************************
 *
@@ -441,13 +465,6 @@ int SEGGER_RTT_vprintf(unsigned BufferIndex, const char * sFormat, va_list * pPa
 #endif
 
 #endif // ifndef(SEGGER_RTT_ASM)
-
-//
-// For some environments, NULL may not be defined until certain headers are included
-//
-#ifndef NULL
-  #define NULL  ((void*)0)
-#endif
 
 /*********************************************************************
 *

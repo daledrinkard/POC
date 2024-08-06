@@ -32,7 +32,7 @@
                   "on Renesas RA MCUs based on Renesas FSP. On successful initialization of the DRW and GLCDC modules,\r\n"\
                   "the EP will be able to draw various shapes and shape fills across the LCD screen, as well as use\r\n"\
                   "Alpha Blending on the images rendered to cover the entire screen of an external LCD connected to the RA MCU.\r\n"\
-                  "Additionally, API Failure messages will be displayed on RTT Viewer.\r\n\n "\
+                   "Additionally, API Failure messages will be displayed on RTT Viewer.\r\n\n "\
 
 #define GLCDC_VSYNC_TIMEOUT     (1000)
 #define BYTES_PER_PIXEL         (2U)

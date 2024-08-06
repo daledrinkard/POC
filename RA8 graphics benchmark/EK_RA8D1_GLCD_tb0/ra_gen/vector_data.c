@@ -12,6 +12,10 @@
             [5] = mipi_dsi_rcv, /* MIPIDSI RCV (DSI packet receive interrupt) */
             [6] = mipi_dsi_ferr, /* MIPIDSI FERR (DSI fatal error interrupt) */
             [7] = mipi_dsi_ppi, /* MIPIDSI PPI (DSI D-PHY PPI interrupt) */
+            [8] = sci_b_uart_rxi_isr, /* SCI9 RXI (Receive data full) */
+            [9] = sci_b_uart_txi_isr, /* SCI9 TXI (Transmit data empty) */
+            [10] = sci_b_uart_tei_isr, /* SCI9 TEI (Transmit end) */
+            [11] = sci_b_uart_eri_isr, /* SCI9 ERI (Receive error) */
         };
         #if BSP_FEATURE_ICU_HAS_IELSR
         const bsp_interrupt_event_t g_interrupt_event_link_select[BSP_ICU_VECTOR_MAX_ENTRIES] =
@@ -24,6 +28,10 @@
             [5] = BSP_PRV_VECT_ENUM(EVENT_MIPIDSI_RCV,GROUP5), /* MIPIDSI RCV (DSI packet receive interrupt) */
             [6] = BSP_PRV_VECT_ENUM(EVENT_MIPIDSI_FERR,GROUP6), /* MIPIDSI FERR (DSI fatal error interrupt) */
             [7] = BSP_PRV_VECT_ENUM(EVENT_MIPIDSI_PPI,GROUP7), /* MIPIDSI PPI (DSI D-PHY PPI interrupt) */
+            [8] = BSP_PRV_VECT_ENUM(EVENT_SCI9_RXI,GROUP0), /* SCI9 RXI (Receive data full) */
+            [9] = BSP_PRV_VECT_ENUM(EVENT_SCI9_TXI,GROUP1), /* SCI9 TXI (Transmit data empty) */
+            [10] = BSP_PRV_VECT_ENUM(EVENT_SCI9_TEI,GROUP2), /* SCI9 TEI (Transmit end) */
+            [11] = BSP_PRV_VECT_ENUM(EVENT_SCI9_ERI,GROUP3), /* SCI9 ERI (Receive error) */
         };
         #endif
         #endif

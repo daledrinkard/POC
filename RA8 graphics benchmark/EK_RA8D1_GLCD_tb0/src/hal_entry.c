@@ -51,7 +51,7 @@ void hal_entry(void)
  **********************************************************************************************************************/
 void R_BSP_WarmStart(bsp_warm_start_event_t event)
 {
-    if (BSP_WARM_START_RESET == event)
+    if (BSP_WARM_START_RESET ==  event)
     {
 #if BSP_FEATURE_FLASH_LP_VERSION != 0
 

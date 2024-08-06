@@ -43,7 +43,7 @@
     <node id="board.clock.pll2r.display" option="board.clock.pll2r.display.value"/>
     <node id="board.clock.clock.source" option="board.clock.clock.source.pll1p"/>
     <node id="board.clock.clkout.source" option="board.clock.clkout.source.disabled"/>
-    <node id="board.clock.sciclk.source" option="board.clock.sciclk.source.disabled"/>
+    <node id="board.clock.sciclk.source" option="board.clock.sciclk.source.pll1q"/>
     <node id="board.clock.spiclk.source" option="board.clock.spiclk.source.disabled"/>
     <node id="board.clock.canfdclk.source" option="board.clock.canfdclk.source.disabled"/>
     <node id="board.clock.lcdclk.source" option="board.clock.lcdclk.source.pll1p"/>
@@ -194,8 +194,8 @@
       <configSetting altId="sci2.txd2.pa03" configurationId="sci2.txd2"/>
       <configSetting altId="sci3.rxd3.p408" configurationId="sci3.rxd3"/>
       <configSetting altId="sci3.txd3.p409" configurationId="sci3.txd3"/>
-      <configSetting altId="sci9.rxd9.pa15" configurationId="sci9.rxd9"/>
-      <configSetting altId="sci9.txd9.pa14" configurationId="sci9.txd9"/>
+      <configSetting altId="sci9.rxd9.pa15" configurationId="sci9.rxd9" isUsedByDriver="true"/>
+      <configSetting altId="sci9.txd9.pa14" configurationId="sci9.txd9" isUsedByDriver="true"/>
       <configSetting altId="sdram.a1.p300" configurationId="sdram.a1"/>
       <configSetting altId="sdram.a10.p309" configurationId="sdram.a10"/>
       <configSetting altId="sdram.a11.p310" configurationId="sdram.a11"/>
