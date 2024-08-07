@@ -10,8 +10,10 @@ RM := rm -rf
 
 # All of the sources participating in the build are defined here
 -include sources.mk
+-include src/draw_core/subdir.mk
 -include src/SEGGER_RTT/subdir.mk
 -include src/SCI_RTT/subdir.mk
+-include src/MIPI/subdir.mk
 -include src/subdir.mk
 -include ra_gen/subdir.mk
 -include ra/tes/dave2d/src/subdir.mk
@@ -104,7 +106,7 @@ main-build: EK_RA8D1_GLCD_tb0.elf secondary-outputs
 
 # Tool invocations
 EK_RA8D1_GLCD_tb0.elf: $(OBJS) $(USER_OBJS) $(LINKER_SCRIPT)
-	$(file > EK_RA8D1_GLCD_tb0.elf.in,-mthumb -mfloat-abi=hard -march=armv8.1-m.main+mve.fp+fp.dp -O2 -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -Wunused -Wuninitialized -Wall -Wextra -Wmissing-declarations -Wconversion -Wpointer-arith -Wshadow -Wlogical-op -Waggregate-return -Wfloat-equal -g -gdwarf-4 -T "fsp.ld" -Xlinker --gc-sections -L "C:\\Projects\\Projects (repos)\\RA8 graphics benchmark\\EK_RA8D1_GLCD_tb0/script" -Wl,-Map,"EK_RA8D1_GLCD_tb0.map" --specs=nano.specs --specs=nosys.specs -o "EK_RA8D1_GLCD_tb0.elf" -Wl,--start-group $(OBJS) $(USER_OBJS) $(LIBS) -Wl,--end-group)
+	$(file > EK_RA8D1_GLCD_tb0.elf.in,-mthumb -mfloat-abi=hard -march=armv8.1-m.main+mve.fp+fp.dp -O0 -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -Wunused -Wuninitialized -Wall -Wextra -Wmissing-declarations -Wconversion -Wpointer-arith -Wshadow -Wlogical-op -Waggregate-return -Wfloat-equal -g -gdwarf-4 -T "fsp.ld" -Xlinker --gc-sections -L "C:\\Projects\\Projects (repos)\\RA8 graphics benchmark\\EK_RA8D1_GLCD_tb0/script" -Wl,-Map,"EK_RA8D1_GLCD_tb0.map" --specs=nano.specs --specs=nosys.specs -o "EK_RA8D1_GLCD_tb0.elf" -Wl,--start-group $(OBJS) $(USER_OBJS) $(LIBS) -Wl,--end-group)
 	@echo Building target: $@ && arm-none-eabi-gcc @"EK_RA8D1_GLCD_tb0.elf.in"
 EK_RA8D1_GLCD_tb0.hex: EK_RA8D1_GLCD_tb0.elf
 	arm-none-eabi-objcopy -O ihex "EK_RA8D1_GLCD_tb0.elf"  "EK_RA8D1_GLCD_tb0.hex"

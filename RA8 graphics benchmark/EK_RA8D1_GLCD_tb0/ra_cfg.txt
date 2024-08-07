@@ -88,7 +88,7 @@ FSP Configuration
     Heap size (bytes): 0x1500
     MCU Vcc (mV): 3300
     Parameter checking: Enabled
-    Assert Failures: Return FSP_ERR_ASSERTION
+    Assert Failures: Use assert() to Halt Execution
     Error Log: No Error Log
     Clock Registers not Reset Values during Startup: Disabled
     Main Oscillator Populated: Populated
@@ -705,7 +705,7 @@ FSP Configuration
       TCON: Vsync pin select: LCD_TCON0
       TCON: Data enable (DE) pin select: LCD_TCON2
       TCON: Panel clock source: Internal clock (GLCDCLK)
-      TCON: Panel clock division ratio: 1/16
+      TCON: Panel clock division ratio: 1/8
       Color Correction: Process order: Brightness/contrast first
       Color Correction: Brightness: Enabled: No
       Color Correction: Brightness: Red channel: 512

@@ -65,6 +65,8 @@ ra/fsp/src/r_sci_b_uart \
 ra/tes/dave2d/src \
 ra_gen \
 src \
+src/MIPI \
 src/SCI_RTT \
 src/SEGGER_RTT \
+src/draw_core \
 

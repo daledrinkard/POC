@@ -29,6 +29,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "hal_data.h"
+#include "common_app.h"
 
 /* SEGGER RTT and error related headers */
 #include "SEGGER_RTT/SEGGER_RTT.h"

@@ -28,6 +28,8 @@
 #include "r_mipi_dsi_api.h"
 #endif
 
+#include "MIPI/mipi.h"
+
 #define EP_INFO   "\r\nThe Example Project demonstrates the basic functionalities of the DRW device driver \r\n"\
                   "on Renesas RA MCUs based on Renesas FSP. On successful initialization of the DRW and GLCDC modules,\r\n"\
                   "the EP will be able to draw various shapes and shape fills across the LCD screen, as well as use\r\n"\
@@ -36,8 +38,6 @@
 
 #define GLCDC_VSYNC_TIMEOUT     (1000)
 #define BYTES_PER_PIXEL         (2U)
-#define ARRAY_INDEX             (0U)
-#define BITFIELD_VALUE          (0U)
 #define RENDER_DELAY            (25U)
 #define SW_DELAY                (15U)
 #define RESET_FLAG              (0U)
@@ -47,13 +47,7 @@
 #define MIPI_DSI_DISPLAY_CONFIG_DATA_DELAY_FLAG      ((mipi_dsi_cmd_id_t) 0xFE)
 #define MIPI_DSI_DISPLAY_CONFIG_DATA_END_OF_TABLE    ((mipi_dsi_cmd_id_t) 0xFD)
 
-typedef struct
-{
-    unsigned char        size;
-    unsigned char        buffer[10];
-    mipi_dsi_cmd_id_t    cmd_id;
-    mipi_dsi_cmd_flag_t flags;
-} lcd_table_setting_t;
+
 
 extern const lcd_table_setting_t g_lcd_init_focuslcd[];
 void mipi_dsi_push_table (const lcd_table_setting_t *table);
@@ -64,26 +58,6 @@ void DRW_entry(void);
 
 /* Co-ordinates for various shapes drawn on the display */
 #if defined(BOARD_RA8D1_EK)
-#define CIRCLE_VAL_X            (360)
-#define CIRCLE_VAL_Y            (165)
-#define CIRCLE_VAL_R            (45)
-#define CIRCLE_VAL_W            (0)
-#define TRIANGLE_X1             (285)
-#define TRIANGLE_Y1             (560)
-#define TRIANGLE_X2             (390)
-#define TRIANGLE_Y2             (660)
-#define TRIANGLE_X3             (285)
-#define TRIANGLE_Y3             (760)
-#define BOX_VAL_X1              (65)
-#define BOX_VAL_Y1              (80)
-#define BOX_VAL_LEN             (135)
-#define BOX_VAL_WIDTH           (200)
-#define BOX_PARAM               (270)
-#define LINE_VAL_X1             (175)
-#define LINE_VAL_Y1             (760)
-#define LINE_VAL_X2             (65)
-#define LINE_VAL_Y2             (580)
-#define LINE_VAL_WIDTH          (6)
 
 #else
 #define CIRCLE_VAL_X            (120)
@@ -108,19 +82,13 @@ void DRW_entry(void);
 #define LINE_VAL_WIDTH          (4)
 #endif
 
-#define ALPHA_VALUE             (155U)
-#define ANTI_ALIASING_VAL       (1U)
-#define BUFFER_CLEAR_VAL        (0x000000)
-#define RED_COLOR_VAL           (0xFF0000)
-#define GREEN_COLOR_VAL         (0x00FF00)
-#define BLUE_COLOR_VAL          (0x0000FF)
-#define YELLOW_COLOR_VAL        (0xFFFF00)
-#define SHIFT_VALUE             (4U)
+
+
+
 
 
 #if defined(BOARD_RA8D1_EK)
-#define DRW_TEST_IMAGE_RES_H    (480)
-#define DRW_TEST_IMAGE_RES_V    (854)
+
 
 #else
 #define DRW_TEST_IMAGE_RES_H    (480)
