@@ -10,6 +10,7 @@ RM := rm -rf
 
 # All of the sources participating in the build are defined here
 -include sources.mk
+-include src/testbench/subdir.mk
 -include src/draw_core/subdir.mk
 -include src/SEGGER_RTT/subdir.mk
 -include src/SCI_RTT/subdir.mk
@@ -21,6 +22,7 @@ RM := rm -rf
 -include ra/fsp/src/r_mipi_phy/subdir.mk
 -include ra/fsp/src/r_mipi_dsi/subdir.mk
 -include ra/fsp/src/r_ioport/subdir.mk
+-include ra/fsp/src/r_gpt/subdir.mk
 -include ra/fsp/src/r_glcdc/subdir.mk
 -include ra/fsp/src/r_drw/subdir.mk
 -include ra/fsp/src/bsp/mcu/all/subdir.mk

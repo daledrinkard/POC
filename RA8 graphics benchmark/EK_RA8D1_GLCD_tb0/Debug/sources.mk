@@ -58,6 +58,7 @@ ra/fsp/src/bsp/cmsis/Device/RENESAS/Source \
 ra/fsp/src/bsp/mcu/all \
 ra/fsp/src/r_drw \
 ra/fsp/src/r_glcdc \
+ra/fsp/src/r_gpt \
 ra/fsp/src/r_ioport \
 ra/fsp/src/r_mipi_dsi \
 ra/fsp/src/r_mipi_phy \
@@ -69,4 +70,5 @@ src/MIPI \
 src/SCI_RTT \
 src/SEGGER_RTT \
 src/draw_core \
+src/testbench \
 

@@ -177,6 +177,10 @@
             <slot name="PB07" secure="true"/>
         </peripheral>
         <peripheral name="GLCDC" security=""/>
+        <peripheral name="GPT0" group="GPT" security=""/>
+        <peripheral name="GPT1" group="GPT" security=""/>
+        <peripheral name="GPT2" group="GPT" security=""/>
+        <peripheral name="GPT3" group="GPT" security=""/>
         <peripheral name="ICU">
             <slot name="IRQ0" secure="true"/>
             <slot name="IRQ1" secure="true"/>

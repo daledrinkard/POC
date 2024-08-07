@@ -64,6 +64,8 @@ ra_gen/main.o: ../ra_gen/main.c ../ra_gen/hal_data.h \
  C:/Projects/Projects\ (repos)/RA8\ graphics\ benchmark/EK_RA8D1_GLCD_tb0/ra/fsp/inc/api/r_ioport_api.h \
  C:/Projects/Projects\ (repos)/RA8\ graphics\ benchmark/EK_RA8D1_GLCD_tb0/ra_cfg/fsp_cfg/r_ioport_cfg.h \
  C:/Projects/Projects\ (repos)/RA8\ graphics\ benchmark/EK_RA8D1_GLCD_tb0/ra_cfg/fsp_cfg/bsp/bsp_pin_cfg.h \
+ C:/Projects/Projects\ (repos)/RA8\ graphics\ benchmark/EK_RA8D1_GLCD_tb0/ra/fsp/inc/instances/r_gpt.h \
+ C:/Projects/Projects\ (repos)/RA8\ graphics\ benchmark/EK_RA8D1_GLCD_tb0/ra/fsp/inc/api/r_timer_api.h \
  C:/Projects/Projects\ (repos)/RA8\ graphics\ benchmark/EK_RA8D1_GLCD_tb0/ra/fsp/inc/instances/r_sci_b_uart.h \
  C:/Projects/Projects\ (repos)/RA8\ graphics\ benchmark/EK_RA8D1_GLCD_tb0/ra/fsp/inc/api/r_uart_api.h \
  C:/Projects/Projects\ (repos)/RA8\ graphics\ benchmark/EK_RA8D1_GLCD_tb0/ra/fsp/inc/api/r_transfer_api.h \
@@ -134,6 +136,8 @@ C:/Projects/Projects\ (repos)/RA8\ graphics\ benchmark/EK_RA8D1_GLCD_tb0/ra/fsp/
 C:/Projects/Projects\ (repos)/RA8\ graphics\ benchmark/EK_RA8D1_GLCD_tb0/ra/fsp/inc/api/r_ioport_api.h:
 C:/Projects/Projects\ (repos)/RA8\ graphics\ benchmark/EK_RA8D1_GLCD_tb0/ra_cfg/fsp_cfg/r_ioport_cfg.h:
 C:/Projects/Projects\ (repos)/RA8\ graphics\ benchmark/EK_RA8D1_GLCD_tb0/ra_cfg/fsp_cfg/bsp/bsp_pin_cfg.h:
+C:/Projects/Projects\ (repos)/RA8\ graphics\ benchmark/EK_RA8D1_GLCD_tb0/ra/fsp/inc/instances/r_gpt.h:
+C:/Projects/Projects\ (repos)/RA8\ graphics\ benchmark/EK_RA8D1_GLCD_tb0/ra/fsp/inc/api/r_timer_api.h:
 C:/Projects/Projects\ (repos)/RA8\ graphics\ benchmark/EK_RA8D1_GLCD_tb0/ra/fsp/inc/instances/r_sci_b_uart.h:
 C:/Projects/Projects\ (repos)/RA8\ graphics\ benchmark/EK_RA8D1_GLCD_tb0/ra/fsp/inc/api/r_uart_api.h:
 C:/Projects/Projects\ (repos)/RA8\ graphics\ benchmark/EK_RA8D1_GLCD_tb0/ra/fsp/inc/api/r_transfer_api.h:
