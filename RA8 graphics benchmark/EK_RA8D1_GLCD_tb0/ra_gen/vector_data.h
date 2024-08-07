@@ -6,7 +6,7 @@
         #endif
 /* Number of interrupts allocated */
 #ifndef VECTOR_DATA_IRQ_COUNT
-#define VECTOR_DATA_IRQ_COUNT    (12)
+#define VECTOR_DATA_IRQ_COUNT    (13)
 #endif
 /* ISR prototypes */
 void drw_int_isr(void);
@@ -21,6 +21,7 @@ void sci_b_uart_rxi_isr(void);
 void sci_b_uart_txi_isr(void);
 void sci_b_uart_tei_isr(void);
 void sci_b_uart_eri_isr(void);
+void gpt_counter_overflow_isr(void);
 
 /* Vector table allocations */
 #define VECTOR_NUMBER_DRW_INT ((IRQn_Type) 0) /* DRW INT (DRW interrupt) */
@@ -47,6 +48,8 @@ void sci_b_uart_eri_isr(void);
 #define SCI9_TEI_IRQn          ((IRQn_Type) 10) /* SCI9 TEI (Transmit end) */
 #define VECTOR_NUMBER_SCI9_ERI ((IRQn_Type) 11) /* SCI9 ERI (Receive error) */
 #define SCI9_ERI_IRQn          ((IRQn_Type) 11) /* SCI9 ERI (Receive error) */
+#define VECTOR_NUMBER_GPT0_COUNTER_OVERFLOW ((IRQn_Type) 12) /* GPT0 COUNTER OVERFLOW (Overflow) */
+#define GPT0_COUNTER_OVERFLOW_IRQn          ((IRQn_Type) 12) /* GPT0 COUNTER OVERFLOW (Overflow) */
 #ifdef __cplusplus
         }
         #endif

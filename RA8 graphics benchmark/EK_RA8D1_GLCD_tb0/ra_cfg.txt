@@ -949,7 +949,7 @@ FSP Configuration
       Input: Noise Filter A Sampling Clock Select: No Filter
       Input: Noise Filter B Sampling Clock Select: No Filter
       Interrupts: Callback: NULL
-      Interrupts: Overflow/Crest Interrupt Priority: Disabled
+      Interrupts: Overflow/Crest Interrupt Priority: Priority 12
       Interrupts: Capture/Compare match A Interrupt Priority: Disabled
       Interrupts: Capture/Compare match B Interrupt Priority: Disabled
       Interrupts: Underflow/Trough Interrupt Priority: Disabled
@@ -971,7 +971,7 @@ FSP Configuration
       General: Name: g_timer1
       General: Channel: 1
       General: Mode: Periodic
-      General: Period: 0x10000
+      General: Period: 0x100000000
       General: Compare Match: Compare Match A: Status: Disabled
       General: Compare Match: Compare Match A: Compare match value: 0
       General: Compare Match: Compare Match B: Status: Disabled

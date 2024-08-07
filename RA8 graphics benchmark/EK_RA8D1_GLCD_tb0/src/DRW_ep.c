@@ -67,6 +67,7 @@ fsp_err_t Gvar_Open(void* p)
     p_gvar->buffer_size = (uint32_t) (p_gvar->hsize * p_gvar->vsize * BYTES_PER_PIXEL);
     return FSP_SUCCESS;
 }
+extern const bsp_leds_t g_bsp_leds;
 driver_packet_t DP = {
                       .p_Console = NULL,
                       .p_GLCDC = (void*) &g_display,
@@ -75,7 +76,8 @@ driver_packet_t DP = {
                                  (void*) &g_timer1,
                                  (void*) &g_timer2,
                                  (void*) &g_timer3
-                                }
+                                },
+                                .board_leds = &g_bsp_leds
                       };
 
 volatile uint32_t tommy=0;
@@ -88,7 +90,12 @@ void DRW_entry(void)
     //#if defined(BOARD_RA8D1_EK)
     fsp_err_t err = FSP_SUCCESS;
     SCI_RTT_Open((void*) &g_printf_uart, NULL);
+    err = R_GPT_Open(&g_timer0_ctrl, &g_timer0_cfg);
+    err |= R_GPT_Open(&g_timer1_ctrl, &g_timer1_cfg);
+    assert(err == FSP_SUCCESS);
+
     TB.open((void*) &DP);
+    TB.start();
     APP_PRINT("test");
     Gvar.open(&Gvar);
     bsp_sdram_init();

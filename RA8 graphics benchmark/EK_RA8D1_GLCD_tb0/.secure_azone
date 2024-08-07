@@ -194,6 +194,7 @@
             <slot name="IRQ9" secure="true"/>
             <slot name="IRQ10" secure="true"/>
             <slot name="IRQ11" secure="true"/>
+            <slot name="IRQ12" secure="true"/>
         </peripheral>
     </partition>
 </azone>
