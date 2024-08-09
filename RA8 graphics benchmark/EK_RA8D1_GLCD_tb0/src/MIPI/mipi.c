@@ -176,7 +176,8 @@ void mipi_dsi_push_table (const lcd_table_setting_t *table)
             g_message_sent = false;
             /* Send a command to the peripheral device */
             err = R_MIPI_DSI_Command (&g_mipi_dsi0_ctrl, &msg);
-            handle_error(err, "** MIPI DSI Command API failed ** \r\n");
+//            handle_error(err, "** MIPI DSI Command API failed ** \r\n");
+            assert(FSP_SUCCESS == err);
             /* Wait */
             while (!g_message_sent);
         }

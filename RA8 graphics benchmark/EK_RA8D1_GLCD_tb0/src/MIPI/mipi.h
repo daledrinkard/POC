@@ -18,4 +18,5 @@ typedef struct
     mipi_dsi_cmd_flag_t flags;
 } lcd_table_setting_t;
 void mipi_dsi_push_table (const lcd_table_setting_t *table);
+extern const lcd_table_setting_t g_lcd_init_focuslcd[];
 #endif /* MIPI_MIPI_H_ */

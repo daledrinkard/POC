@@ -10,5 +10,7 @@
 
 #include "testbench_api.h"
 extern const timer_cfg_t OneSecondPeriod_cfg;
+extern timer_callback_args_t timer0_cb_args;
+void testbench_timer0_cb(timer_callback_args_t *p_arg);
 
 #endif /* TESTBENCH_TESTBENCH_TIMERS_H_ */

@@ -30,11 +30,9 @@
 
 
 
-volatile uint8_t g_vsync_flag = RESET_FLAG;
+//volatile uint8_t g_vsync_flag = RESET_FLAG;
 
 /* User defined functions */
-void glcdc_callback(display_callback_args_t * args);
-static void glcdc_init(void);
 
 
 typedef struct gvar_s {
@@ -54,8 +52,8 @@ gvar_t Gvar = {.open = Gvar_Open,
 void Gvar_Swap(void* p)
 {
     gvar_t *p_gvar = (gvar_t*) p;
-    p_gvar->p_framebuffer = (p_gvar->p_framebuffer == g_framebuffer[0]) ?
-            g_framebuffer[1] : g_framebuffer[0];
+    p_gvar->p_framebuffer = (p_gvar->p_framebuffer == (uint32_t*) g_framebuffer[0]) ?
+            (uint32_t*) g_framebuffer[1] : (uint32_t*) g_framebuffer[0];
 }
 fsp_err_t Gvar_Open(void* p)
 {
@@ -93,23 +91,23 @@ void DRW_entry(void)
     err = R_GPT_Open(&g_timer0_ctrl, &g_timer0_cfg);
     err |= R_GPT_Open(&g_timer1_ctrl, &g_timer1_cfg);
     assert(err == FSP_SUCCESS);
-
-    TB.open((void*) &DP);
-    TB.start();
-    APP_PRINT("test");
-    Gvar.open(&Gvar);
     bsp_sdram_init();
-    glcdc_init();
-      memset((uint16_t*) &g_framebuffer[0],0x07E0,sizeof(g_framebuffer));
-    while(!g_vsync_flag);
-    g_vsync_flag = RESET_FLAG;
-    draw_core_init();
+    // glcdc_instance_ctrl_t
+    //((  glcdc_instance_ctrl_t*)g_display.p_ctrl)->p_cfg->
+    TB.open((void*) &DP);
+    Gvar.open(&Gvar);
+//    glcd_init();
+//      memset((uint16_t*) &g_framebuffer[0],0x07E0,sizeof(g_framebuffer));
+//    while((TB.event_flag & TB_EVENT_VSYNC) == 0);
+//    TB.event_flag &= (uint32_t) ~TB_EVENT_VSYNC;
+//    draw_core_init();
+    TB.start();
     while(true)
     {
         /* Swap the active framebuffer */
         Gvar.swap(&Gvar);
-        while(!g_vsync_flag);
-        g_vsync_flag = RESET_FLAG;
+        while((TB.event_flag & TB_EVENT_VSYNC) == 0);
+        TB.event_flag &= (uint32_t) ~TB_EVENT_VSYNC;
         err = R_GLCDC_BufferChange(&g_display_ctrl, (uint8_t*) Gvar.p_framebuffer, DISPLAY_FRAME_LAYER_1);
         /* Handle error */
         if(FSP_SUCCESS != err)
@@ -120,6 +118,7 @@ void DRW_entry(void)
         }
 //        while(3 == tommy);
         /* Draw the new framebuffer now */
+        draw_core_animate();
         draw_core_draw(Gvar.p_framebuffer);
         tommy++;
     }
@@ -167,100 +166,8 @@ void DRW_entry(void)
 #endif
 }
 
-/*******************************************************************************************************************//**
- * User defined function to initialize glcdc module
- *
- * @param      none
- * @retval     none
- **********************************************************************************************************************/
-static void glcdc_init(void)
-{
-    fsp_err_t err = FSP_SUCCESS;
-    /* Initialize GLCDC driver */
-    err = R_GLCDC_Open(&g_display_ctrl, &g_display_cfg);
-    /* Handle error */
-    if(FSP_SUCCESS != err)
-    {
-        /* GLCDC initialization failed  */
-        APP_ERR_PRINT("\r\n ** GLCDC driver initialization FAILED ** \r\n");
-        APP_ERR_TRAP(err);
-    }
-    else
-    {
-        APP_PRINT("\r\n ** GLCDC driver initialization SUCCESS ** \r\n");
-    }
-
-#if defined(BOARD_RA8D1_EK)
-    /* Initialize LCD. */
-    mipi_dsi_push_table(g_lcd_init_focuslcd);
-#endif
-
-    /* Start GLCDC display output */
-    err = R_GLCDC_Start(&g_display_ctrl);
-    /* Handle error */
-    if(FSP_SUCCESS != err)
-    {
-        /* GLCDC initialization failed  */
-        APP_ERR_PRINT("\r\n ** GLCDC driver start FAILED ** \r\n");
-        APP_ERR_TRAP(err);
-    }
-    else
-    {
-        APP_PRINT("\r\n ** GLCDC driver start SUCCESS ** \r\n");
-    }
-}
-
-/*******************************************************************************************************************//**
 
 
-/*******************************************************************************************************************//**
- * Callback functions for GLCDC interrupts
- *
- * @param[in]  p_args    Callback arguments
- * @retval     none
- **********************************************************************************************************************/
-void glcdc_callback (display_callback_args_t * p_args)
-{
-    if (p_args->event == DISPLAY_EVENT_LINE_DETECTION)
-    {
-        g_vsync_flag = SET_FLAG;
-    }
-}
-
-
-
-#if defined(BOARD_RA8D1_EK)
-
-/*******************************************************************************************************************//**
- *  @brief       This function handles errors, closes all opened modules, and prints errors.
- *
- *  @param[in]   err       error status
- *  @param[in]   err_str   error string
- *  @retval      None
- **********************************************************************************************************************/
-void handle_error (fsp_err_t err,  const char * err_str)
-{
-    if(FSP_SUCCESS != err)
-    {
-        /* Print the error */
-        APP_ERR_PRINT(err_str);
-
-        /* Close opened GLCD module*/
-        if(RESET_VALUE != g_display_ctrl.state)
-        {
-            if(FSP_SUCCESS != R_GLCDC_Close (&g_display_ctrl))
-            {
-                APP_ERR_PRINT("GLCDC Close API failed\r\n");
-            }
-        }
-
-        APP_ERR_TRAP(err);
-    }
-}
-
-
-
-#endif
 /*******************************************************************************************************************//**
  * @} (end addtogroup DRW_ep)
  **********************************************************************************************************************/

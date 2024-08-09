@@ -114,7 +114,7 @@ void draw_core_draw (uint32_t * framebuffer)
 {
     /* DRW operations happens here */
     /*Animation of different figures */
-    draw_core_animate();
+//    draw_core_animate();
 
     /* set frame buffer properties */
     draw_core_set(framebuffer);
