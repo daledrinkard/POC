@@ -20,8 +20,48 @@ extern const bsp_leds_t g_bsp_leds;
                          TB.animate_data.w_idx = (TB.animate_data.w_idx == TB.animate_data.size) ? 0 : TB.animate_data.w_idx + 1;
 #define CAPTURE_RENDER   TB.render_data.data[TB.render_data.w_idx] = p_tmr_ctrl->p_reg->GTCNT; \
                          TB.render_data.w_idx = (TB.render_data.w_idx == TB.render_data.size) ? 0 : TB.render_data.w_idx + 1;
+/*
+ *   Create a poly
+ */
+d2_point Points[12] = {(200 << 4),(200 << 4),
+                      (300 << 4),(200 << 4),
+                      (300 << 4),(300 << 4),
+                      (150 << 4),(150 << 4),
+                      (100 << 4),(100 << 4),
+                      (200 << 4),(300 << 4)
 
 
+
+};
+d2_point Deltas[12] = {(1 << 4),(1 << 4) * (-1),
+                      (2 << 4),(2 << 4),
+                      (1 << 4)*(-1),(8 << 4),
+                      (5 << 4),(3 << 4),
+                      (6 << 4),(6 << 4),
+                      (5 << 4),(3 << 4)
+
+
+};
+d2_point Accel[12] = {0};
+dr_animate_t Poly_animate = {
+                             .atype = 1,
+                              .coord = &Points[0],
+                              .velocity = &Deltas[0],
+                              .acceleration = &Accel[0],
+                              .size = 6
+};
+dr_render_t Poly_render = {
+                           .coords = &Points[0],
+                           .rtype = 1,
+                           .number = 6,
+                           .state = 0
+};
+dr_render_t Box_render = {
+                           .coords = &Points[0],
+                           .rtype = 2,
+                           .number = 6,
+                           .state = 0
+};
 /*
  *    API functions
  */
@@ -128,5 +168,11 @@ static fsp_err_t testbench_Open(void *data)
     while ((TB.event_flag & (uint32_t) TB_EVENT_VSYNC) == 0);
     TB.event_flag &= (uint32_t) ~TB_EVENT_VSYNC;
     draw_core_init();
+    //@@  startup
+    /*
+     *
+    */
+    RenderList.add(&Poly_render);
+    AnimateList.add(&Poly_animate);
     return FSP_SUCCESS;
 }

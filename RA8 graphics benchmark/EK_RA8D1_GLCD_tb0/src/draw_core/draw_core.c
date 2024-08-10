@@ -12,34 +12,23 @@
 //dr_object_t circle = {.X = 100,.Y = 100,.color = 0xFF00FF00,.object_type = Circle};
 
 
-d2_point Points[12] = {(200 << 4),(200 << 4),
-                      (300 << 4),(200 << 4),
-                      (300 << 4),(300 << 4),
-                      (150 << 4),(150 << 4),
-                      (100 << 4),(100 << 4),
-                      (200 << 4),(300 << 4)
 
-
-
-};
-d2_point Deltas[12] = {(1 << 4),(1 << 4) * (-1),
-                      (2 << 4),(2 << 4),
-                      (1 << 4)*(-1),(8 << 4),
-                      (5 << 4),(3 << 4),
-                      (6 << 4),(6 << 4),
-                      (5 << 4),(3 << 4)
-
-
-};
-
-
-dr_poly_t Poly = {
-                  .coords = Points,
-                  .deltas = Deltas,
-                  .number = 6
-};
-
-
+void draw_core_animate_add(dr_animate_t *);
+void draw_core_animate_rem(dr_animate_t *);
+void draw_core_render_add(dr_render_t *);
+void draw_core_render_rem(dr_render_t *);
+dr_animate_t Animate[DRAW_CORE_NUMBER_OF_ANIMATIONS] = {0};
+dr_render_t Render[DRAW_CORE_NUMBER_OF_RENDERS] = {0};
+dr_animate_list_t AnimateList = {
+                                 .add = draw_core_animate_add,
+                                 .rem = draw_core_animate_rem,
+                                 .idx = 0,
+                                 .list = Animate};
+dr_render_list_t RenderList = {
+                               .add = draw_core_render_add,
+                               .rem = draw_core_render_rem,
+                               .idx = 0,
+                               .list = Render};
 
 //dr_cirlce_t Circle1 = {.center = &CircleCenter,.radius = (50 << 4),.width = 0};
 #include "dave_driver.h"
@@ -115,15 +104,29 @@ void draw_core_draw (uint32_t * framebuffer)
     /* DRW operations happens here */
     /*Animation of different figures */
 //    draw_core_animate();
-
-    /* set frame buffer properties */
+    int i = 0;
+    d2_point *dp;
+    uint32_t n;
     draw_core_set(framebuffer);
-
-    /* Set the render color to red */
     DRW_err = d2_setcolor(gp_davey, ARRAY_INDEX, RED_COLOR_VAL);
     error_handler(DRW_err, gp_davey);
+    while (RenderList.list[i].rtype > 0)
+    {
+        dp = RenderList.list[i].coords;
+        n = RenderList.list[i].number;
+        switch (RenderList.list[i].rtype) {
+            case 1: // polygon
+                DRW_err = d2_renderpolyline( gp_davey, dp, n, 32, d2_le_closed);
+                break;
+            default: while(1); //@@
+        }
+        i++;
+    }
+    /* set frame buffer properties */
 
-    DRW_err = d2_renderpolyline( gp_davey, Poly.coords, Poly.number, 32, d2_le_closed);
+    /* Set the render color to red */
+
+//    DRW_err = d2_renderpolyline( gp_davey, Poly.coords, Poly.number, 32, d2_le_closed);
     /* Render a circle */
 //    DRW_err = d2_rendercircle(gp_davey,(d2_point)(g_c_c_x1 << SHIFT_VALUE), (d2_point)(g_c_c_y1 << SHIFT_VALUE), (d2_width)(g_c_r << SHIFT_VALUE), (d2_width)(g_c_w << SHIFT_VALUE));
 //    error_handler(DRW_err, gp_davey);
@@ -160,11 +163,121 @@ void draw_core_draw (uint32_t * framebuffer)
     error_handler(DRW_err, gp_davey);
 }
 
+#define ZPX (0)
+#define MPX (DRW_TEST_IMAGE_RES_H << 4)
+#define ZPY (0)
+#define MPY (DRW_TEST_IMAGE_RES_V << 4)
 void draw_core_animate(void)
 {
     /* circle animation */
     int i;
-#if 1
+    i = 0;
+    uint32_t j,k;
+    dr_animate_t * p;
+    d2_point tX,tY,mX,mY,zX,zY;
+    while (AnimateList.list[i].size != 0)
+    {
+        p = &AnimateList.list[i];
+        switch (AnimateList.list[i].atype) {
+            case 0:
+                for (j = 0; j < p->size; j++)
+                {
+                    p->coord[j].X += p->velocity[j].X;
+                    p->velocity[j].X += p->acceleration[j].X;
+                    p->coord[j].Y += p->velocity[j].Y;
+                    p->velocity[j].Y += p->acceleration[j].Y;
+                    // check for bounce.
+                    if (p->coord[j].X >= MPX)
+                    {
+                        p->coord[j].X = MPX - (p->coord[j].X - MPX);
+                        p->velocity[j].X = p->velocity[j].X * (-1);
+                    }
+                    if (p->coord[j].Y >= MPY)
+                    {
+                        p->coord[j].Y = MPY - (p->coord[j].Y - MPY);
+                        p->velocity[j].Y = p->velocity[j].Y * (-1);
+                    }
+                    if (p->coord[j].X <= ZPX)
+                    {
+                        p->coord[j].X = (ZPX - p->coord[j].X) + ZPX;
+                        p->velocity[j].X = p->velocity[j].X * (-1);
+                    }
+                    if (p->coord[j].Y <= ZPY)
+                    {
+                        p->coord[j].Y = (ZPY - p->coord[j].Y) + ZPY;
+                        p->velocity[j].Y = p->velocity[j].Y * (-1);
+                    }
+                }
+                break;
+            case 1:
+                tX = p->coord[0].X;
+                tY = p->coord[0].Y;
+                // move only the first point.
+                p->coord[0].X += p->velocity[0].X;
+                p->velocity[0].X += p->acceleration[0].X;
+                p->coord[0].Y += p->velocity[0].Y;
+                p->velocity[0].Y += p->acceleration[0].Y;
+                // calculate the delta
+                tX = p->coord[0].X - tX;
+                tY = p->coord[0].Y - tY;
+                // move all the other points
+                mX = p->coord[0].X;
+                zX = p->coord[0].X;
+                mY = p->coord[0].Y;
+                zY = p->coord[0].Y;
+                for(j=1;j < p->size; j++)
+                {
+                    p->coord[j].X += tX;
+                    p->coord[j].Y += tY;
+                    if (p->coord[j].X > mX)  mX = p->coord[j].X;
+                    else if (p->coord[j].X < zX) zX = p->coord[j].X;
+                    if (p->coord[j].Y > mY)  mY = p->coord[j].Y;
+                    else if (p->coord[j].Y < zY) zY = p->coord[j].Y;
+                }
+                // check for bounce.
+                tX = (mX >= MPX) ? (MPX - mX) : 0;
+                tY = (mY >= MPY) ? (MPY - mY) : 0;
+
+                if (mX >= MPX)
+                {
+                    p->velocity[0].X = p->velocity[0].X * (-1);
+                    for(j=0;j < p->size;j++)
+                    {
+                        p->coord[j].X = p->coord[j].X + (tX * 2);
+                    }
+                }
+                if (mY >= MPY)
+                {
+                    p->velocity[0].Y = p->velocity[0].Y * (-1);
+                    for(j=0;j < p->size;j++)
+                    {
+                        p->coord[j].Y = p->coord[j].Y + (tY * 2);
+                    }
+                }
+                tX = (mX <= ZPX) ? (ZPX - mX) : 0;
+                tY = (mY <= ZPY) ? (ZPY - mY) : 0;
+
+                if (zX < ZPX)
+                {
+                    p->velocity[0].X = p->velocity[0].X * (-1);
+                    for(j=0;j < p->size;j++)
+                    {
+                        p->coord[j].X = p->coord[j].X + (tX * 2);
+                    }
+                }
+                if (zY < ZPY)
+                {
+                    p->velocity[0].Y = p->velocity[0].Y * (-1);
+                    for(j=0;j < p->size;j++)
+                    {
+                        p->coord[j].Y = p->coord[j].Y + (tY * 2);
+                    }
+                }
+                break;
+        }
+        i++;
+    }
+#if 0
     for(i=0;i<Poly.number*2;i++)
 //    for(i=0;i<8;i++)
     {
@@ -371,4 +484,29 @@ static void error_handler(d2_s32 err, d2_device * gp_dave)
         APP_ERR_PRINT(d2_geterrorstring( gp_dave ));
         APP_ERR_TRAP(err);
     }
+}
+
+
+void draw_core_animate_add(dr_animate_t *p_animate)
+{
+   AnimateList.idx = 0;
+   while(AnimateList.list[AnimateList.idx].size > 0)
+       AnimateList.idx++; //@@ no checks
+   memcpy((uint8_t*) &AnimateList.list[AnimateList.idx],(uint8_t*) p_animate, sizeof(dr_animate_t));
+}
+void draw_core_animate_rem(dr_animate_t *)
+{
+
+}
+void draw_core_render_add(dr_render_t *p_render)
+{
+    RenderList.idx = 0;
+    while(RenderList.list[RenderList.idx].rtype > 0)
+        RenderList.idx++; //@@ no checks
+    memcpy((uint8_t*) &RenderList.list[RenderList.idx],(uint8_t*) p_render, sizeof(dr_render_t));
+
+}
+void draw_core_render_rem(dr_render_t *)
+{
+
 }

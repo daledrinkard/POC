@@ -36,6 +36,10 @@
 #define LINE_VAL_Y2             (580)
 #define LINE_VAL_WIDTH          (6)
 
+#define DRAW_CORE_NUMBER_OF_COORDS (1024)
+#define DRAW_CORE_NUMBER_OF_ANIMATIONS (32)
+#define DRAW_CORE_NUMBER_OF_RENDERS (32)
+
 
 
 #endif /* DRAW_CORE_DRAW_CORE_CFG_H_ */
