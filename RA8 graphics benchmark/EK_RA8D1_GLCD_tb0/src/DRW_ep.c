@@ -75,7 +75,11 @@ driver_packet_t DP = {
                                  (void*) &g_timer2,
                                  (void*) &g_timer3
                                 },
-                                .board_leds = &g_bsp_leds
+                       .p_SW =  {
+                                  (void*) &g_SW1_irq,
+                                  (void*) &g_SW2_irq
+                                },
+                       .board_leds = &g_bsp_leds
                       };
 
 volatile uint32_t tommy=0;
@@ -97,7 +101,7 @@ void DRW_entry(void)
     TB.open((void*) &DP);
     Gvar.open(&Gvar);
 //    glcd_init();
-//      memset((uint16_t*) &g_framebuffer[0],0x07E0,sizeof(g_framebuffer));
+      memset((uint16_t*) &g_framebuffer[0],0x07E0,sizeof(g_framebuffer));
 //    while((TB.event_flag & TB_EVENT_VSYNC) == 0);
 //    TB.event_flag &= (uint32_t) ~TB_EVENT_VSYNC;
 //    draw_core_init();

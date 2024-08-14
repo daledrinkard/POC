@@ -85,7 +85,7 @@ FSP Configuration
   RA8D1 event data
   RA Common
     Main stack size (bytes): 0x1000
-    Heap size (bytes): 0x1500
+    Heap size (bytes): 0x20000
     MCU Vcc (mV): 3300
     Parameter checking: Enabled
     Assert Failures: Use assert() to Halt Execution
@@ -166,8 +166,8 @@ FSP Configuration
       P005 N10 ADC0_AN001 GROVE2_1_AN - - "Analog mode" - - "ADC0: AN001; IRQ10: IRQ10-DS" - I - - 
       P006 R11 - PMOD1_7_INT - - Disabled - - "ACMPHS0: IVCMP0_3; ADC0: AN002; IRQ11: IRQ11-DS" - None - - 
       P007 M10 ADC0_AN004 ARDUINO_A2 - - "Analog mode" - - "ADC0: AN004" - I - - 
-      P008 R10 - USER_S2 - - Disabled - - "ADC0: AN008; IRQ12: IRQ12-DS" - None - - 
-      P009 L9 - USER_S1 - - Disabled - - "ADC0: AN006; IRQ13: IRQ13-DS" - None - - 
+      P008 R10 IRQ12_IRQ12-DS USER_S2 - IRQ12-DS "IRQ mode" - - "ADC0: AN008; IRQ12: IRQ12-DS" - IO - - 
+      P009 L9 IRQ13_IRQ13-DS USER_S1 - IRQ13-DS "IRQ mode" - - "ADC0: AN006; IRQ13: IRQ13-DS" - IO - - 
       P010 M8 - MIKROBUS_INT - - Disabled - - "ACMPHS0: IVCMP0_0; ADC0: AN005; IRQ14: IRQ14" - None - - 
       P011 M9 ADC1_AN106 ARDUINO_A3 - - "Analog mode" - - "ADC1: AN106" - I - - 
       P014 P7 ADC0_AN007 ARDUINO_A4 - - "Analog mode" - - "ADC0: AN007; DAC120: DA0" - I - - 
@@ -391,8 +391,8 @@ FSP Configuration
       P005 N10 - GROVE2_1_AN - - Disabled - - "ADC0: AN001; IRQ10: IRQ10-DS" - I - - 
       P006 R11 - PMOD1_7_INT - - Disabled - - "ACMPHS0: IVCMP0_3; ADC0: AN002; IRQ11: IRQ11-DS" - None - - 
       P007 M10 - ARDUINO_A2 - - Disabled - - "ADC0: AN004" - I - - 
-      P008 R10 - USER_S2 - - Disabled - - "ADC0: AN008; IRQ12: IRQ12-DS" - None - - 
-      P009 L9 - USER_S1 - - Disabled - - "ADC0: AN006; IRQ13: IRQ13-DS" - None - - 
+      P008 R10 - USER_S2 - None Disabled - - "ADC0: AN008; IRQ12: IRQ12-DS" - IO - - 
+      P009 L9 - USER_S1 - None Disabled - - "ADC0: AN006; IRQ13: IRQ13-DS" - IO - - 
       P010 M8 - MIKROBUS_INT - - Disabled - - "ACMPHS0: IVCMP0_0; ADC0: AN005; IRQ14: IRQ14" - None - - 
       P011 M9 - ARDUINO_A3 - - Disabled - - "ADC1: AN106" - I - - 
       P014 P7 - ARDUINO_A4 - - Disabled - - "ADC0: AN007; DAC120: DA0" - I - - 
@@ -628,6 +628,9 @@ FSP Configuration
     Parameter Checking: Default (BSP)
     Pin Output Support: Disabled
     Write Protect Enable: Disabled
+    
+  Module "External IRQ (r_icu)"
+    Parameter Checking: Default (BSP)
     
   HAL
     Instance "g_ioport I/O Port (r_ioport)"
@@ -1122,4 +1125,22 @@ FSP Configuration
       Extra Features: Interrupt Skipping (Channels with GTITC only): Skip ADC Events: None
       Extra Features: Output Disable: GTIOCA Disable Setting: Disable Prohibited
       Extra Features: Output Disable: GTIOCB Disable Setting: Disable Prohibited
+      
+    Instance "g_SW2_irq External IRQ (r_icu)"
+      Name: g_SW2_irq
+      Channel: 12
+      Trigger: Rising
+      Digital Filtering: Enabled
+      Digital Filtering Sample Clock (Only valid when Digital Filtering is Enabled): PCLK / 64
+      Callback: NULL
+      Pin Interrupt Priority: Priority 12
+      
+    Instance "g_SW1_irq External IRQ (r_icu)"
+      Name: g_SW1_irq
+      Channel: 13
+      Trigger: Rising
+      Digital Filtering: Enabled
+      Digital Filtering Sample Clock (Only valid when Digital Filtering is Enabled): PCLK / 64
+      Callback: NULL
+      Pin Interrupt Priority: Priority 12
       

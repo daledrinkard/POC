@@ -8,6 +8,8 @@
             <slot name="P004" secure="true"/>
             <slot name="P005" secure="true"/>
             <slot name="P007" secure="true"/>
+            <slot name="P008" secure="true"/>
+            <slot name="P009" secure="true"/>
             <slot name="P011" secure="true"/>
             <slot name="P014" secure="true"/>
             <slot name="P015" secure="true"/>
@@ -181,6 +183,10 @@
         <peripheral name="GPT1" group="GPT" security=""/>
         <peripheral name="GPT2" group="GPT" security=""/>
         <peripheral name="GPT3" group="GPT" security=""/>
+        <peripheral name="ICU_EXT_IRQ">
+            <slot name="ICU_EXT_IRQ12" secure="true"/>
+            <slot name="ICU_EXT_IRQ13" secure="true"/>
+        </peripheral>
         <peripheral name="ICU">
             <slot name="IRQ0" secure="true"/>
             <slot name="IRQ1" secure="true"/>
@@ -195,6 +201,8 @@
             <slot name="IRQ10" secure="true"/>
             <slot name="IRQ11" secure="true"/>
             <slot name="IRQ12" secure="true"/>
+            <slot name="IRQ13" secure="true"/>
+            <slot name="IRQ14" secure="true"/>
         </peripheral>
     </partition>
 </azone>

@@ -28,7 +28,7 @@ typedef struct dr_animate_s {
     dr_point_t *coord;
     dr_point_t *velocity;
     dr_point_t *acceleration;
-    uint32_t size;
+    uint32_t coord_size, velocity_size, acceleration_size;
 }dr_animate_t;
 typedef struct dr_poly_s {
     d2_point *coords;
@@ -49,13 +49,13 @@ typedef struct dr_circle_s {
 }dr_cirlce_t;
 typedef struct dr_animate_list_s {
     dr_animate_t *list;
-    void (*add)(dr_animate_t*);
+    void (*add)(uint16_t,dr_animate_t*);
     void (*rem)(dr_animate_t*);
     uint16_t idx;
 }dr_animate_list_t;
 typedef struct rd_render_list_s {
    dr_render_t *list;
-   void (*add)(dr_render_t*);
+   uint16_t (*add)(dr_render_t*);
    void (*rem)(dr_render_t*);
    uint16_t idx;
 

@@ -10,9 +10,11 @@
 #include "r_timer_api.h"
 #include "testbench_api.h"
 #include "testbench_timers.h"
+#include "testbench_buttons.h"
+#include "testbench_memory.h"
 #include "draw_core/draw_core_api.h"
 #include "glcd.h"
-extern const bsp_leds_t g_bsp_leds;
+//extern const bsp_leds_t g_bsp_leds;
 
 #define CAPTURE_VSYNC    TB.vsync_data.data[TB.vsync_data.w_idx] = p_tmr_ctrl->p_reg->GTCNT; \
                          TB.vsync_data.w_idx = (TB.vsync_data.w_idx == TB.vsync_data.size) ? 0 : TB.vsync_data.w_idx + 1;
@@ -21,14 +23,24 @@ extern const bsp_leds_t g_bsp_leds;
 #define CAPTURE_RENDER   TB.render_data.data[TB.render_data.w_idx] = p_tmr_ctrl->p_reg->GTCNT; \
                          TB.render_data.w_idx = (TB.render_data.w_idx == TB.render_data.size) ? 0 : TB.render_data.w_idx + 1;
 /*
- *   Create a poly
+ *   Create a 6 sided poly  (needs 6 Y/X pairs, so 12 points)
  */
 d2_point Points[12] = {(200 << 4),(200 << 4),
                       (300 << 4),(200 << 4),
                       (300 << 4),(300 << 4),
-                      (150 << 4),(150 << 4),
-                      (100 << 4),(100 << 4),
+                      (200 << 4),(300 << 4),
+                      (250 << 4),(250 << 4),
                       (200 << 4),(300 << 4)
+
+
+
+};
+d2_point Points2[12] = {(200 << 4),(600 << 4),
+                      (300 << 4),(600 << 4),
+                      (300 << 4),(700 << 4),
+                      (200 << 4),(700 << 4),
+                      (250 << 4),(650 << 4),
+                      (200 << 4),(700 << 4)
 
 
 
@@ -39,20 +51,49 @@ d2_point Deltas[12] = {(1 << 4),(1 << 4) * (-1),
                       (5 << 4),(3 << 4),
                       (6 << 4),(6 << 4),
                       (5 << 4),(3 << 4)
-
-
+};
+d2_point Deltas2[12] = {
+                        (1 << 4),(1 << 4) * (-1),
+                        (1 << 4),(1 << 4),
+                        (1 << 4)*(-1),(8 << 4),
+                        (1 << 4),(1 << 4),
+                        (1 << 4),(1 << 4),
+                        (1 << 4),(1 << 4)
 };
 d2_point Accel[12] = {0};
 dr_animate_t Poly_animate = {
-                             .atype = 1,
-                              .coord = &Points[0],
-                              .velocity = &Deltas[0],
-                              .acceleration = &Accel[0],
-                              .size = 6
+                             .atype = 0,
+                              .coord = (dr_point_t*) &Points[0],
+                              .velocity = (dr_point_t*) &Deltas[0],
+                              .acceleration = (dr_point_t*) &Accel[0],
+                              .coord_size = 6,
+                              .velocity_size = 6,
+                              .acceleration_size = 6
+};
+dr_animate_t Poly_animate2 = {
+                             .atype = 0,
+                              .coord = (dr_point_t*) &Points2[0],
+                              .velocity = (dr_point_t*) &Deltas2[0],
+                              .acceleration = (dr_point_t*) &Accel[0],
+                              .coord_size = 6,
+                              .velocity_size = 6,
+                              .acceleration_size = 6
 };
 dr_render_t Poly_render = {
                            .coords = &Points[0],
-                           .rtype = 1,
+                           .rtype = 1,  // 1 = PolyRender
+                           .number = 6,
+                           .state = 0
+};
+dr_render_t Poly_render2 = {
+                           .coords = &Points2[0],
+                           .rtype = 1,  // 1 = PolyRender
+                           .number = 6,
+                           .state = 0
+};
+dr_render_t Poly_render3 = {
+                           .coords = &Points2[0],
+                           .rtype = 1,  // 1 = PolyRender
                            .number = 6,
                            .state = 0
 };
@@ -67,6 +108,7 @@ dr_render_t Box_render = {
  */
 static fsp_err_t testbench_Open(void*);
 static fsp_err_t testbench_Start(void);
+static void testbench_Led(uint16_t idx,bsp_io_level_t x);
 
 uint32_t AnimateBuffer[CAPTURE_BUFFER_SIZE];
 uint32_t RenderBuffer[CAPTURE_BUFFER_SIZE];
@@ -74,6 +116,7 @@ uint32_t VSYNCBuffer[CAPTURE_BUFFER_SIZE];
 // Global structures
 testbench_t TB = {.open = testbench_Open,
                   .start = testbench_Start,
+                  .led = testbench_Led,
                   .idle_cycles = 0,
                   .sec_counts = 0
                  };
@@ -121,6 +164,13 @@ static fsp_err_t testbench_Start(void)
 //                    FSP_CRITICAL_SECTION_ENTER;
 //                    TB.event_flag &= (uint32_t) ~emask;
 //                    FSP_CRITICAL_SECTION_EXIT;
+                    break;
+                case TB_EVENT_SW1:
+                    TB.led(0,BSP_IO_LEVEL_HIGH);
+                    break;
+                case TB_EVENT_SW2:
+                    TB.led(0,BSP_IO_LEVEL_LOW);
+                    break;
 
                    break;
                 default: while(1); //@@ unhandled event.
@@ -135,8 +185,16 @@ static fsp_err_t testbench_Start(void)
     }
     return FSP_SUCCESS;
 }
+static void testbench_Led(uint16_t idx,bsp_io_level_t x)
+{
+    g_ioport.p_api->pinWrite(g_ioport.p_ctrl,TB.driver->board_leds->p_leds[idx],x);
+}
 static fsp_err_t testbench_Open(void *data)
 {
+     //BSP_IO_PORT_00_PIN_00
+     bsp_io_port_pin_t b;
+     //BSP_IO_LEVEL_LOW
+    bsp_leds_t y;
     timer_instance_t *p_tmr;
     fsp_err_t err;
     TB.event_flag = TB_EVENT_STARTUP;
@@ -160,6 +218,33 @@ static fsp_err_t testbench_Open(void *data)
     assert(FSP_SUCCESS == err);
     //open and enable the measure timer
     p_tmr = TB.driver->p_tmr0[1];
+    // open and enable the press buttons external interrupts.
+    void *pctrl;
+    void *pcfg;
+
+    for(int i=0;i<TB_NUMBER_OF_PRESS_BUTTONS;i++)
+    {
+        pctrl = (void *) TB.driver->p_SW[i]->p_ctrl;
+        pcfg = (void*) TB.driver->p_SW[i]->p_cfg;
+        if (TB.driver->p_SW[i] != NULL)
+        {
+            err  = TB.driver->p_SW[i]->p_api->open(pctrl,pcfg);
+            switch (i) {
+                case 0:
+                    err |= TB.driver->p_SW[i]->p_api->callbackSet(pctrl,SW1_callback,NULL,&SW1_cb_args);
+                    break;
+                case 1:
+                    err |= TB.driver->p_SW[i]->p_api->callbackSet(pctrl,SW2_callback,NULL,&SW2_cb_args);
+                    break;
+                default: while(1); //TRAP
+            }
+            err |= TB.driver->p_SW[0]->p_api->enable(pctrl);
+    //        fsp_err_t (* callbackSet)(external_irq_ctrl_t * const p_ctrl, void (* p_callback)(external_irq_callback_args_t *),
+    //                                  void const * const p_context, external_irq_callback_args_t * const p_callback_memory);
+
+        }
+
+    }
     err = p_tmr->p_api->enable(p_tmr->p_ctrl);
     assert(FSP_SUCCESS == err);
     TB.p_activeframe = TB.driver->p_GLCDC->p_cfg->input[0].p_base;
@@ -172,7 +257,26 @@ static fsp_err_t testbench_Open(void *data)
     /*
      *
     */
-    RenderList.add(&Poly_render);
-    AnimateList.add(&Poly_animate);
+    MEM.clear(32);
+    uint16_t handle;
+    uint32_t i;
+    handle = RenderList.add(&Poly_render);
+    AnimateList.add(handle,&Poly_animate);  //@@ uses side-effect... don't like-a dat-a
+    for(i=0;i < (Poly_render.number * 2); i++)
+    {
+    Poly_render.coords[i] += (50 << 4);// Poly_render.coords[i+1] += 50;
+    }
+    handle = RenderList.add(&Poly_render);
+    AnimateList.add(handle,&Poly_animate);  //@@ uses side-effect... don't like-a dat-a
+    for(i=0;i < (Poly_render.number * 2); i++)
+    {
+    Poly_render.coords[i] += (50 << 4);// Poly_render.coords[i+1] += 50;
+    }
+    handle = RenderList.add(&Poly_render);
+    Poly_animate.atype = 1;
+    AnimateList.add(handle,&Poly_animate);  //@@ uses side-effect... don't like-a dat-a
+//    AnimateList.add(handle,&Poly_animate2);  //@@ uses side-effect... don't like-a dat-a
+
     return FSP_SUCCESS;
 }
+

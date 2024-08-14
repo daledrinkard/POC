@@ -8,8 +8,11 @@
 #ifndef TESTBENCH_TESTBENCH_API_H_
 #define TESTBENCH_TESTBENCH_API_H_
 
+//#include "common_data.h"
 #include "r_display_api.h"
 #include "r_timer_api.h"
+#include "r_external_irq_api.h"
+
 #include "testbench.h"
 typedef struct timer_object_s {
 
@@ -18,6 +21,7 @@ typedef struct driver_packet_s {
     display_instance_t* p_GLCDC;
     void* p_Console;
     timer_instance_t *p_tmr0[4];
+    external_irq_instance_t *p_SW[2];
     bsp_leds_t *board_leds;
 }driver_packet_t;
 typedef struct capture_buffer_s {
@@ -39,6 +43,8 @@ typedef struct testbench_s {
     uint32_t framesize;
     fsp_err_t (*open)(void*);
     fsp_err_t (*start)(void);
+    void (*led)(uint8_t,bsp_io_level_t);
+
 }testbench_t;
 
 extern testbench_t TB;

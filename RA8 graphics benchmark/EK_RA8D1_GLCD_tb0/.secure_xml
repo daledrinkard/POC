@@ -150,6 +150,8 @@
       <configSetting altId="glcd.lcd_tcon3.p515" configurationId="glcd.lcd_tcon3"/>
       <configSetting altId="iic1.scl1.p512" configurationId="iic1.scl1"/>
       <configSetting altId="iic1.sda1.p511" configurationId="iic1.sda1"/>
+      <configSetting altId="irq12.irq12_dash_ds.p008" configurationId="irq12.irq12_dash_ds" isUsedByDriver="true"/>
+      <configSetting altId="irq13.irq13_dash_ds.p009" configurationId="irq13.irq13_dash_ds" isUsedByDriver="true"/>
       <configSetting altId="jtag_fslash_swd.tck.p211" configurationId="jtag_fslash_swd.tck"/>
       <configSetting altId="jtag_fslash_swd.tdi.p208" configurationId="jtag_fslash_swd.tdi"/>
       <configSetting altId="jtag_fslash_swd.tdo.p209" configurationId="jtag_fslash_swd.tdo"/>

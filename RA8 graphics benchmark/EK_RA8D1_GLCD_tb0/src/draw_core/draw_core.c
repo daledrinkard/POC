@@ -8,14 +8,15 @@
 #include "common_utils.h"
 #include <stdbool.h>
 #include "draw_core_api.h"
+#include "../testbench/testbench_memory.h"
 
 //dr_object_t circle = {.X = 100,.Y = 100,.color = 0xFF00FF00,.object_type = Circle};
 
 
 
-void draw_core_animate_add(dr_animate_t *);
+void draw_core_animate_add(uint16_t,dr_animate_t *);
 void draw_core_animate_rem(dr_animate_t *);
-void draw_core_render_add(dr_render_t *);
+uint16_t draw_core_render_add(dr_render_t *);
 void draw_core_render_rem(dr_render_t *);
 dr_animate_t Animate[DRAW_CORE_NUMBER_OF_ANIMATIONS] = {0};
 dr_render_t Render[DRAW_CORE_NUMBER_OF_RENDERS] = {0};
@@ -58,6 +59,7 @@ void draw_core_init(void)
 {
     /* Open the D2 driver and initialize the hardware */
     gp_davey = d2_opendevice(BITFIELD_VALUE);
+    DRW_err = d2_lowlocalmemmode(gp_davey,32,32);// dlistblockfactor, dlistblocks)
     DRW_err = d2_inithw(gp_davey, BITFIELD_VALUE);
         error_handler(DRW_err, gp_davey);
 
@@ -108,7 +110,6 @@ void draw_core_draw (uint32_t * framebuffer)
     d2_point *dp;
     uint32_t n;
     draw_core_set(framebuffer);
-    DRW_err = d2_setcolor(gp_davey, ARRAY_INDEX, RED_COLOR_VAL);
     error_handler(DRW_err, gp_davey);
     while (RenderList.list[i].rtype > 0)
     {
@@ -116,6 +117,10 @@ void draw_core_draw (uint32_t * framebuffer)
         n = RenderList.list[i].number;
         switch (RenderList.list[i].rtype) {
             case 1: // polygon
+                if (i == 0)
+                DRW_err = d2_setcolor(gp_davey, ARRAY_INDEX, RED_COLOR_VAL);
+                else
+                    DRW_err = d2_setcolor(gp_davey, ARRAY_INDEX, GREEN_COLOR_VAL);
                 DRW_err = d2_renderpolyline( gp_davey, dp, n, 32, d2_le_closed);
                 break;
             default: while(1); //@@
@@ -172,15 +177,15 @@ void draw_core_animate(void)
     /* circle animation */
     int i;
     i = 0;
-    uint32_t j,k;
+    uint32_t j;
     dr_animate_t * p;
     d2_point tX,tY,mX,mY,zX,zY;
-    while (AnimateList.list[i].size != 0)
+    while (AnimateList.list[i].coord_size != 0)
     {
         p = &AnimateList.list[i];
         switch (AnimateList.list[i].atype) {
             case 0:
-                for (j = 0; j < p->size; j++)
+                for (j = 0; j < p->coord_size; j++)
                 {
                     p->coord[j].X += p->velocity[j].X;
                     p->velocity[j].X += p->acceleration[j].X;
@@ -225,7 +230,7 @@ void draw_core_animate(void)
                 zX = p->coord[0].X;
                 mY = p->coord[0].Y;
                 zY = p->coord[0].Y;
-                for(j=1;j < p->size; j++)
+                for(j=1;j < p->coord_size; j++)
                 {
                     p->coord[j].X += tX;
                     p->coord[j].Y += tY;
@@ -241,15 +246,15 @@ void draw_core_animate(void)
                 if (mX >= MPX)
                 {
                     p->velocity[0].X = p->velocity[0].X * (-1);
-                    for(j=0;j < p->size;j++)
+                    for(j=0;j < p->coord_size;j++)
                     {
-                        p->coord[j].X = p->coord[j].X + (tX * 2);
+                        p->coord[j].X = (d2_point) (p->coord[j].X + (tX * 2));
                     }
                 }
                 if (mY >= MPY)
                 {
                     p->velocity[0].Y = p->velocity[0].Y * (-1);
-                    for(j=0;j < p->size;j++)
+                    for(j=0;j < p->coord_size;j++)
                     {
                         p->coord[j].Y = p->coord[j].Y + (tY * 2);
                     }
@@ -260,7 +265,7 @@ void draw_core_animate(void)
                 if (zX < ZPX)
                 {
                     p->velocity[0].X = p->velocity[0].X * (-1);
-                    for(j=0;j < p->size;j++)
+                    for(j=0;j < p->coord_size;j++)
                     {
                         p->coord[j].X = p->coord[j].X + (tX * 2);
                     }
@@ -268,7 +273,7 @@ void draw_core_animate(void)
                 if (zY < ZPY)
                 {
                     p->velocity[0].Y = p->velocity[0].Y * (-1);
-                    for(j=0;j < p->size;j++)
+                    for(j=0;j < p->coord_size;j++)
                     {
                         p->coord[j].Y = p->coord[j].Y + (tY * 2);
                     }
@@ -478,32 +483,53 @@ static void rbg_render565(void)
  **********************************************************************************************************************/
 static void error_handler(d2_s32 err, d2_device * gp_dave)
 {
+    volatile d2_char *pp;
     if (D2_OK != err)
     {
         /* print the error message */
-        APP_ERR_PRINT(d2_geterrorstring( gp_dave ));
+        pp = d2_geterrorstring( gp_dave );
+        APP_ERR_PRINT(pp);
         APP_ERR_TRAP(err);
     }
 }
 
 
-void draw_core_animate_add(dr_animate_t *p_animate)
+void draw_core_animate_add(uint16_t handle,dr_animate_t *p_animate)
 {
    AnimateList.idx = 0;
-   while(AnimateList.list[AnimateList.idx].size > 0)
+   while(AnimateList.list[AnimateList.idx].coord_size > 0) //@@ need a better way to detect a null entry
        AnimateList.idx++; //@@ no checks
    memcpy((uint8_t*) &AnimateList.list[AnimateList.idx],(uint8_t*) p_animate, sizeof(dr_animate_t));
+   // allocate a buffer for the velocity vectors
+   MEM.allocate((d2_point **)(&AnimateList.list[AnimateList.idx].velocity), p_animate->velocity_size);
+   memcpy((uint8_t*) AnimateList.list[AnimateList.idx].velocity,p_animate->velocity, p_animate->velocity_size * sizeof(dr_point_t));
+   // allocate a buffer for the acceleration vectors
+   MEM.allocate((d2_point **)(&AnimateList.list[AnimateList.idx].acceleration), p_animate->acceleration_size);
+   memcpy((uint8_t*) AnimateList.list[AnimateList.idx].acceleration,p_animate->acceleration, p_animate->acceleration_size * sizeof(dr_point_t));
+
+
+
+
+
+
+   AnimateList.list[AnimateList.idx].coord = RenderList.list[handle].coords;
 }
 void draw_core_animate_rem(dr_animate_t *)
 {
 
 }
-void draw_core_render_add(dr_render_t *p_render)
+uint16_t draw_core_render_add(dr_render_t *p_render)
 {
     RenderList.idx = 0;
     while(RenderList.list[RenderList.idx].rtype > 0)
         RenderList.idx++; //@@ no checks
+    // copy the object to the Render list
     memcpy((uint8_t*) &RenderList.list[RenderList.idx],(uint8_t*) p_render, sizeof(dr_render_t));
+    // Now allocate storage for the coord set.
+    MEM.allocate(&RenderList.list[RenderList.idx].coords,(uint32_t) RenderList.list[RenderList.idx].number);
+    // Now initialize that set of coords.
+    memcpy((uint8_t*) RenderList.list[RenderList.idx].coords,p_render->coords,p_render->number * sizeof(dr_point_t));
+    return RenderList.idx;
 
 }
 void draw_core_render_rem(dr_render_t *)
