@@ -10,6 +10,8 @@
 #include "draw_core_api.h"
 #include "../testbench/testbench_memory.h"
 
+#include <math.h>
+#define PI 3.141592654
 //dr_object_t circle = {.X = 100,.Y = 100,.color = 0xFF00FF00,.object_type = Circle};
 
 
@@ -108,6 +110,9 @@ void draw_core_draw (uint32_t * framebuffer)
 //    draw_core_animate();
     int i = 0;
     d2_point *dp;
+    dr_point_t center;
+    d2_width radius;
+    d2_width line_width;
     uint32_t n;
     draw_core_set(framebuffer);
     error_handler(DRW_err, gp_davey);
@@ -117,26 +122,25 @@ void draw_core_draw (uint32_t * framebuffer)
         n = RenderList.list[i].number;
         switch (RenderList.list[i].rtype) {
             case 1: // polygon
-                if (i == 0)
-                DRW_err = d2_setcolor(gp_davey, ARRAY_INDEX, RED_COLOR_VAL);
-                else
-                    DRW_err = d2_setcolor(gp_davey, ARRAY_INDEX, GREEN_COLOR_VAL);
-                DRW_err = d2_renderpolyline( gp_davey, dp, n, 32, d2_le_closed);
+                DRW_err = d2_setcolor(gp_davey, ARRAY_INDEX, RenderList.list[i].color);
+                DRW_err |= d2_renderpolyline( gp_davey, dp, n, 32, d2_le_closed);
+                while(DRW_err); //@@
+                break;
+            case 2: // circle
+                center.X = dp[0];
+                center.Y = dp[1];
+                radius   = (d2_width) dp[2];
+                line_width = (d2_width) dp[3];
+                DRW_err = d2_setcolor(gp_davey, ARRAY_INDEX, RenderList.list[i].color);
+                DRW_err |=     DRW_err = d2_rendercircle(gp_davey, center.X, center.Y, radius, line_width);
+
+                while(DRW_err); //@@
                 break;
             default: while(1); //@@
         }
         i++;
     }
-    /* set frame buffer properties */
 
-    /* Set the render color to red */
-
-//    DRW_err = d2_renderpolyline( gp_davey, Poly.coords, Poly.number, 32, d2_le_closed);
-    /* Render a circle */
-//    DRW_err = d2_rendercircle(gp_davey,(d2_point)(g_c_c_x1 << SHIFT_VALUE), (d2_point)(g_c_c_y1 << SHIFT_VALUE), (d2_width)(g_c_r << SHIFT_VALUE), (d2_width)(g_c_w << SHIFT_VALUE));
-//    error_handler(DRW_err, gp_davey);
-//    DRW_err = d2_rendercircle(gp_davey,Circle1.center->X,Circle1.center->Y, Circle1.radius, Circle1.width);
-//    error_handler(DRW_err, gp_davey);
 
     /* Set the render color to green */
     DRW_err = d2_setcolor(gp_davey, ARRAY_INDEX, GREEN_COLOR_VAL);
@@ -535,4 +539,55 @@ uint16_t draw_core_render_add(dr_render_t *p_render)
 void draw_core_render_rem(dr_render_t *)
 {
 
+}
+
+static d2_point cvrt(double x);
+static d2_point cvrt(double x)
+{
+    d2_point zz;
+    int d,f;
+    double q;
+    double i;
+    q = modf(x,&i);
+    d = (int)x;
+    f = (int) (1/q) * 16;
+    zz = ((d & 0x000003FF) << 4) | f;
+    return zz;
+}
+static double todbl(d2_point x);
+static double todbl(d2_point x)
+{
+    d2_point zz;
+    uint32_t d,f;
+    double q;
+    d = (x & 0x7FF0) >> 4;
+    f = (x & 0x000F);
+    q = (double) d + (double) 16 * f;
+    return q;
+}
+
+dr_point_t* draw_core_star(dr_point_t center,d2_point r1, d2_point r2,uint16_t number)
+{
+    static dr_point_t *points;
+    MEM.allocate(&points,number * 2);
+    double x,y,theda,dtheda;
+    dr_point_t P;
+    int i;
+    dtheda = (double) (2*PI)/number;
+    theda = dtheda;
+    for(i=0;i<number;i++)
+    {
+        x = cos(theda) * todbl(r1);
+        y = sin(theda) * todbl(r1);
+        P.X = cvrt(x);
+        P.Y = cvrt(y);
+        P.X = P.X + center.X;
+        P.Y = P.Y + center.Y;
+        points[i] = P;
+        theda += dtheda;
+    }
+
+
+
+    return points;
 }

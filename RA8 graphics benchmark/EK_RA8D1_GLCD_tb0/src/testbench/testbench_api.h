@@ -39,6 +39,7 @@ typedef struct testbench_s {
     uint32_t event_mask;
     uint32_t idle_cycles;
     uint32_t sec_counts;
+    uint32_t frame_count;
     volatile uint32_t* p_activeframe;
     uint32_t framesize;
     fsp_err_t (*open)(void*);

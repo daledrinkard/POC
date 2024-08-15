@@ -41,6 +41,7 @@ typedef struct dr_render_s {
 //    d2_point *deltas;
     uint16_t number;
     uint16_t state;
+    uint32_t color;
 }dr_render_t;
 typedef struct dr_circle_s {
     dr_point_t *center;
@@ -63,4 +64,6 @@ typedef struct rd_render_list_s {
 
 extern dr_animate_list_t AnimateList;
 extern dr_render_list_t RenderList;
+
+dr_point_t* draw_core_star(dr_point_t center,d2_point r1, d2_point r2,uint16_t number);
 #endif /* DRAW_CORE_DRAW_CORE_H_ */

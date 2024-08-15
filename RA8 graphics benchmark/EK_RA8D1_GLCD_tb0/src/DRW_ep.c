@@ -106,6 +106,7 @@ void DRW_entry(void)
 //    TB.event_flag &= (uint32_t) ~TB_EVENT_VSYNC;
 //    draw_core_init();
     TB.start();
+#if 0
     while(true)
     {
         /* Swap the active framebuffer */
@@ -128,7 +129,7 @@ void DRW_entry(void)
     }
 
     APP_PRINT("\r\n ** Image rendering successful ** \r\n");
-#if 0
+
     /* Wait for rendering operations to finish */
     DRW_err = d2_flushframe(gp_davey);
     error_handler(DRW_err, gp_davey);

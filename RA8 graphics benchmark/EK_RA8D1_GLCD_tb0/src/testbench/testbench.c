@@ -14,6 +14,8 @@
 #include "testbench_memory.h"
 #include "draw_core/draw_core_api.h"
 #include "glcd.h"
+
+#include "common_utils.h"  //@@ YUCK... need a console !!!
 //extern const bsp_leds_t g_bsp_leds;
 
 #define CAPTURE_VSYNC    TB.vsync_data.data[TB.vsync_data.w_idx] = p_tmr_ctrl->p_reg->GTCNT; \
@@ -25,6 +27,9 @@
 /*
  *   Create a 6 sided poly  (needs 6 Y/X pairs, so 12 points)
  */
+d2_point CirclePoints[4] = {(50 << 4),(50 << 4),
+                            (40 << 4),(5 << 4)};
+
 d2_point Points[12] = {(200 << 4),(200 << 4),
                       (300 << 4),(200 << 4),
                       (300 << 4),(300 << 4),
@@ -53,7 +58,7 @@ d2_point Deltas[12] = {(1 << 4),(1 << 4) * (-1),
                       (5 << 4),(3 << 4)
 };
 d2_point Deltas2[12] = {
-                        (1 << 4),(1 << 4) * (-1),
+                        (1 << 4),(1 << 4),
                         (1 << 4),(1 << 4),
                         (1 << 4)*(-1),(8 << 4),
                         (1 << 4),(1 << 4),
@@ -79,56 +84,101 @@ dr_animate_t Poly_animate2 = {
                               .velocity_size = 6,
                               .acceleration_size = 6
 };
+dr_animate_t Circle_animate = {
+                               .atype = 0,
+                               .coord = (dr_point_t*) &Points[0],  //@@ not used anymore
+                               .velocity = (dr_point_t*) &Deltas2[0],
+                               .acceleration = (dr_point_t*) &Accel[0],
+                               .coord_size = 1,
+                               .velocity_size = 1,
+                               .acceleration_size = 1
+
+};
 dr_render_t Poly_render = {
                            .coords = &Points[0],
                            .rtype = 1,  // 1 = PolyRender
                            .number = 6,
-                           .state = 0
+                           .state = 0,
+                           .color = 0x00FF0000
 };
 dr_render_t Poly_render2 = {
                            .coords = &Points2[0],
                            .rtype = 1,  // 1 = PolyRender
                            .number = 6,
-                           .state = 0
+                           .state = 0,
+                           .color = 0x0000FF00
 };
 dr_render_t Poly_render3 = {
                            .coords = &Points2[0],
                            .rtype = 1,  // 1 = PolyRender
                            .number = 6,
-                           .state = 0
+                           .state = 0,
+                           .color = 0x000000FF
 };
-dr_render_t Box_render = {
-                           .coords = &Points[0],
-                           .rtype = 2,
-                           .number = 6,
-                           .state = 0
+dr_render_t Circle_render = {
+                           .coords = &CirclePoints[0],
+                           .rtype = 2, // 2 = circle
+                           .number = 4,
+                           .state = 0,
+                           .color = 0x00000FF0
 };
 /*
  *    API functions
  */
 static fsp_err_t testbench_Open(void*);
-static fsp_err_t testbench_Start(void);
+static fsp_err_t testbench_Start(void) BSP_PLACE_IN_SECTION(".itcm");
 static void testbench_Led(uint16_t idx,bsp_io_level_t x);
 
-uint32_t AnimateBuffer[CAPTURE_BUFFER_SIZE];
-uint32_t RenderBuffer[CAPTURE_BUFFER_SIZE];
-uint32_t VSYNCBuffer[CAPTURE_BUFFER_SIZE];
+uint32_t AnimateBuffer[CAPTURE_BUFFER_SIZE] BSP_PLACE_IN_SECTION(".dtcm");
+uint32_t RenderBuffer[CAPTURE_BUFFER_SIZE]BSP_PLACE_IN_SECTION(".dtcm");
+uint32_t VSYNCBuffer[CAPTURE_BUFFER_SIZE]BSP_PLACE_IN_SECTION(".dtcm");
 // Global structures
-testbench_t TB = {.open = testbench_Open,
+testbench_t TB BSP_PLACE_IN_SECTION(".dtcm") = {.open = testbench_Open,
                   .start = testbench_Start,
-                  .led = testbench_Led,
-                  .idle_cycles = 0,
-                  .sec_counts = 0
+                  .led = (void*) testbench_Led,
+                  .idle_cycles = 12,
+                  .sec_counts = 34,
+                  .frame_count = 78
                  };
 
 // static declarations
 timer_callback_args_t timer0_cb_args;
 
-
+static void testbench_Poll(void);
+static void testbench_Poll(void)
+{
+    uint32_t A,B,C,i;
+    double F;
+    char c1[8];
+    A = B = C = 0;
+    for(i=0;i<TB.render_data.size;i++)
+    {
+        A = A + TB.render_data.data[i];
+    }
+    for(i=0;i<TB.vsync_data.size;i++)
+    {
+        B = B + TB.vsync_data.data[i];
+    }
+    for(i=0;i<TB.animate_data.size;i++)
+    {
+        C = C + TB.animate_data.data[i];
+    }
+    A = A /(TB.render_data.size * 120);
+    B = B /(TB.vsync_data.size * 120);
+    C = C /(TB.animate_data.size * 120);
+//    A = A / 120; //@@ assumes clocking at 120mHz
+//    B = B / 120;
+    F = (double) 1000000 / B;
+    sprintf(c1,"%2.4f",F);
+    //A = (TB.render_data.data[0] * 100) // TB.vsync_data.data[0];
+    APP_PRINT("\r\nsync = %duS [fr: %s] \r\n animate = %duS\r\nrender = %d\r\n",B,c1,C,A);
+}
+extern dr_animate_t Animate[];
 static fsp_err_t testbench_Start(void)
 {
     uint32_t events;
     uint32_t emask;
+    uint16_t handle;
     timer_instance_t *p_tmr;
     gpt_instance_ctrl_t *p_tmr_ctrl;
     p_tmr = (timer_instance_t*) TB.driver->p_tmr0[1];
@@ -146,6 +196,7 @@ static fsp_err_t testbench_Start(void)
                     }
                     continue;
                 case TB_EVENT_TIMER0:
+                    testbench_Poll();
                     TB.sec_counts++;
                     break;
                 case TB_EVENT_VSYNC:
@@ -156,6 +207,7 @@ static fsp_err_t testbench_Start(void)
                     CAPTURE_ANIMATE
                     draw_core_draw(TB.p_activeframe);
                     CAPTURE_RENDER
+                    TB.frame_count++;
                     glcd_swap();
                     break;
                 case TB_EVENT_STARTUP:
@@ -167,9 +219,14 @@ static fsp_err_t testbench_Start(void)
                     break;
                 case TB_EVENT_SW1:
                     TB.led(0,BSP_IO_LEVEL_HIGH);
+                    handle = RenderList.add(&Circle_render);
+                    AnimateList.add(handle,&Circle_animate);
                     break;
                 case TB_EVENT_SW2:
                     TB.led(0,BSP_IO_LEVEL_LOW);
+                    Animate[0].atype = 1;
+                    Animate[1].atype = 1;
+                    Animate[2].atype = 1;
                     break;
 
                    break;
@@ -248,7 +305,7 @@ static fsp_err_t testbench_Open(void *data)
     err = p_tmr->p_api->enable(p_tmr->p_ctrl);
     assert(FSP_SUCCESS == err);
     TB.p_activeframe = TB.driver->p_GLCDC->p_cfg->input[0].p_base;
-    TB.framesize = (TB.driver->p_GLCDC->p_cfg->input[0].hsize * TB.driver->p_GLCDC->p_cfg->input[0].vsize * 2);//@@
+    TB.framesize = (TB.driver->p_GLCDC->p_cfg->input[0].hsize * TB.driver->p_GLCDC->p_cfg->input[0].vsize * (uint32_t) 2);//@@
     glcd_init();
     while ((TB.event_flag & (uint32_t) TB_EVENT_VSYNC) == 0);
     TB.event_flag &= (uint32_t) ~TB_EVENT_VSYNC;
@@ -262,20 +319,30 @@ static fsp_err_t testbench_Open(void *data)
     uint32_t i;
     handle = RenderList.add(&Poly_render);
     AnimateList.add(handle,&Poly_animate);  //@@ uses side-effect... don't like-a dat-a
+#if 0
     for(i=0;i < (Poly_render.number * 2); i++)
     {
     Poly_render.coords[i] += (50 << 4);// Poly_render.coords[i+1] += 50;
     }
+
+    Poly_render.color = 0x0000FF00;
     handle = RenderList.add(&Poly_render);
-    AnimateList.add(handle,&Poly_animate);  //@@ uses side-effect... don't like-a dat-a
+    AnimateList.add(handle,&Poly_animate);
     for(i=0;i < (Poly_render.number * 2); i++)
     {
     Poly_render.coords[i] += (50 << 4);// Poly_render.coords[i+1] += 50;
     }
+
+    Poly_render.color = 0x000000FF;
     handle = RenderList.add(&Poly_render);
     Poly_animate.atype = 1;
-    AnimateList.add(handle,&Poly_animate);  //@@ uses side-effect... don't like-a dat-a
-//    AnimateList.add(handle,&Poly_animate2);  //@@ uses side-effect... don't like-a dat-a
+    AnimateList.add(handle,&Poly_animate);
+#endif
+//    AnimateList.add(handle,&Poly_animate2);
+//    dr_point_t C;
+//    dr_point_t *zebra;
+//    C.X = (200 << 4); C.Y = (200 <<4);
+//@@    zebra =  draw_core_star(C,(50 << 4), (25 << 4),5);
 
     return FSP_SUCCESS;
 }
