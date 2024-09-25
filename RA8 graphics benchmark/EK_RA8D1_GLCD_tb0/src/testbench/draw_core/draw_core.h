@@ -24,11 +24,14 @@ typedef struct dr_point_s {
     d2_point X,Y;
 }dr_point_t;
 typedef struct dr_animate_s {
-    uint32_t atype;
+    uint16_t atype;
+    uint16_t atimer;
     dr_point_t *coord;
     dr_point_t *velocity;
     dr_point_t *acceleration;
     uint32_t coord_size, velocity_size, acceleration_size;
+    dr_point_t pull;
+    d2_point drag;
 }dr_animate_t;
 typedef struct dr_poly_s {
     d2_point *coords;
@@ -41,6 +44,8 @@ typedef struct dr_render_s {
 //    d2_point *deltas;
     uint16_t number;
     uint16_t state;
+    uint16_t animator;
+    uint16_t atimer;
     uint32_t color;
 }dr_render_t;
 typedef struct dr_circle_s {

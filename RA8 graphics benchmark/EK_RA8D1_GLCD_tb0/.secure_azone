@@ -203,6 +203,7 @@
             <slot name="IRQ12" secure="true"/>
             <slot name="IRQ13" secure="true"/>
             <slot name="IRQ14" secure="true"/>
+            <slot name="IRQ15" secure="true"/>
         </peripheral>
     </partition>
 </azone>

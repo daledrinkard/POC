@@ -13,17 +13,19 @@
 #include "testbench_buttons.h"
 #include "testbench_memory.h"
 #include "draw_core/draw_core_api.h"
+#include "Console/console_api.h"
 #include "glcd.h"
+#include "storage.h"
 
 #include "common_utils.h"  //@@ YUCK... need a console !!!
 //extern const bsp_leds_t g_bsp_leds;
 
 #define CAPTURE_VSYNC    TB.vsync_data.data[TB.vsync_data.w_idx] = p_tmr_ctrl->p_reg->GTCNT; \
-                         TB.vsync_data.w_idx = (TB.vsync_data.w_idx == TB.vsync_data.size) ? 0 : TB.vsync_data.w_idx + 1;
+                         TB.vsync_data.w_idx = (TB.vsync_data.w_idx == (TB.vsync_data.size - 1)) ? 0 : TB.vsync_data.w_idx + 1;
 #define CAPTURE_ANIMATE  TB.animate_data.data[TB.animate_data.w_idx] = p_tmr_ctrl->p_reg->GTCNT; \
-                         TB.animate_data.w_idx = (TB.animate_data.w_idx == TB.animate_data.size) ? 0 : TB.animate_data.w_idx + 1;
+                         TB.animate_data.w_idx = (TB.animate_data.w_idx == (TB.animate_data.size - 1)) ? 0 : TB.animate_data.w_idx + 1;
 #define CAPTURE_RENDER   TB.render_data.data[TB.render_data.w_idx] = p_tmr_ctrl->p_reg->GTCNT; \
-                         TB.render_data.w_idx = (TB.render_data.w_idx == TB.render_data.size) ? 0 : TB.render_data.w_idx + 1;
+                         TB.render_data.w_idx = (TB.render_data.w_idx == (TB.render_data.size - 1)) ? 0 : TB.render_data.w_idx + 1;
 /*
  *   Create a 6 sided poly  (needs 6 Y/X pairs, so 12 points)
  */
@@ -91,7 +93,9 @@ dr_animate_t Circle_animate = {
                                .acceleration = (dr_point_t*) &Accel[0],
                                .coord_size = 1,
                                .velocity_size = 1,
-                               .acceleration_size = 1
+                               .acceleration_size = 1,
+                               .drag = 0,
+                               .pull = 0
 
 };
 dr_render_t Poly_render = {
@@ -120,29 +124,145 @@ dr_render_t Circle_render = {
                            .rtype = 2, // 2 = circle
                            .number = 4,
                            .state = 0,
+                           .animator = (0xFFFF),
                            .color = 0x00000FF0
 };
+/*
+ *   command functions
+ */
+static uint32_t ato32(char*  s);
+static uint32_t ato32(char*  s)
+{
+    uint32_t rv;
+    rv = 0;
+    while(*s != 0)
+    {
+        rv = rv << 4;
+        if (*s >= '0' && *s <= '9')
+        {
+            rv |= (*s - '0');
+        }
+        else
+        {
+            rv |= ((*s - 'a')+10);
+        }
+        s++;
+    }
+    return rv;
+}
+static d2_point atod2(char*);
+static d2_point atod2(char* s)
+{
+    d2_point ret;
+    d2_point sgn = 1;
+    char *p;
+    if (*s == '-')
+    {
+        s++;
+        sgn = (-1);
+    }
+    p = s;
+    while((*p != 0) && (*p != '.')) p++;
+    if (*p == '.')
+    {
+        *p = 0; // terminate here for integer part.
+        p++;
+        ret = (ato32(p) & 0x0000000F);
+    }
+    ret = ret | (ato32(s) << 4);
+    ret = ret * sgn;
+    return ret;
+}
+
+static void command_Kick(char* cmd,char** args);
+static void command_Set(char* cmd,char** args);
+static void command_Kick(char* cmd,char** args)
+// kick obj X Y
+{
+    FSP_PARAMETER_NOT_USED(cmd);
+    int i;
+    i = atoi(args[0]);
+    dr_point_t *dpl;
+    dr_point_t kck;
+    dpl = (dr_point_t*)Render[i].coords;
+    kck.X = atod2(args[1]);
+    kck.Y = atod2(args[2]);
+    dpl->X = dpl->X + kck.X;
+    dpl->Y = dpl->Y + kck.Y;
+
+}
+static void command_Set(char* cmd,char** args)
+{
+   //set {object number} {V|A|C} {value} {value}
+    FSP_PARAMETER_NOT_USED(cmd);
+    int i;
+    dr_point_t *dp1;
+    i = atoi(args[0]);
+    switch (args[1][0]) {
+        case 'p':  // set the location
+            ((dr_point_t*) Render[i].coords)->X = atod2(args[2]);
+            ((dr_point_t*) Render[i].coords)->Y = atod2(args[3]);
+            break;
+        case 'v': // set the velocity
+            Animate[Render[i].animator].velocity->X = atod2(args[2]);
+            Animate[Render[i].animator].velocity->Y = atod2(args[3]);
+            break;
+        case 'a': // set the acceleration
+            Animate[Render[i].animator].acceleration->X = atod2(args[2]);
+            Animate[Render[i].animator].acceleration->Y = atod2(args[3]);
+            Animate[Render[i].animator].atimer = (args[4] == NULL) ? 1 : (uint16_t) ato32(args[4]);
+            break;
+        case 'c': // set the color
+            Render[i].color = ato32(args[2]);
+            break;
+        case 'r': // set the radius
+            dp1 = ((dr_point_t*) Render[i].coords);
+            dp1++;
+            dp1->X = atod2(args[2]); // the radius for a circle.
+            break;
+    }
+}
+testbench_command_t TB_CMD[TB_NUMBER_OF_COMMANDS] = {
+{.name = "set",.help = "set various stuff", .func = command_Set},
+{.name = "kick",.help = "kick a ball",      .func = command_Kick},
+                                                       {0}
+};
+void silly_putty(void);
+
 /*
  *    API functions
  */
 static fsp_err_t testbench_Open(void*);
 static fsp_err_t testbench_Start(void) BSP_PLACE_IN_SECTION(".itcm");
 static void testbench_Led(uint16_t idx,bsp_io_level_t x);
+static void testbench_process(void);
+static void testbench_RX(void);
 
-uint32_t AnimateBuffer[CAPTURE_BUFFER_SIZE] BSP_PLACE_IN_SECTION(".dtcm");
-uint32_t RenderBuffer[CAPTURE_BUFFER_SIZE]BSP_PLACE_IN_SECTION(".dtcm");
-uint32_t VSYNCBuffer[CAPTURE_BUFFER_SIZE]BSP_PLACE_IN_SECTION(".dtcm");
+static void testbench_RX_cb(console12_args_t *args);
+
 // Global structures
-testbench_t TB BSP_PLACE_IN_SECTION(".dtcm") = {.open = testbench_Open,
-                  .start = testbench_Start,
-                  .led = (void*) testbench_Led,
-                  .idle_cycles = 12,
-                  .sec_counts = 34,
-                  .frame_count = 78
-                 };
+const testbench_t TB_initial =
+ {.open = testbench_Open,
+  .start = testbench_Start,
+  .led = (void*) testbench_Led,
+  .idle_cycles = 0,
+  .sec_counts = 0,
+  .frame_count = 0,
+  .animate_count = 0,
+  .rxbuffer = TBRXBuffer,
+  .rxbuffer_size = TB_RX_BUFFER_SIZE,
+  .rxbuffer_idx = 0,
+  .txbuffer = TBTXBuffer,
+  .txbuffer_size = TB_TX_BUFFER_SIZE,
+  .txbuffer_idx = 0,
+  .state = TB_STATE_MASK_DEFAULT
 
+ };
+
+
+testbench_t TB; // BSP_PLACE_IN_SECTION(".dtcm_data");
 // static declarations
-timer_callback_args_t timer0_cb_args;
+timer_callback_args_t timer0_cb_args, timer2_cb_args;
 
 static void testbench_Poll(void);
 static void testbench_Poll(void)
@@ -171,9 +291,9 @@ static void testbench_Poll(void)
     F = (double) 1000000 / B;
     sprintf(c1,"%2.4f",F);
     //A = (TB.render_data.data[0] * 100) // TB.vsync_data.data[0];
-    APP_PRINT("\r\nsync = %duS [fr: %s] \r\n animate = %duS\r\nrender = %d\r\n",B,c1,C,A);
+    sprintf(TB.txbuffer,"\r\nsync = %lduS [fr: %s] \r\nanimate = %lduS\r\nrender = %lduS\r\nframe count = %ld",B,c1,C,A,TB.frame_count);
+    CON12.prints(TB.txbuffer);
 }
-extern dr_animate_t Animate[];
 static fsp_err_t testbench_Start(void)
 {
     uint32_t events;
@@ -183,32 +303,54 @@ static fsp_err_t testbench_Start(void)
     gpt_instance_ctrl_t *p_tmr_ctrl;
     p_tmr = (timer_instance_t*) TB.driver->p_tmr0[1];
     p_tmr_ctrl = (gpt_instance_ctrl_t*) TB.driver->p_tmr0[1]->p_ctrl;
+    events = 0;
     while(1)
     {
         events = (TB.event_flag & TB.event_mask);
         emask = 0x80000000;
         while(emask){
             switch(events & emask) {
-                case 0:
+                case 0: // crawl through the emask until another event is found.
                     while( (emask != 0x00000000) && ((emask & events) == 0))
-                    {
-                        emask = (emask == 0x00000001) ? 0 : emask >> 1;
-                    }
+                        {emask = (emask == 0x00000001) ? 0 : emask >> 1;}
                     continue;
                 case TB_EVENT_TIMER0:
-                    testbench_Poll();
+                    if (TB_STATE_POLL_STATUS & TB.state)
+                    {
+                       testbench_Poll();
+                    }
                     TB.sec_counts++;
+                    break;
+                case TB_EVENT_TIMER2:
+                    break;
+                    TB.animate_count++;
+                    draw_core_animate();
+                    FSP_CRITICAL_SECTION_DEFINE;
+                    FSP_CRITICAL_SECTION_ENTER;
+                    TB.event_flag |= TB_EVENT_ADONE;
+                    FSP_CRITICAL_SECTION_EXIT;
                     break;
                 case TB_EVENT_VSYNC:
                     CAPTURE_VSYNC
                     p_tmr->p_api->reset(p_tmr_ctrl);
                     p_tmr->p_api->start(p_tmr_ctrl);
+#if 1
+                    TB.animate_count++;
                     draw_core_animate();
                     CAPTURE_ANIMATE
-                    draw_core_draw(TB.p_activeframe);
-                    CAPTURE_RENDER
-                    TB.frame_count++;
-                    glcd_swap();
+#endif
+     //               if (TB.event_flag & TB_EVENT_ADONE)
+                    if(1)
+                    {
+                        draw_core_draw((uint32_t *)TB.p_activeframe);
+                        CAPTURE_RENDER
+                        TB.frame_count++;
+                        glcd_swap();
+                        FSP_CRITICAL_SECTION_DEFINE;
+                        FSP_CRITICAL_SECTION_ENTER;
+                        TB.event_flag &= ~TB_EVENT_ADONE;
+                        FSP_CRITICAL_SECTION_EXIT;
+                    }
                     break;
                 case TB_EVENT_STARTUP:
 //                    draw_core_init();
@@ -228,8 +370,9 @@ static fsp_err_t testbench_Start(void)
                     Animate[1].atype = 1;
                     Animate[2].atype = 1;
                     break;
-
-                   break;
+                case TB_EVENT_RXMSG:
+                    testbench_RX();
+                    break;
                 default: while(1); //@@ unhandled event.
 
             }
@@ -246,35 +389,49 @@ static void testbench_Led(uint16_t idx,bsp_io_level_t x)
 {
     g_ioport.p_api->pinWrite(g_ioport.p_ctrl,TB.driver->board_leds->p_leds[idx],x);
 }
+
 static fsp_err_t testbench_Open(void *data)
 {
-     //BSP_IO_PORT_00_PIN_00
-     bsp_io_port_pin_t b;
-     //BSP_IO_LEVEL_LOW
-    bsp_leds_t y;
     timer_instance_t *p_tmr;
+    console12_t *p_con12;
     fsp_err_t err;
     TB.event_flag = TB_EVENT_STARTUP;
     TB.event_mask = TB_MASK_DEFAULT;
-    TB.animate_data.data = &AnimateBuffer[0];
+    TB.animate_data.data = Sample_Buffer_Animate;
     TB.animate_data.size = CAPTURE_BUFFER_SIZE;
     TB.animate_data.w_idx = 1;
-    TB.render_data.data = RenderBuffer;
-    TB.render_data.size = CAPTURE_BUFFER_SIZE+1;
-    TB.render_data.w_idx = 2;
-    TB.vsync_data.data = VSYNCBuffer;
-    TB.vsync_data.size = CAPTURE_BUFFER_SIZE+2;
-    TB.vsync_data.w_idx = 3;
+    TB.render_data.data = Sample_Buffer_Render;
+    TB.render_data.size = CAPTURE_BUFFER_SIZE;
+    TB.render_data.w_idx = 1;
+    TB.vsync_data.data = Sample_Buffer_VSYNC;
+    TB.vsync_data.size = CAPTURE_BUFFER_SIZE;
+    TB.vsync_data.w_idx = 1;
     TB.driver = (driver_packet_t* ) data;
-    TB.state = 0;
+    TB.mode = 0; //@@enum wanted
+
+    p_con12 = (console12_t*)TB.driver->p_Console;
+    p_con12->rx_cb = testbench_RX_cb;
+    p_con12->open(TB.rxbuffer,TB.rxbuffer_size,NULL);
     // open, enable and start cadence timer
     p_tmr = TB.driver->p_tmr0[0];
-    err = p_tmr->p_api->enable(p_tmr->p_ctrl);
+    err = p_tmr->p_api->open(p_tmr->p_ctrl,p_tmr->p_cfg);
+    err |= p_tmr->p_api->enable(p_tmr->p_ctrl);
     err |= p_tmr->p_api->callbackSet(p_tmr->p_ctrl,testbench_timer0_cb,NULL,&timer0_cb_args);
     err |= p_tmr->p_api->start(p_tmr->p_ctrl);
     assert(FSP_SUCCESS == err);
     //open and enable the measure timer
     p_tmr = TB.driver->p_tmr0[1];
+    err = p_tmr->p_api->open(p_tmr->p_ctrl,p_tmr->p_cfg);
+    err |= p_tmr->p_api->enable(p_tmr->p_ctrl);
+    assert(FSP_SUCCESS == err);
+    //open and enable the animation timer
+    p_tmr = TB.driver->p_tmr0[2];
+    err = p_tmr->p_api->open(p_tmr->p_ctrl,p_tmr->p_cfg);
+    err |= p_tmr->p_api->enable(p_tmr->p_ctrl);
+    assert(FSP_SUCCESS == err);
+    err |= p_tmr->p_api->callbackSet(p_tmr->p_ctrl,testbench_timer2_cb,NULL,&timer2_cb_args);
+    err |= p_tmr->p_api->start(p_tmr->p_ctrl);
+
     // open and enable the press buttons external interrupts.
     void *pctrl;
     void *pcfg;
@@ -302,14 +459,13 @@ static fsp_err_t testbench_Open(void *data)
         }
 
     }
-    err = p_tmr->p_api->enable(p_tmr->p_ctrl);
-    assert(FSP_SUCCESS == err);
     TB.p_activeframe = TB.driver->p_GLCDC->p_cfg->input[0].p_base;
     TB.framesize = (TB.driver->p_GLCDC->p_cfg->input[0].hsize * TB.driver->p_GLCDC->p_cfg->input[0].vsize * (uint32_t) 2);//@@
     glcd_init();
     while ((TB.event_flag & (uint32_t) TB_EVENT_VSYNC) == 0);
     TB.event_flag &= (uint32_t) ~TB_EVENT_VSYNC;
     draw_core_init();
+
     //@@  startup
     /*
      *
@@ -346,4 +502,66 @@ static fsp_err_t testbench_Open(void *data)
 
     return FSP_SUCCESS;
 }
+volatile uint32_t freddy;
+static void testbench_process(void)
+{
+    int i;
+    i=0;
+    while ((TB_CMD[i].name != NULL) && (strcmp((char*) TB.console_args->cmd,TB_CMD[i].name))) i++;
+    if (TB_CMD[i].func != NULL)
+    {
+        TB_CMD[i].func(NULL,(char**) TB.console_args->args);
+    }
+    else
+    {
+        CON12.prints("\r\n not found\r\n>");
+    }
+}
+static void testbench_RX(void)
+{
 
+    if (TB.rxbuffer[0] == 27)
+    {
+        if ((TB.state & TB_STATE_POLL_STATUS) == 0)
+        {
+            TB.state |= TB_STATE_POLL_STATUS;
+            TB.state &= (uint32_t) ~TB_STATE_COMMAND;
+            CON12.prints("\r\n(polling)\r\n");
+        }
+        else
+        {
+            TB.state &= (uint32_t)~TB_STATE_POLL_STATUS;
+            TB.state |= TB_STATE_COMMAND;
+            CON12.prints("\r\n(command)\r\n> ");
+        }
+        return;
+    }
+    testbench_process();
+    CON12.prints("\r\n > ");
+
+}
+
+static void testbench_RX_cb(console12_args_t *args)
+{
+    TB.event_flag |= TB_EVENT_RXMSG;
+    TB.rxbuffer_size = (uint16_t) args->len;
+    TB.console_args = args;
+    // the data is already in TB.rxbuffer
+}
+
+
+/*
+ *   Call this in the Warmstart of hal_entry.
+ */
+void testbench_warmstart(void)
+{
+  TB = TB_initial;
+  memset((uint8_t*) &Animate[0],0,sizeof(dr_animate_t) * DRAW_CORE_NUMBER_OF_ANIMATIONS);
+  memset((uint8_t*) &Render[0],0,sizeof(dr_render_t) * DRAW_CORE_NUMBER_OF_RENDERS);
+}
+
+
+void silly_putty(void)
+{
+    Render[0].color = 0x0000FF00;
+}

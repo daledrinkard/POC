@@ -9,6 +9,7 @@
 #include <stdbool.h>
 #include "draw_core_api.h"
 #include "../testbench/testbench_memory.h"
+#include "../storage.h"
 
 #include <math.h>
 #define PI 3.141592654
@@ -20,8 +21,6 @@ void draw_core_animate_add(uint16_t,dr_animate_t *);
 void draw_core_animate_rem(dr_animate_t *);
 uint16_t draw_core_render_add(dr_render_t *);
 void draw_core_render_rem(dr_render_t *);
-dr_animate_t Animate[DRAW_CORE_NUMBER_OF_ANIMATIONS] = {0};
-dr_render_t Render[DRAW_CORE_NUMBER_OF_RENDERS] = {0};
 dr_animate_list_t AnimateList = {
                                  .add = draw_core_animate_add,
                                  .rem = draw_core_animate_rem,
@@ -145,7 +144,7 @@ void draw_core_draw (uint32_t * framebuffer)
     /* Set the render color to green */
     DRW_err = d2_setcolor(gp_davey, ARRAY_INDEX, GREEN_COLOR_VAL);
     error_handler(DRW_err, gp_davey);
-
+#if 0
     /* Render a triangle */
     DRW_err = d2_rendertri(gp_davey, (d2_point)( g_t_x1 << SHIFT_VALUE),(d2_point)( g_t_y1 << SHIFT_VALUE),(d2_point)( g_t_x2 << SHIFT_VALUE),(d2_point)( g_t_y2 << SHIFT_VALUE),(d2_point)( g_t_x3 << SHIFT_VALUE),(d2_point)( g_t_y3 << SHIFT_VALUE),d2_edge2_shared);
     error_handler(DRW_err, gp_davey);
@@ -166,7 +165,7 @@ void draw_core_draw (uint32_t * framebuffer)
     DRW_err = d2_renderline(gp_davey, (d2_point) (g_l_x1 << SHIFT_VALUE), (d2_point) (g_l_y1 << SHIFT_VALUE), (d2_point) (g_l_x2 << SHIFT_VALUE), (d2_point) (g_l_y2 << SHIFT_VALUE),
                             (d2_width) (g_l_w << SHIFT_VALUE), d2_le_exclude_both);
     error_handler(DRW_err, gp_davey);
-
+#endif
     /* End the display list, then call d2_start frame to begin execution */
     DRW_err = d2_endframe(gp_davey);
     error_handler(DRW_err, gp_davey);
@@ -179,7 +178,7 @@ void draw_core_draw (uint32_t * framebuffer)
 void draw_core_animate(void)
 {
     /* circle animation */
-    int i;
+    int i,k;
     i = 0;
     uint32_t j;
     dr_animate_t * p;
@@ -188,7 +187,7 @@ void draw_core_animate(void)
     {
         p = &AnimateList.list[i];
         switch (AnimateList.list[i].atype) {
-            case 0:
+            case 0:  // move all points in the list independently
                 for (j = 0; j < p->coord_size; j++)
                 {
                     p->coord[j].X += p->velocity[j].X;
@@ -216,6 +215,11 @@ void draw_core_animate(void)
                         p->coord[j].Y = (ZPY - p->coord[j].Y) + ZPY;
                         p->velocity[j].Y = p->velocity[j].Y * (-1);
                     }
+                    // apply drag
+                    tX= p->velocity[j].X;
+                    tY= p->velocity[j].Y;
+
+//                    p->velocity[j].X = tX / p->drag;
                 }
                 break;
             case 1:
@@ -260,7 +264,7 @@ void draw_core_animate(void)
                     p->velocity[0].Y = p->velocity[0].Y * (-1);
                     for(j=0;j < p->coord_size;j++)
                     {
-                        p->coord[j].Y = p->coord[j].Y + (tY * 2);
+                        p->coord[j].Y = (d2_point) (p->coord[j].Y + (tY * 2));
                     }
                 }
                 tX = (mX <= ZPX) ? (ZPX - mX) : 0;
@@ -271,7 +275,7 @@ void draw_core_animate(void)
                     p->velocity[0].X = p->velocity[0].X * (-1);
                     for(j=0;j < p->coord_size;j++)
                     {
-                        p->coord[j].X = p->coord[j].X + (tX * 2);
+                        p->coord[j].X = (d2_point) (p->coord[j].X + (tX * 2));
                     }
                 }
                 if (zY < ZPY)
@@ -282,8 +286,21 @@ void draw_core_animate(void)
                         p->coord[j].Y = p->coord[j].Y + (tY * 2);
                     }
                 }
+
                 break;
+            default: k = 1; while(k);
         }
+        switch (p->atimer) {
+            case 1: //@@ do a callback
+                p->atimer--;
+                p->acceleration[0].X = 0;
+                p->acceleration[0].Y = 0;
+                break;
+            case 0: // don't do anything
+                break;
+            default: p->atimer--;
+        }
+
         i++;
     }
 #if 0
@@ -514,7 +531,7 @@ void draw_core_animate_add(uint16_t handle,dr_animate_t *p_animate)
 
 
 
-
+   RenderList.list[handle].animator = AnimateList.idx;
 
    AnimateList.list[AnimateList.idx].coord = RenderList.list[handle].coords;
 }
@@ -533,6 +550,7 @@ uint16_t draw_core_render_add(dr_render_t *p_render)
     MEM.allocate(&RenderList.list[RenderList.idx].coords,(uint32_t) RenderList.list[RenderList.idx].number);
     // Now initialize that set of coords.
     memcpy((uint8_t*) RenderList.list[RenderList.idx].coords,p_render->coords,p_render->number * sizeof(dr_point_t));
+    //@@ should the initial animator be set to 0 here?
     return RenderList.idx;
 
 }

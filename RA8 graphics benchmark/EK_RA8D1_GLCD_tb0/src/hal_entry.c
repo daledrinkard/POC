@@ -24,6 +24,9 @@
 #include "hal_data.h"
 #include "common_utils.h"
 
+void testbench_warmstart(void);
+void console_warmstart(void);
+
 FSP_CPP_HEADER
 void R_BSP_WarmStart(bsp_warm_start_event_t event);
 FSP_CPP_FOOTER
@@ -69,6 +72,8 @@ void R_BSP_WarmStart(bsp_warm_start_event_t event)
 
         /* Configure pins. */
         R_IOPORT_Open (&g_ioport_ctrl, g_ioport.p_cfg);
+        testbench_warmstart();
+        console_warmstart();
     }
 
 }

@@ -25,7 +25,7 @@ static volatile uint16_t sci_rxidx;
 static SemaphoreHandle_t sema;
 #endif
 void SCI_RTT_callback(uart_callback_args_t *p_args);
-fsp_err_t SCI_RTT_Open(void *p_sci, void *p_semaphore)
+fsp_err_t SCI_RTT_Open(void *p_sci, void *p_semaphore, void *p_user_callback)
 {
     fsp_err_t err;
     sci_flags = 0;
@@ -67,7 +67,7 @@ unsigned     SEGGER_RTT_Read  (unsigned BufferIndex,
         ((uint8_t*) pBuffer)[i] = sci_rxbuffer[i];
         Size = sci_rxidx;
     }
-    sci_flags &= ~SCI_FLAG_HASKEY;
+    sci_flags &= (uint32_t) ~SCI_FLAG_HASKEY;
     sci_rxidx = 0;
   return Size;
 
@@ -128,6 +128,10 @@ void SCI_RTT_callback(uart_callback_args_t *p_args)
             {
                 case '\r' : // carriage return
                     sci_rxbuffer[sci_rxidx] = 0;
+                    sci_flags |= SCI_FLAG_HASKEY;
+                    break;
+                case 27 : // escape
+                    sci_rxbuffer[sci_rxidx] = 27;
                     sci_flags |= SCI_FLAG_HASKEY;
                     break;
                 default:

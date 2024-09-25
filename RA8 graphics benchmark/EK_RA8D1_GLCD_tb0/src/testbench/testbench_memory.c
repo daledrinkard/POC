@@ -8,7 +8,7 @@
 #include "testbench_cfg.h"
 #include "testbench_memory.h"
 
-uint32_t MEM_HEAP[MEM_SIZE_OF_HEAP];
+extern uint32_t MEM_HEAP[]; //MEM_SIZE_OF_HEAP];
 
 static MEM_errors_t MEM_Allocate(uint32_t **mem,uint32_t size);
 static MEM_errors_t MEM_Clear(uint32_t size);

@@ -14,6 +14,7 @@
 #include "r_external_irq_api.h"
 
 #include "testbench.h"
+#include "Console/console_api.h"
 typedef struct timer_object_s {
 
 }timer_object_t;
@@ -31,7 +32,16 @@ typedef struct capture_buffer_s {
 }capture_buffer_t;
 typedef struct testbench_s {
     uint32_t state;
+    uint32_t mode;
     driver_packet_t *driver;
+    console12_args_t *console_args;
+
+    char *rxbuffer;
+    uint16_t rxbuffer_size;
+    uint16_t rxbuffer_idx;
+    char *txbuffer;
+    uint16_t txbuffer_size;
+    uint16_t txbuffer_idx;
     capture_buffer_t vsync_data;
     capture_buffer_t animate_data;
     capture_buffer_t render_data;
@@ -40,6 +50,7 @@ typedef struct testbench_s {
     uint32_t idle_cycles;
     uint32_t sec_counts;
     uint32_t frame_count;
+    uint32_t animate_count;
     volatile uint32_t* p_activeframe;
     uint32_t framesize;
     fsp_err_t (*open)(void*);

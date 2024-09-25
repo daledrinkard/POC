@@ -84,7 +84,7 @@ FSP Configuration
     
   RA8D1 event data
   RA Common
-    Main stack size (bytes): 0x1000
+    Main stack size (bytes): 0x2000
     Heap size (bytes): 0x20000
     MCU Vcc (mV): 3300
     Parameter checking: Enabled
@@ -1026,12 +1026,12 @@ FSP Configuration
       General: Name: g_timer2
       General: Channel: 2
       General: Mode: Periodic
-      General: Period: 0x10000
+      General: Period: 10
       General: Compare Match: Compare Match A: Status: Disabled
       General: Compare Match: Compare Match A: Compare match value: 0
       General: Compare Match: Compare Match B: Status: Disabled
       General: Compare Match: Compare Match B: Compare match value: 0
-      General: Period Unit: Raw Counts
+      General: Period Unit: Milliseconds
       Output: Custom Waveform: GTIOA: Initial Output Level: Pin Level Low
       Output: Custom Waveform: GTIOA: Cycle End Output Level: Pin Level Retain
       Output: Custom Waveform: GTIOA: Compare Match Output Level: Pin Level Retain
@@ -1056,7 +1056,7 @@ FSP Configuration
       Input: Noise Filter A Sampling Clock Select: No Filter
       Input: Noise Filter B Sampling Clock Select: No Filter
       Interrupts: Callback: NULL
-      Interrupts: Overflow/Crest Interrupt Priority: Disabled
+      Interrupts: Overflow/Crest Interrupt Priority: Priority 2
       Interrupts: Capture/Compare match A Interrupt Priority: Disabled
       Interrupts: Capture/Compare match B Interrupt Priority: Disabled
       Interrupts: Underflow/Trough Interrupt Priority: Disabled

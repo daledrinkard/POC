@@ -6,7 +6,7 @@
         #endif
 /* Number of interrupts allocated */
 #ifndef VECTOR_DATA_IRQ_COUNT
-#define VECTOR_DATA_IRQ_COUNT    (15)
+#define VECTOR_DATA_IRQ_COUNT    (16)
 #endif
 /* ISR prototypes */
 void drw_int_isr(void);
@@ -51,10 +51,12 @@ void r_icu_isr(void);
 #define SCI9_ERI_IRQn          ((IRQn_Type) 11) /* SCI9 ERI (Receive error) */
 #define VECTOR_NUMBER_GPT0_COUNTER_OVERFLOW ((IRQn_Type) 12) /* GPT0 COUNTER OVERFLOW (Overflow) */
 #define GPT0_COUNTER_OVERFLOW_IRQn          ((IRQn_Type) 12) /* GPT0 COUNTER OVERFLOW (Overflow) */
-#define VECTOR_NUMBER_ICU_IRQ12 ((IRQn_Type) 13) /* ICU IRQ12 (External pin interrupt 12) */
-#define ICU_IRQ12_IRQn          ((IRQn_Type) 13) /* ICU IRQ12 (External pin interrupt 12) */
-#define VECTOR_NUMBER_ICU_IRQ13 ((IRQn_Type) 14) /* ICU IRQ13 (External pin interrupt 13) */
-#define ICU_IRQ13_IRQn          ((IRQn_Type) 14) /* ICU IRQ13 (External pin interrupt 13) */
+#define VECTOR_NUMBER_GPT2_COUNTER_OVERFLOW ((IRQn_Type) 13) /* GPT2 COUNTER OVERFLOW (Overflow) */
+#define GPT2_COUNTER_OVERFLOW_IRQn          ((IRQn_Type) 13) /* GPT2 COUNTER OVERFLOW (Overflow) */
+#define VECTOR_NUMBER_ICU_IRQ12 ((IRQn_Type) 14) /* ICU IRQ12 (External pin interrupt 12) */
+#define ICU_IRQ12_IRQn          ((IRQn_Type) 14) /* ICU IRQ12 (External pin interrupt 12) */
+#define VECTOR_NUMBER_ICU_IRQ13 ((IRQn_Type) 15) /* ICU IRQ13 (External pin interrupt 13) */
+#define ICU_IRQ13_IRQn          ((IRQn_Type) 15) /* ICU IRQ13 (External pin interrupt 13) */
 #ifdef __cplusplus
         }
         #endif

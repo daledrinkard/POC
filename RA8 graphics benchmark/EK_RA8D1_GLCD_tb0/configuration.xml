@@ -119,7 +119,7 @@
       <property id="config.bsp.fsp.dcache" value="config.bsp.fsp.dcache.disabled"/>
     </config>
     <config id="config.bsp.ra">
-      <property id="config.bsp.common.main" value="0x1000"/>
+      <property id="config.bsp.common.main" value="0x2000"/>
       <property id="config.bsp.common.heap" value="0x20000"/>
       <property id="config.bsp.common.vcc" value="3300"/>
       <property id="config.bsp.common.checking" value="config.bsp.common.checking.enabled"/>
@@ -671,12 +671,12 @@
       <property id="module.driver.timer.name" value="g_timer2"/>
       <property id="module.driver.timer.channel" value="2"/>
       <property id="module.driver.timer.mode" value="module.driver.timer.mode.mode_periodic"/>
-      <property id="module.driver.timer.period" value="0x10000"/>
+      <property id="module.driver.timer.period" value="10"/>
       <property id="module.driver.timer.compare_match.a.status" value="module.driver.timer.compare_match.a.status.disabled"/>
       <property id="module.driver.timer.compare_match.a.value" value="0"/>
       <property id="module.driver.timer.compare_match.b.status" value="module.driver.timer.compare_match.b.status.disabled"/>
       <property id="module.driver.timer.compare_match.b.value" value="0"/>
-      <property id="module.driver.timer.unit" value="module.driver.timer.unit.unit_period_raw_counts"/>
+      <property id="module.driver.timer.unit" value="module.driver.timer.unit.unit_period_msec"/>
       <property id="module.driver.timer.gtior.gtioa.initial_output_level" value="module.driver.timer.gtior.gtioa.initial_output_level.low"/>
       <property id="module.driver.timer.gtior.gtioa.cycle_end_output_level" value="module.driver.timer.gtior.gtioa.cycle_end_output_level.retain"/>
       <property id="module.driver.timer.gtior.gtioa.compare_match_output_level" value="module.driver.timer.gtior.gtioa.compare_match_output_level.retain"/>
@@ -701,7 +701,7 @@
       <property id="module.driver.timer.gtioca_filter" value="module.driver.timer.gtioc_filter.gtioc_filter_none"/>
       <property id="module.driver.timer.gtiocb_filter" value="module.driver.timer.gtioc_filter.gtioc_filter_none"/>
       <property id="module.driver.timer.p_callback" value="NULL"/>
-      <property id="module.driver.timer.ipl" value="_disabled"/>
+      <property id="module.driver.timer.ipl" value="board.icu.common.irq.priority2"/>
       <property id="module.driver.timer.capture_a_ipl" value="_disabled"/>
       <property id="module.driver.timer.capture_b_ipl" value="_disabled"/>
       <property id="module.driver.timer.trough_ipl" value="_disabled"/>

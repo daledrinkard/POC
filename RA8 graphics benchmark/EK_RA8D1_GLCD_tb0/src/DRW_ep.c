@@ -26,7 +26,8 @@
 #include "graphics_settings.h"
 #include "testbench/testbench_api.h"
 #include "SCI_RTT.h"
-#include "draw_core/draw_core_api.h"
+#include "testbench/draw_core/draw_core_api.h"
+#include "Console/console_api.h"
 
 
 
@@ -66,8 +67,8 @@ fsp_err_t Gvar_Open(void* p)
     return FSP_SUCCESS;
 }
 extern const bsp_leds_t g_bsp_leds;
-driver_packet_t DP = {
-                      .p_Console = NULL,
+const driver_packet_t DP = {
+                      .p_Console = (void*) &CON12,
                       .p_GLCDC = (void*) &g_display,
                       .p_tmr0 = {
                                  (void*) &g_timer0,
@@ -91,13 +92,14 @@ void DRW_entry(void)
 {
     //#if defined(BOARD_RA8D1_EK)
     fsp_err_t err = FSP_SUCCESS;
-    SCI_RTT_Open((void*) &g_printf_uart, NULL);
-    err = R_GPT_Open(&g_timer0_ctrl, &g_timer0_cfg);
-    err |= R_GPT_Open(&g_timer1_ctrl, &g_timer1_cfg);
-    assert(err == FSP_SUCCESS);
+//    SCI_RTT_Open((void*) &g_printf_uart, NULL);
+//    err = R_GPT_Open(&g_timer0_ctrl, &g_timer0_cfg);
+//    err |= R_GPT_Open(&g_timer1_ctrl, &g_timer1_cfg);
+//    assert(err == FSP_SUCCESS);
     bsp_sdram_init();
     // glcdc_instance_ctrl_t
     //((  glcdc_instance_ctrl_t*)g_display.p_ctrl)->p_cfg->
+    CON12.phy = (void*) &g_printf_uart;
     TB.open((void*) &DP);
     Gvar.open(&Gvar);
 //    glcd_init();
