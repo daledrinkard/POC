@@ -15,6 +15,7 @@
 extern uint32_t Sample_Buffer_Animate[];
 extern uint32_t Sample_Buffer_Render[];
 extern uint32_t Sample_Buffer_VSYNC[];
+extern uint32_t Sample_Buffer_ASYNC[];
 
 extern char TBRXBuffer[];
 extern char TBTXBuffer[];

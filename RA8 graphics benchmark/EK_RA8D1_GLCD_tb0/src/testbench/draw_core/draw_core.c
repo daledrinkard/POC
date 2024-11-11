@@ -21,6 +21,11 @@ void draw_core_animate_add(uint16_t,dr_animate_t *);
 void draw_core_animate_rem(dr_animate_t *);
 uint16_t draw_core_render_add(dr_render_t *);
 void draw_core_render_rem(dr_render_t *);
+static void dc_move_points(dr_animate_t * p);
+static void dc_move_group(dr_animate_t * p, uint32_t x);
+static void dc_bounce_points(dr_animate_t * p);
+static void dc_bounce_group(dr_animate_t * p, uint32_t x);
+
 dr_animate_list_t AnimateList = {
                                  .add = draw_core_animate_add,
                                  .rem = draw_core_animate_rem,
@@ -38,6 +43,7 @@ d2_device * gp_davey;
 d2_s32             DRW_err;
 
 static void error_handler(d2_s32 err, d2_device * gp_dave);
+#if 0
 static d2_point g_c_c_x1 = CIRCLE_VAL_X, g_c_c_y1 = CIRCLE_VAL_Y, g_c_r = CIRCLE_VAL_R, g_c_w = CIRCLE_VAL_W;
 static bool g_c_left_flag = true, g_c_right_flag = false;
 /* Triangle variables */
@@ -49,7 +55,7 @@ static bool g_p_top_flag = false, g_p_bottom_flag = true;
 /* line variables */
 static d2_point g_l_x1 = LINE_VAL_X1, g_l_y1 = LINE_VAL_Y1, g_l_x2 = LINE_VAL_X2, g_l_y2 = LINE_VAL_Y2, g_l_w = LINE_VAL_WIDTH;
 static bool g_l_left_flag = false, g_l_right_flag = true;
-
+#endif
 
 /* User defined function to initialize drw module
  *
@@ -175,6 +181,143 @@ void draw_core_draw (uint32_t * framebuffer)
 #define MPX (DRW_TEST_IMAGE_RES_H << 4)
 #define ZPY (0)
 #define MPY (DRW_TEST_IMAGE_RES_V << 4)
+
+
+static void dc_bounce_balls(dr_animate_t *p);
+static void dc_bounce_balls(dr_animate_t *p)
+{
+    // parse render list looking for balls.
+    uint16_t i = 0;
+    uint16_t j;
+    while(RenderList.list[i].rtype > 0)
+    {
+        if (RenderList.list[i].rtype == rCircle)
+        {
+            j = 0;
+            while(RenderList.list[j].rtype > rNothing)
+            {
+                if (RenderList.list[j].rtype == rCircle)
+                {
+                    // does this ball collide with ball i
+
+                }
+
+        }
+        i++;
+    }
+
+}
+
+static void dc_move_points(dr_animate_t * p)
+{
+    for (int j = 0; j < p->coord_size; j++)
+    {
+        p->coord[j].X += p->velocity[j].X;
+        p->velocity[j].X += p->acceleration[j].X;
+        p->coord[j].Y += p->velocity[j].Y;
+        p->velocity[j].Y += p->acceleration[j].Y;
+    }
+}
+static void dc_bounce_points(dr_animate_t * p)
+{
+    for (int j = 0; j < p->coord_size; j++)
+    {
+        // check for bounce.
+        if (p->coord[j].X >= MPX)
+        {
+            p->coord[j].X = MPX - (p->coord[j].X - MPX);
+            p->velocity[j].X = p->velocity[j].X * (-1);
+        }
+        if (p->coord[j].Y >= MPY)
+        {
+            p->coord[j].Y = MPY - (p->coord[j].Y - MPY);
+            p->velocity[j].Y = p->velocity[j].Y * (-1);
+        }
+        if (p->coord[j].X <= ZPX)
+        {
+            p->coord[j].X = (ZPX - p->coord[j].X) + ZPX;
+            p->velocity[j].X = p->velocity[j].X * (-1);
+        }
+        if (p->coord[j].Y <= ZPY)
+        {
+            p->coord[j].Y = (ZPY - p->coord[j].Y) + ZPY;
+            p->velocity[j].Y = p->velocity[j].Y * (-1);
+        }
+    }
+}
+static void dc_move_group(dr_animate_t * p, uint32_t x)
+{
+    d2_point tX,tY,mX,mY,zX,zY;
+    int j;
+    // move only the first point.
+    p->coord[0].X += p->velocity[0].X;
+    p->velocity[0].X += p->acceleration[0].X;
+    p->coord[0].Y += p->velocity[0].Y;
+    p->velocity[0].Y += p->acceleration[0].Y;
+    // calculate the delta
+    tX = p->coord[0].X - tX;
+    tY = p->coord[0].Y - tY;
+    // move all the other points
+    mX = p->coord[0].X;
+    zX = p->coord[0].X;
+    mY = p->coord[0].Y;
+    zY = p->coord[0].Y;
+    for(j=1;j < p->coord_size; j++)
+    {
+        p->coord[j].X += tX;
+        p->coord[j].Y += tY;
+        if (p->coord[j].X > mX)  mX = p->coord[j].X;
+        else if (p->coord[j].X < zX) zX = p->coord[j].X;
+        if (p->coord[j].Y > mY)  mY = p->coord[j].Y;
+        else if (p->coord[j].Y < zY) zY = p->coord[j].Y;
+    }
+
+}
+static void dc_bounce_group(dr_animate_t * p, uint32_t x)
+{
+    d2_point tX,tY,mX,mY,zX,zY;
+    // check for bounce.
+    tX = (mX >= MPX) ? (MPX - mX) : 0;
+    tY = (mY >= MPY) ? (MPY - mY) : 0;
+int j;
+    if (mX >= MPX)
+    {
+        p->velocity[0].X = p->velocity[0].X * (-1);
+        for( j=0;j < p->coord_size;j++)
+        {
+            p->coord[j].X = (d2_point) (p->coord[j].X + (tX * 2));
+        }
+    }
+    if (mY >= MPY)
+    {
+        p->velocity[0].Y = p->velocity[0].Y * (-1);
+        for( j=0;j < p->coord_size;j++)
+        {
+            p->coord[j].Y = (d2_point) (p->coord[j].Y + (tY * 2));
+        }
+    }
+    tX = (mX <= ZPX) ? (ZPX - mX) : 0;
+    tY = (mY <= ZPY) ? (ZPY - mY) : 0;
+
+    if (zX < ZPX)
+    {
+        p->velocity[0].X = p->velocity[0].X * (-1);
+        for(j=0;j < p->coord_size;j++)
+        {
+            p->coord[j].X = (d2_point) (p->coord[j].X + (tX * 2));
+        }
+    }
+    if (zY < ZPY)
+    {
+        p->velocity[0].Y = p->velocity[0].Y * (-1);
+        for(j=0;j < p->coord_size;j++)
+        {
+            p->coord[j].Y = p->coord[j].Y + (tY * 2);
+        }
+    }
+
+}
+
 void draw_core_animate(void)
 {
     /* circle animation */
@@ -182,111 +325,18 @@ void draw_core_animate(void)
     i = 0;
     uint32_t j;
     dr_animate_t * p;
-    d2_point tX,tY,mX,mY,zX,zY;
+
     while (AnimateList.list[i].coord_size != 0)
     {
         p = &AnimateList.list[i];
         switch (AnimateList.list[i].atype) {
             case 0:  // move all points in the list independently
-                for (j = 0; j < p->coord_size; j++)
-                {
-                    p->coord[j].X += p->velocity[j].X;
-                    p->velocity[j].X += p->acceleration[j].X;
-                    p->coord[j].Y += p->velocity[j].Y;
-                    p->velocity[j].Y += p->acceleration[j].Y;
-                    // check for bounce.
-                    if (p->coord[j].X >= MPX)
-                    {
-                        p->coord[j].X = MPX - (p->coord[j].X - MPX);
-                        p->velocity[j].X = p->velocity[j].X * (-1);
-                    }
-                    if (p->coord[j].Y >= MPY)
-                    {
-                        p->coord[j].Y = MPY - (p->coord[j].Y - MPY);
-                        p->velocity[j].Y = p->velocity[j].Y * (-1);
-                    }
-                    if (p->coord[j].X <= ZPX)
-                    {
-                        p->coord[j].X = (ZPX - p->coord[j].X) + ZPX;
-                        p->velocity[j].X = p->velocity[j].X * (-1);
-                    }
-                    if (p->coord[j].Y <= ZPY)
-                    {
-                        p->coord[j].Y = (ZPY - p->coord[j].Y) + ZPY;
-                        p->velocity[j].Y = p->velocity[j].Y * (-1);
-                    }
-                    // apply drag
-                    tX= p->velocity[j].X;
-                    tY= p->velocity[j].Y;
-
-//                    p->velocity[j].X = tX / p->drag;
-                }
+                dc_move_points(p);
+                dc_bounce_points(p);
                 break;
-            case 1:
-                tX = p->coord[0].X;
-                tY = p->coord[0].Y;
-                // move only the first point.
-                p->coord[0].X += p->velocity[0].X;
-                p->velocity[0].X += p->acceleration[0].X;
-                p->coord[0].Y += p->velocity[0].Y;
-                p->velocity[0].Y += p->acceleration[0].Y;
-                // calculate the delta
-                tX = p->coord[0].X - tX;
-                tY = p->coord[0].Y - tY;
-                // move all the other points
-                mX = p->coord[0].X;
-                zX = p->coord[0].X;
-                mY = p->coord[0].Y;
-                zY = p->coord[0].Y;
-                for(j=1;j < p->coord_size; j++)
-                {
-                    p->coord[j].X += tX;
-                    p->coord[j].Y += tY;
-                    if (p->coord[j].X > mX)  mX = p->coord[j].X;
-                    else if (p->coord[j].X < zX) zX = p->coord[j].X;
-                    if (p->coord[j].Y > mY)  mY = p->coord[j].Y;
-                    else if (p->coord[j].Y < zY) zY = p->coord[j].Y;
-                }
-                // check for bounce.
-                tX = (mX >= MPX) ? (MPX - mX) : 0;
-                tY = (mY >= MPY) ? (MPY - mY) : 0;
-
-                if (mX >= MPX)
-                {
-                    p->velocity[0].X = p->velocity[0].X * (-1);
-                    for(j=0;j < p->coord_size;j++)
-                    {
-                        p->coord[j].X = (d2_point) (p->coord[j].X + (tX * 2));
-                    }
-                }
-                if (mY >= MPY)
-                {
-                    p->velocity[0].Y = p->velocity[0].Y * (-1);
-                    for(j=0;j < p->coord_size;j++)
-                    {
-                        p->coord[j].Y = (d2_point) (p->coord[j].Y + (tY * 2));
-                    }
-                }
-                tX = (mX <= ZPX) ? (ZPX - mX) : 0;
-                tY = (mY <= ZPY) ? (ZPY - mY) : 0;
-
-                if (zX < ZPX)
-                {
-                    p->velocity[0].X = p->velocity[0].X * (-1);
-                    for(j=0;j < p->coord_size;j++)
-                    {
-                        p->coord[j].X = (d2_point) (p->coord[j].X + (tX * 2));
-                    }
-                }
-                if (zY < ZPY)
-                {
-                    p->velocity[0].Y = p->velocity[0].Y * (-1);
-                    for(j=0;j < p->coord_size;j++)
-                    {
-                        p->coord[j].Y = p->coord[j].Y + (tY * 2);
-                    }
-                }
-
+            case 1:  // move group as a whole with 0 = the anchor point
+                dc_move_group(p,0);
+                dc_bounce_group(p,0);
                 break;
             default: k = 1; while(k);
         }
@@ -353,7 +403,7 @@ void draw_core_animate(void)
 //    }
 
 
-
+#if 0
     if((g_c_c_y1 < TRIANGLE_Y2) && (g_c_left_flag == true))
     {
         g_c_c_y1 = g_c_c_y1 + 2;
@@ -442,7 +492,7 @@ void draw_core_animate(void)
         g_p_bottom_flag = true;
         g_p_top_flag = false;
     }
-
+#endif
 }
 #if 0
 static void rbg_render565(void)

@@ -35,6 +35,10 @@
 #define LINE_VAL_X2             (65)
 #define LINE_VAL_Y2             (580)
 #define LINE_VAL_WIDTH          (6)
+/*
+ *          DEFINE base type for vectors
+ */
+#define  vType float
 
 #define DRAW_CORE_NUMBER_OF_COORDS (1024)
 #define DRAW_CORE_NUMBER_OF_ANIMATIONS (32)

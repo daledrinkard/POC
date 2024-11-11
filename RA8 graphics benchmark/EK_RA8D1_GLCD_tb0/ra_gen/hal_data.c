@@ -77,8 +77,8 @@ const gpt_extended_cfg_t g_timer3_extend =
 
 const timer_cfg_t g_timer3_cfg =
 { .mode = TIMER_MODE_PERIODIC,
-/* Actual period: 0.0005461333333333333 seconds. Actual duty: 50%. */.period_counts = (uint32_t) 0x10000,
-  .duty_cycle_counts = 0x8000, .source_div = (timer_source_div_t) 0, .channel = 3, .p_callback = NULL,
+/* Actual period: 35.791394133333334 seconds. Actual duty: 50%. */.period_counts = (uint32_t) 0x100000000,
+  .duty_cycle_counts = 0x80000000, .source_div = (timer_source_div_t) 0, .channel = 3, .p_callback = NULL,
   /** If NULL then do not add & */
 #if defined(NULL)
     .p_context           = NULL,

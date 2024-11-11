@@ -43,6 +43,7 @@ typedef struct testbench_s {
     uint16_t txbuffer_size;
     uint16_t txbuffer_idx;
     capture_buffer_t vsync_data;
+    capture_buffer_t async_data;
     capture_buffer_t animate_data;
     capture_buffer_t render_data;
     volatile uint32_t event_flag;

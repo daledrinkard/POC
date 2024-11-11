@@ -15,6 +15,7 @@
 uint32_t Sample_Buffer_Animate[CAPTURE_BUFFER_SIZE] BSP_PLACE_IN_SECTION(".dtcm_data");
 uint32_t Sample_Buffer_Render[CAPTURE_BUFFER_SIZE]  BSP_PLACE_IN_SECTION(".dtcm_data");
 uint32_t Sample_Buffer_VSYNC[CAPTURE_BUFFER_SIZE]   BSP_PLACE_IN_SECTION(".dtcm_data");
+uint32_t Sample_Buffer_ASYNC[CAPTURE_BUFFER_SIZE]   BSP_PLACE_IN_SECTION(".dtcm_data");
 
 
 /*

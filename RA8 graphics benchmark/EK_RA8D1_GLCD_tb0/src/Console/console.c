@@ -63,6 +63,7 @@ static uint32_t Console12_write(uint8_t *data,uint32_t len)
     err = sci->p_api->write(sci->p_ctrl,data,len);
     if (FSP_SUCCESS != err) return 0;
     while(0 == (sci_flags & SCI_FLAG_TXDONE));
+    sci_flags &= ~SCI_FLAG_TXDONE;
 
     return len;
 }

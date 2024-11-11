@@ -19,7 +19,7 @@
 #define BUFFER_CLEAR_VAL        (0x000000)
 #define SHIFT_VALUE             (4U)
 
-typedef enum e_object_type {Circle} object_type_t;
+typedef enum e_object_type {rNothing = 0,rPoly,rCircle} object_type_t;
 typedef struct dr_point_s {
     d2_point X,Y;
 }dr_point_t;
@@ -39,7 +39,7 @@ typedef struct dr_poly_s {
     uint16_t number;
 }dr_poly_t;
 typedef struct dr_render_s {
-    uint32_t rtype;  // 0 = no object 1 = polygon, 2 = circle, ..
+    object_type_t rtype;  // 0 = no object 1 = polygon, 2 = circle, ..
     d2_point *coords;
 //    d2_point *deltas;
     uint16_t number;

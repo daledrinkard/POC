@@ -22,10 +22,13 @@
 
 #define CAPTURE_VSYNC    TB.vsync_data.data[TB.vsync_data.w_idx] = p_tmr_ctrl->p_reg->GTCNT; \
                          TB.vsync_data.w_idx = (TB.vsync_data.w_idx == (TB.vsync_data.size - 1)) ? 0 : TB.vsync_data.w_idx + 1;
-#define CAPTURE_ANIMATE  TB.animate_data.data[TB.animate_data.w_idx] = p_tmr_ctrl->p_reg->GTCNT; \
-                         TB.animate_data.w_idx = (TB.animate_data.w_idx == (TB.animate_data.size - 1)) ? 0 : TB.animate_data.w_idx + 1;
 #define CAPTURE_RENDER   TB.render_data.data[TB.render_data.w_idx] = p_tmr_ctrl->p_reg->GTCNT; \
                          TB.render_data.w_idx = (TB.render_data.w_idx == (TB.render_data.size - 1)) ? 0 : TB.render_data.w_idx + 1;
+
+#define CAPTURE_ASYNC    TB.async_data.data[TB.async_data.w_idx] = p_tmr3_ctrl->p_reg->GTCNT; \
+                         TB.async_data.w_idx = (TB.async_data.w_idx == (TB.async_data.size - 1)) ? 0 : TB.async_data.w_idx + 1;
+#define CAPTURE_ANIMATE  TB.animate_data.data[TB.animate_data.w_idx] = p_tmr3_ctrl->p_reg->GTCNT; \
+                         TB.animate_data.w_idx = (TB.animate_data.w_idx == (TB.animate_data.size - 1)) ? 0 : TB.animate_data.w_idx + 1;
 /*
  *   Create a 6 sided poly  (needs 6 Y/X pairs, so 12 points)
  */
@@ -140,11 +143,11 @@ static uint32_t ato32(char*  s)
         rv = rv << 4;
         if (*s >= '0' && *s <= '9')
         {
-            rv |= (*s - '0');
+            rv |= (uint32_t) (*s - '0');
         }
         else
         {
-            rv |= ((*s - 'a')+10);
+            rv |= (uint32_t) ((*s - 'a')+10);
         }
         s++;
     }
@@ -176,6 +179,9 @@ static d2_point atod2(char* s)
 
 static void command_Kick(char* cmd,char** args);
 static void command_Set(char* cmd,char** args);
+static void command_Tmr(char* cmd,char** args);
+static void command_Emsk(char* cmd,char** args);
+
 static void command_Kick(char* cmd,char** args)
 // kick obj X Y
 {
@@ -222,11 +228,41 @@ static void command_Set(char* cmd,char** args)
             break;
     }
 }
-testbench_command_t TB_CMD[TB_NUMBER_OF_COMMANDS] = {
-{.name = "set",.help = "set various stuff", .func = command_Set},
-{.name = "kick",.help = "kick a ball",      .func = command_Kick},
-                                                       {0}
-};
+static void command_Emsk(char* cmd,char** args)
+{
+    FSP_PARAMETER_NOT_USED(cmd);
+    uint32_t m = ato32(args[1]);
+    switch (args[0][0]) {
+        case 's':  // set the event.
+            TB.event_mask |= m;
+            break;
+        case 'c': // stop timer.
+            TB.event_mask &= ~m;
+            break;
+    }
+
+}
+static void command_Tmr(char* cmd,char** args)
+{
+   //set {object number} {V|A|C} {value} {value}
+    FSP_PARAMETER_NOT_USED(cmd);
+    int i;
+    uint32_t j;
+    dr_point_t *dp1;
+    i = atoi(args[0]);
+    switch (args[1][0]) {
+        case 'p':  // set the period
+            j = (uint32_t) atol(args[2]);
+            testbench_timer_period_set((uint8_t) i, j);
+            break;
+        case 's': // stop timer.
+            testbench_timer_stop((uint8_t) i);
+            break;
+        case 'g': // start timer.
+            testbench_timer_start((uint8_t) i);
+            break;
+    }
+}
 void silly_putty(void);
 
 /*
@@ -241,6 +277,13 @@ static void testbench_RX(void);
 static void testbench_RX_cb(console12_args_t *args);
 
 // Global structures
+testbench_command_t TB_CMD[TB_NUMBER_OF_COMMANDS] = {
+{.name = "set",.help = "set various stuff", .func = command_Set},
+{.name = "kick",.help = "kick a ball",      .func = command_Kick},
+{.name = "tmr",.help = "t p|s|g [period]",  .func = command_Tmr},
+{.name = "emsk",.help = "set timer stuff",   .func = command_Emsk},
+                                                       {0}
+};
 const testbench_t TB_initial =
  {.open = testbench_Open,
   .start = testbench_Start,
@@ -267,7 +310,7 @@ timer_callback_args_t timer0_cb_args, timer2_cb_args;
 static void testbench_Poll(void);
 static void testbench_Poll(void)
 {
-    uint32_t A,B,C,i;
+    uint32_t A,B,C,D,i;
     double F;
     char c1[8];
     A = B = C = 0;
@@ -283,16 +326,35 @@ static void testbench_Poll(void)
     {
         C = C + TB.animate_data.data[i];
     }
+    for(i=0;i<TB.async_data.size;i++)
+    {
+        D = D + TB.async_data.data[i];
+    }
     A = A /(TB.render_data.size * 120);
     B = B /(TB.vsync_data.size * 120);
     C = C /(TB.animate_data.size * 120);
+    D = D /(TB.async_data.size * 120);
 //    A = A / 120; //@@ assumes clocking at 120mHz
 //    B = B / 120;
     F = (double) 1000000 / B;
     sprintf(c1,"%2.4f",F);
+
     //A = (TB.render_data.data[0] * 100) // TB.vsync_data.data[0];
-    sprintf(TB.txbuffer,"\r\nsync = %lduS [fr: %s] \r\nanimate = %lduS\r\nrender = %lduS\r\nframe count = %ld",B,c1,C,A,TB.frame_count);
+    sprintf(TB.txbuffer,"\r\nVideo:   %lduS [fr: %s] \r\n",B,c1);
     CON12.prints(TB.txbuffer);
+    F = (double) 1000000 / D;
+    sprintf(c1,"%2.4f",F);
+    sprintf(TB.txbuffer,"Animate: %lduS [fr: %s] \r\n",D,c1);
+    CON12.prints(TB.txbuffer);
+    sprintf(TB.txbuffer,"animation (%lduS)  render = (%lduS)\r\n",C,A);
+    CON12.prints(TB.txbuffer);
+    void *p_ctrl = TB.driver->p_tmr0[2]->p_ctrl;
+    timer_info_t Tinfo;
+    TB.driver->p_tmr0[2]->p_api->infoGet(p_ctrl,&Tinfo);
+//    gpt_instance_ctrl_t *r = (gpt_instance_ctrl_t *) TB.driver->p_tmr0[1]->p_ctrl;
+    sprintf(TB.txbuffer,"animate timer period = %ld\r\n",Tinfo.period_counts);
+    CON12.prints(TB.txbuffer);
+
 }
 static fsp_err_t testbench_Start(void)
 {
@@ -300,10 +362,15 @@ static fsp_err_t testbench_Start(void)
     uint32_t emask;
     uint16_t handle;
     timer_instance_t *p_tmr;
+    timer_instance_t *p_tmr3;
     gpt_instance_ctrl_t *p_tmr_ctrl;
+    gpt_instance_ctrl_t *p_tmr3_ctrl;
     p_tmr = (timer_instance_t*) TB.driver->p_tmr0[1];
+    p_tmr3 = (timer_instance_t*) TB.driver->p_tmr0[3];
     p_tmr_ctrl = (gpt_instance_ctrl_t*) TB.driver->p_tmr0[1]->p_ctrl;
+    p_tmr3_ctrl = (gpt_instance_ctrl_t*) TB.driver->p_tmr0[3]->p_ctrl;
     events = 0;
+    FSP_CRITICAL_SECTION_DEFINE;
     while(1)
     {
         events = (TB.event_flag & TB.event_mask);
@@ -322,10 +389,12 @@ static fsp_err_t testbench_Start(void)
                     TB.sec_counts++;
                     break;
                 case TB_EVENT_TIMER2:
-                    break;
+                    CAPTURE_ASYNC
+                    p_tmr3->p_api->reset(p_tmr3_ctrl);
+                    p_tmr3->p_api->start(p_tmr3_ctrl);
                     TB.animate_count++;
                     draw_core_animate();
-                    FSP_CRITICAL_SECTION_DEFINE;
+                    CAPTURE_ANIMATE
                     FSP_CRITICAL_SECTION_ENTER;
                     TB.event_flag |= TB_EVENT_ADONE;
                     FSP_CRITICAL_SECTION_EXIT;
@@ -334,21 +403,20 @@ static fsp_err_t testbench_Start(void)
                     CAPTURE_VSYNC
                     p_tmr->p_api->reset(p_tmr_ctrl);
                     p_tmr->p_api->start(p_tmr_ctrl);
-#if 1
+#if 0
                     TB.animate_count++;
                     draw_core_animate();
                     CAPTURE_ANIMATE
 #endif
      //               if (TB.event_flag & TB_EVENT_ADONE)
-                    if(1)
+                    if(TB.event_flag & TB_EVENT_ADONE)
                     {
                         draw_core_draw((uint32_t *)TB.p_activeframe);
                         CAPTURE_RENDER
                         TB.frame_count++;
                         glcd_swap();
-                        FSP_CRITICAL_SECTION_DEFINE;
                         FSP_CRITICAL_SECTION_ENTER;
-                        TB.event_flag &= ~TB_EVENT_ADONE;
+                        TB.event_flag &= (uint32_t) ~TB_EVENT_ADONE;
                         FSP_CRITICAL_SECTION_EXIT;
                     }
                     break;
@@ -376,7 +444,7 @@ static fsp_err_t testbench_Start(void)
                 default: while(1); //@@ unhandled event.
 
             }
-            FSP_CRITICAL_SECTION_DEFINE;
+
             FSP_CRITICAL_SECTION_ENTER;
             TB.event_flag &= (uint32_t) ~emask;
             FSP_CRITICAL_SECTION_EXIT;
@@ -403,6 +471,9 @@ static fsp_err_t testbench_Open(void *data)
     TB.render_data.data = Sample_Buffer_Render;
     TB.render_data.size = CAPTURE_BUFFER_SIZE;
     TB.render_data.w_idx = 1;
+    TB.async_data.data = Sample_Buffer_ASYNC;
+    TB.async_data.size = CAPTURE_BUFFER_SIZE;
+    TB.async_data.w_idx = 1;
     TB.vsync_data.data = Sample_Buffer_VSYNC;
     TB.vsync_data.size = CAPTURE_BUFFER_SIZE;
     TB.vsync_data.w_idx = 1;
@@ -413,25 +484,27 @@ static fsp_err_t testbench_Open(void *data)
     p_con12->rx_cb = testbench_RX_cb;
     p_con12->open(TB.rxbuffer,TB.rxbuffer_size,NULL);
     // open, enable and start cadence timer
-    p_tmr = TB.driver->p_tmr0[0];
-    err = p_tmr->p_api->open(p_tmr->p_ctrl,p_tmr->p_cfg);
-    err |= p_tmr->p_api->enable(p_tmr->p_ctrl);
-    err |= p_tmr->p_api->callbackSet(p_tmr->p_ctrl,testbench_timer0_cb,NULL,&timer0_cb_args);
-    err |= p_tmr->p_api->start(p_tmr->p_ctrl);
-    assert(FSP_SUCCESS == err);
-    //open and enable the measure timer
-    p_tmr = TB.driver->p_tmr0[1];
-    err = p_tmr->p_api->open(p_tmr->p_ctrl,p_tmr->p_cfg);
-    err |= p_tmr->p_api->enable(p_tmr->p_ctrl);
-    assert(FSP_SUCCESS == err);
-    //open and enable the animation timer
-    p_tmr = TB.driver->p_tmr0[2];
-    err = p_tmr->p_api->open(p_tmr->p_ctrl,p_tmr->p_cfg);
-    err |= p_tmr->p_api->enable(p_tmr->p_ctrl);
-    assert(FSP_SUCCESS == err);
-    err |= p_tmr->p_api->callbackSet(p_tmr->p_ctrl,testbench_timer2_cb,NULL,&timer2_cb_args);
-    err |= p_tmr->p_api->start(p_tmr->p_ctrl);
-
+    for(int i=0;i<TB_NUMBER_OF_TIMERS;i++)
+    {
+        p_tmr = TB.driver->p_tmr0[i];
+        err = p_tmr->p_api->open(p_tmr->p_ctrl,p_tmr->p_cfg);
+        err |= p_tmr->p_api->enable(p_tmr->p_ctrl);
+        switch(i) {
+            case 0: // poll timer.. typically 1 second.
+                err |= p_tmr->p_api->callbackSet(p_tmr->p_ctrl,testbench_timer0_cb,NULL,&timer0_cb_args);
+                err |= p_tmr->p_api->start(p_tmr->p_ctrl);
+                break;
+            case 1: // measuring timer for vertical syncs
+                break;
+            case 2: // animation cadence timer ..  typically 100mS
+                err |= p_tmr->p_api->callbackSet(p_tmr->p_ctrl,testbench_timer2_cb,NULL,&timer2_cb_args);
+                err |= p_tmr->p_api->start(p_tmr->p_ctrl);
+                break;
+            case 3:  // measuring timer for animation cadence
+                break;
+        }
+        assert(FSP_SUCCESS == err);
+    }
     // open and enable the press buttons external interrupts.
     void *pctrl;
     void *pcfg;

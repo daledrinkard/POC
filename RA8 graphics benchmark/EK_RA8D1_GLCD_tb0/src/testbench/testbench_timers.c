@@ -5,10 +5,26 @@
  *      Author: daled
  */
 
-#include "testbench_api.h"
+#include "testbench_timers.h"
 
 
-
+void testbench_timer_start(uint8_t t)
+{
+    timer_instance_t *pt = TB.driver->p_tmr0[t];
+    pt->p_api->start(pt->p_ctrl);
+}
+void testbench_timer_stop(uint8_t t)
+{
+    timer_instance_t *pt = TB.driver->p_tmr0[t];
+    pt->p_api->stop(pt->p_ctrl);
+}
+void testbench_timer_period_set(uint8_t t,uint32_t val)
+{
+   timer_instance_t *pt = TB.driver->p_tmr0[t];
+   pt->p_api->stop(pt->p_ctrl);
+   pt->p_api->periodSet(pt->p_ctrl, val);
+   pt->p_api->start(pt->p_ctrl);
+}
 /*
  *    Callback functions
  */
