@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<raConfiguration version="3">
+  <raComponentSelection>
+    <component apiversion="" class="Projects" condition="" group="all" subgroup="freertos_blinky" variant="" vendor="Renesas" version="5.3.0">
+      <description>Simple application that blinks an LED. Using FreeRTOS.</description>
+      <originalPack>Renesas.RA_freertos_blinky.5.3.0.pack</originalPack>
+    </component>
+    <component apiversion="" class="Common" condition="" group="all" subgroup="fsp_common" variant="" vendor="Renesas" version="5.3.0">
+      <description>Board Support Package Common Files</description>
+      <originalPack>Renesas.RA.5.3.0.pack</originalPack>
+    </component>
+    <component apiversion="" class="HAL Drivers" condition="" group="all" subgroup="r_ioport" variant="" vendor="Renesas" version="5.3.0">
+      <description>I/O Port</description>
+      <originalPack>Renesas.RA.5.3.0.pack</originalPack>
+    </component>
+    <component apiversion="" class="RTOS" condition="" group="FreeRTOS" subgroup="all" variant="" vendor="AWS" version="10.6.1+fsp.5.3.0">
+      <description>FreeRTOS</description>
+      <originalPack>Amazon.FreeRTOS-Kernel.10.6.1+fsp.5.3.0.pack</originalPack>
+    </component>
+    <component apiversion="" class="CMSIS" condition="" group="CMSIS5" subgroup="CoreM" variant="" vendor="Arm" version="5.9.0+renesas.1.fsp.5.3.0">
+      <description>Arm CMSIS Version 5 - Core (M)</description>
+      <originalPack>Arm.CMSIS5.5.9.0+renesas.1.fsp.5.3.0.pack</originalPack>
+    </component>
+    <component apiversion="" class="Middleware" condition="" group="all" subgroup="rm_freertos_port" variant="" vendor="Renesas" version="5.3.0">
+      <description>FreeRTOS Port</description>
+      <originalPack>Renesas.RA.5.3.0.pack</originalPack>
+    </component>
+  </raComponentSelection>
+  <raIcuConfiguration/>
+  <raMessagingConfiguration/>
+  <raModuleConfiguration>
+    <module id="module.driver.ioport_on_ioport.0">
+      <property id="module.driver.ioport.name" value="g_ioport"/>
+    </module>
+    <module id="module.middleware.rm_freertos_port.0">
+    </module>
+    <context id="_hal.0">
+      <stack module="module.driver.ioport_on_ioport.0"/>
+      <stack module="module.middleware.rm_freertos_port.0"/>
+    </context>
+    <context id="rtos.awsfreertos.thread.0">
+      <property id="_symbol" value="blinky_thread"/>
+      <property id="rtos.awsfreertos.thread.name" value="Blinky Thread"/>
+      <property id="rtos.awsfreertos.thread.stack" value="512"/>
+      <property id="rtos.awsfreertos.thread.priority" value="1"/>
+    </context>
+    <config id="config.awsfreertos.thread">
+      <property id="config.awsfreertos.thread.configsupport_static_allocation" value="config.awsfreertos.thread.configsupport_static_allocation.enabled"/>
+      <property id="config.awsfreertos.thread.configsupport_dynamic_allocation" value="config.awsfreertos.thread.configsupport_dynamic_allocation.disabled"/>
+    </config>
+  </raModuleConfiguration>
+</raConfiguration>

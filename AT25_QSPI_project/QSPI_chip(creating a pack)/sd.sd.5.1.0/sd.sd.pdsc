@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<package xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="1.7.2" xs:noNamespaceSchemaLocation="PACK.xsd">
+  <vendor>sd</vendor>
+  <name>sd</name>
+  <description/>
+  <url/>
+  <supportContact/>
+  <license/>
+  <releases>
+    <release version="5.1.0">5.1.0</release>
+  </releases>
+  <conditions>
+    <condition id="Only_GCC">
+      <description/>
+      <require Tcompiler="GCC"/>
+    </condition>
+  </conditions>
+  <components>
+    <component Cclass="BSP" Cgroup="Board" Cvendor="sd" Cversion="5.1.0" condition="">
+      <description/>
+      <files>
+        <file category="header" condition="" name="ra/board/tommy/board.h" version="5.1.0"/>
+      </files>
+    </component>
+  </components>
+</package>

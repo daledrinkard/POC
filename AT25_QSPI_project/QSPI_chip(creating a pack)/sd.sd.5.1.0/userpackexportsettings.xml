@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="userpacksettings">
+	<item key="userpacksettings_version" value="1.0"/>
+	<section name="packdetails">
+		<item key="packtype" value="1"/>
+		<item key="packlocation" value="C:/Users/daled/.eclipse/com.renesas.platform_1205515107/internal/projectgen/ra/packs"/>
+		<item key="packvendor" value="sd"/>
+		<item key="packname" value="sd"/>
+		<item key="packversion" value="5.1.0"/>
+		<item key="packdescription" value=""/>
+		<item key="packurl" value=""/>
+		<item key="packcontact" value=""/>
+		<item key="packlicenseinfo" value=""/>
+	</section>
+	<section name="packtype_user">
+		<list key="usercomponentthreadids_g##g##g######1.2.3">
+		</list>
+		<list key="usercomponentids">
+			<item value="g##g##g######1.2.3"/>
+		</list>
+	</section>
+	<section name="packtype_user_components">
+		<item key="componentsindex" value="1"/>
+		<section name="component0">
+			<item key="componentkey" value="g##g##g######1.2.3"/>
+			<item key="Cvendor" value="g"/>
+			<item key="Cclass" value="g"/>
+			<item key="Cgroup" value="g"/>
+			<item key="Csub" value=""/>
+			<item key="Cvariant" value=""/>
+			<item key="Cversion" value="1.2.3"/>
+			<item key="Capiversion" value=""/>
+			<item key="condition" value=""/>
+			<item key="description" value=""/>
+			<item key="CONDITON_PARENT_PACK" value=""/>
+			<item key="isusercreated" value="true"/>
+		</section>
+	</section>
+	<section name="packtype_bsp">
+		<item key="bspboardname" value="tommy"/>
+		<item key="bspboardnamesolid" value="tommy"/>
+		<item key="bspboardid" value="board.tommy"/>
+		<item key="forcetemplate" value="SRCTEMPLATE_LEAVE"/>
+	</section>
+	<section name="packtype_bsp_components">
+		<item key="componentsindex" value="1"/>
+		<section name="component0">
+			<item key="componentkey" value="sd##BSP##Board######5.1.0"/>
+			<item key="Cvendor" value="sd"/>
+			<item key="Cclass" value="BSP"/>
+			<item key="Cgroup" value="Board"/>
+			<item key="Csub" value=""/>
+			<item key="Cvariant" value=""/>
+			<item key="Cversion" value="5.1.0"/>
+			<item key="Capiversion" value=""/>
+			<item key="condition" value=""/>
+			<item key="description" value=""/>
+			<item key="CONDITON_PARENT_PACK" value=""/>
+			<item key="isusercreated" value="false"/>
+			<item key="componentfilesindex" value="1"/>
+			<section name="componentfile0">
+				<item key="name" value="ra/board/tommy/board.h"/>
+				<item key="category" value="header"/>
+				<item key="attr" value=""/>
+				<item key="src" value=""/>
+				<item key="select" value=""/>
+				<item key="version" value="5.1.0"/>
+				<item key="condition" value=""/>
+				<item key="CONDITON_PARENT_PACK" value=""/>
+			</section>
+		</section>
+	</section>
+	<section name="conditions">
+		<item key="conditionsindex" value="0"/>
+		<list key="conditions">
+			<item value="Renesas.RA_mcu_ra4m2.5.3.0.pack|Only_GCC"/>
+		</list>
+	</section>
+</section>

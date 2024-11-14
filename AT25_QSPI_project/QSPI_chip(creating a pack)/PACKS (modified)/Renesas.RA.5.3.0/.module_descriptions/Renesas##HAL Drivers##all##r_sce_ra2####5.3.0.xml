@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<raModuleDescription>
+  <module display="Security|Crypto RA2" id="module.driver.crypto_ra2" common="1" version="1" visible="false" url="">
+    <constraint display="Requires AES Engine">
+          "${interface.mcu.crypto_ra2}" === "1"
+    </constraint>
+    <requires id="module.driver.sce.requires.crypto_ra2" interface="interface.mcu.crypto_ra2" visible="false" display="Requires RA2" />
+    <requires id="module.driver.sce.requires.crypto_aes1" interface="interface.mcu.crypto.aes1" visible="false" display="Requires RA2" />
+    <provides interface="interface.driver.sce"/>
+  </module>
+</raModuleDescription>

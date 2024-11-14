@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<raModuleDescription>
+  <config id="config.board.tommy" path="fsp_cfg/bsp/board_cfg.h" version="0">
+    <content>#include "../../../ra/board/tommy/board.h"</content>
+  </config>
+  <board config="config.board.tommy" device="" display="tommy" id="board.tommy" version="0"/>
+</raModuleDescription>
