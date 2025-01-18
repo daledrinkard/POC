@@ -1,0 +1,181 @@
+<?xml version="1.0" ?>
+<package xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="1.2" xs:noNamespaceSchemaLocation="PACK.xsd">
+	<vendor>Linaro</vendor>
+	<name>MCUboot</name>
+	<description>MCUboot</description>
+	<url>https://github.com/mcu-tools/mcuboot</url>
+	<supportContact/>
+	<releases>
+		<release version="2.1.0+renesas.2.fsp.5.6.0">2.1.0+renesas.2.fsp.5.6.0</release>
+	</releases>
+	<components>
+		
+  
+		<component Cvendor="Linaro" Cclass="boot" Cgroup="all" Csub="MCUboot" Cversion="2.1.0+renesas.2.fsp.5.6.0">
+			<description>MCUboot</description>
+			<files>
+				<file category="include" name="ra/mcu-tools/MCUboot/boot/bootutil/src/"/>
+				<file category="include" name="ra_cfg/mcu-tools/include/"/>
+				<file category="include" name="ra/mcu-tools/MCUboot/boot/bootutil/include/"/>
+				<file category="source" name="ra/mcu-tools/MCUboot/boot/bootutil/src/caps.c" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="source" name="ra/mcu-tools/MCUboot/boot/bootutil/src/swap_scratch.c" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="source" name="ra/mcu-tools/MCUboot/boot/bootutil/src/tlv.c" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="source" name="ra/mcu-tools/MCUboot/boot/bootutil/src/fault_injection_hardening_delay_rng_mbedtls.c" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="source" name="ra/mcu-tools/MCUboot/boot/bootutil/src/image_ed25519.c" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="source" name="ra/mcu-tools/MCUboot/boot/bootutil/src/bootutil_public.c" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="source" name="ra/mcu-tools/MCUboot/boot/bootutil/src/boot_record.c" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="source" name="ra/mcu-tools/MCUboot/boot/bootutil/src/swap_misc.c" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="source" name="ra/mcu-tools/MCUboot/boot/bootutil/src/image_rsa.c" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/src/swap_priv.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="source" name="ra/mcu-tools/MCUboot/boot/bootutil/src/encrypted.c" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="source" name="ra/mcu-tools/MCUboot/boot/bootutil/src/bootutil_misc.c" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/src/bootutil_priv.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="source" name="ra/mcu-tools/MCUboot/boot/bootutil/src/fault_injection_hardening.c" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="source" name="ra/mcu-tools/MCUboot/boot/bootutil/src/swap_move.c" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="source" name="ra/mcu-tools/MCUboot/boot/bootutil/src/image_validate.c" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="source" name="ra/mcu-tools/MCUboot/boot/bootutil/src/image_ecdsa.c" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/src/bootutil_misc.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="source" name="ra/mcu-tools/MCUboot/boot/bootutil/src/loader.c" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/security_cnt.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/bootutil_public.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/boot_record.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/bootutil.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/ignore.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/caps.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/fault_injection_hardening_delay_rng.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/image.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/bootutil_test.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/enc_key_public.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/ramload.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/mcuboot_status.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/enc_key.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/sign_key.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/bootutil_log.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/fault_injection_hardening.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/boot_hooks.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/boot_public_hooks.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/boot_status.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/bench.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/crypto/aes_ctr.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/crypto/common.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/crypto/hmac_sha256.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/crypto/ecdh_x25519.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/crypto/sha.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/crypto/ecdsa.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/crypto/rsa.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/crypto/ecdh_p256.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/crypto/aes_kw.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="other" name="ra/mcu-tools/MCUboot/scripts/imgtool.py" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="other" name="ra/mcu-tools/MCUboot/scripts/imgtool.nix" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="other" name="ra/mcu-tools/MCUboot/scripts/jgdb.sh" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="other" name="ra/mcu-tools/MCUboot/scripts/mcubin.bt" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="other" name="ra/mcu-tools/MCUboot/scripts/gdb-boot.sh" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="other" name="ra/mcu-tools/MCUboot/scripts/jl.sh" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="other" name="ra/mcu-tools/MCUboot/scripts/assemble.py" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="doc" name="ra/mcu-tools/MCUboot/scripts/requirements.txt" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="other" name="ra/mcu-tools/MCUboot/scripts/flash.sh" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="other" name="ra/mcu-tools/MCUboot/scripts/setup.py" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="other" name="ra/mcu-tools/MCUboot/scripts/imgtool/dumpinfo.py" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="other" name="ra/mcu-tools/MCUboot/scripts/imgtool/image.py" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="other" name="ra/mcu-tools/MCUboot/scripts/imgtool/__init__.py" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="other" name="ra/mcu-tools/MCUboot/scripts/imgtool/version.py" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="other" name="ra/mcu-tools/MCUboot/scripts/imgtool/boot_record.py" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="other" name="ra/mcu-tools/MCUboot/scripts/imgtool/main.py" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="other" name="ra/mcu-tools/MCUboot/scripts/imgtool/keys/rsa.py" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="other" name="ra/mcu-tools/MCUboot/scripts/imgtool/keys/x25519.py" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="other" name="ra/mcu-tools/MCUboot/scripts/imgtool/keys/__init__.py" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="other" name="ra/mcu-tools/MCUboot/scripts/imgtool/keys/ed25519_test.py" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="other" name="ra/mcu-tools/MCUboot/scripts/imgtool/keys/ed25519.py" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="other" name="ra/mcu-tools/MCUboot/scripts/imgtool/keys/ecdsa_test.py" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="other" name="ra/mcu-tools/MCUboot/scripts/imgtool/keys/ecdsa.py" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="other" name="ra/mcu-tools/MCUboot/scripts/imgtool/keys/general.py" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="other" name="ra/mcu-tools/MCUboot/scripts/imgtool/keys/rsa_test.py" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="other" name="ra/mcu-tools/MCUboot/scripts/imgtool/keys/privatebytes.py" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+			</files>
+		</component>
+		<component Cvendor="Linaro" Cclass="boot" Cgroup="all" Csub="keys" Cversion="2.1.0+renesas.2.fsp.5.6.0">
+			<description>MCUboot Example Keys</description>
+			<files>
+				<file category="source" name="ra/mcu-tools/MCUboot/sim/mcuboot-sys/csupport/keys.c" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="other" name="ra/mcu-tools/MCUboot/root-ec-p256.pem" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="other" name="ra/mcu-tools/MCUboot/root-rsa-2048.pem" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="other" name="ra/mcu-tools/MCUboot/root-rsa-3072.pem" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="other" name="ra/mcu-tools/MCUboot/enc-ec256-priv.pem" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="other" name="ra/mcu-tools/MCUboot/enc-ec256-pub.pem" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="other" name="ra/mcu-tools/MCUboot/enc-rsa2048-priv.pem" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="other" name="ra/mcu-tools/MCUboot/enc-rsa2048-pub.pem" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="other" name="ra/mcu-tools/MCUboot/root-ec-p384.pem" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="other" name="ra/mcu-tools/MCUboot/root-ec-p384-pkcs8.pem" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+			</files>
+		</component>
+		<component Cvendor="Linaro" Cclass="boot" Cgroup="all" Csub="asn1parser" Cversion="2.1.0+renesas.2.fsp.5.6.0">
+			<description>MCUboot ASN.1 Parser</description>
+			<files>
+				<file category="include" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/"/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/common.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/platform_util.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/private_access.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/build_info.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/check_config.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/oid.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/bignum.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/pk.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/ecp.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/ecdsa.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/mbedtls_config.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/version.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/rsa.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/platform.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/asn1.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/bn_mul.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/error.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/md.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/threading.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/platform_util.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/private_access.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/build_info.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/check_config.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/oid.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/bignum.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/pk.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/ecp.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/ecdsa.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/mbedtls_config.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/version.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/rsa.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/platform.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/asn1.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/bn_mul.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/error.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/md.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/include/mbedtls/threading.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="source" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/src/platform_util.c" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="source" name="ra/mcu-tools/MCUboot/ext/mbedtls-asn1/src/asn1parse.c" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+			</files>
+		</component>
+		<component Cvendor="Linaro" Cclass="boot" Cgroup="all" Csub="MCUboot_Image_Utilities" Cversion="2.1.0+renesas.2.fsp.5.6.0">
+			<description>MCUboot Image Utilities</description>
+			<files>
+				<file category="include" name="ra_cfg/mcu-tools/include/mcuboot_image_utilities_config/"/>
+				<file category="include" name="ra/fsp/src/rm_mcuboot_port/"/>
+				<file category="include" name="ra/mcu-tools/MCUboot/boot/bootutil/src/"/>
+				<file category="include" name="ra/mcu-tools/MCUboot/boot/bootutil/include/"/>
+				<file category="source" name="ra/mcu-tools/MCUboot/boot/bootutil/src/bootutil_public.c" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/src/bootutil_misc.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="source" name="ra/mcu-tools/MCUboot/boot/bootutil/src/tlv.c" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/src/bootutil_priv.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/bootutil_log.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/bootutil_public.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/bootutil.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/boot_public_hooks.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/boot_hooks.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/fault_injection_hardening.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/ignore.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/image.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/mcu-tools/MCUboot/boot/bootutil/include/bootutil/crypto/common.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="header" name="ra/fsp/src/rm_mcuboot_port/flash_map_backend/flash_map_backend.h" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+				<file category="source" name="ra/fsp/src/rm_mcuboot_port/flash_map.c" version="2.1.0+renesas.2.fsp.5.6.0" condition="" select=""/>
+			</files>
+		</component>
+	</components>
+</package>

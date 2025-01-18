@@ -1,0 +1,6 @@
+<toolingSupport family="ra" platform="platform.rafsp_companion">
+  <file supportType="Modules" version="2.1.0+renesas.2.fsp.5.6.0">.module_descriptions/Linaro##boot##all##MCUboot####2.1.0+renesas.2.fsp.5.6.0.xml</file>
+  <file supportType="Modules" version="2.1.0+renesas.2.fsp.5.6.0">.module_descriptions/Linaro##boot##all##keys####2.1.0+renesas.2.fsp.5.6.0.xml</file>
+  <file supportType="Modules" version="2.1.0+renesas.2.fsp.5.6.0">.module_descriptions/Linaro##boot##all##asn1parser####2.1.0+renesas.2.fsp.5.6.0.xml</file>
+  <file supportType="Modules" version="2.1.0+renesas.2.fsp.5.6.0">.module_descriptions/Linaro##boot##all##MCUboot_Image_Utilities####2.1.0+renesas.2.fsp.5.6.0.xml</file>
+</toolingSupport>
