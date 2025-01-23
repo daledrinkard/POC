@@ -85,6 +85,7 @@
 				<file category="source" name="ra/fsp/src/r_at25/r_at25.c" version="5.6.0" condition="" select=""/>
 				<file category="header" name="ra/fsp/inc/instances/r_at25.h" version="5.6.0" condition="" select=""/>
 				<file category="header" name="ra/fsp/inc/api/r_at25_api.h" version="5.6.0" condition="" select=""/>
+				<file category="document" name="document/at25_module.docx" version="5.6.0" condition="" select=""/>
 			</files>
 		</component>
 	</components>
