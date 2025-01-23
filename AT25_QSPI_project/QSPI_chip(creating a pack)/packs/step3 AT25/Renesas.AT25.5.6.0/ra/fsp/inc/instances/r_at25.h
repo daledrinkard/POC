@@ -26,24 +26,27 @@ FSP_HEADER
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define RESET_ENABLE              0x66
-#define RESET                     0x99
-#define READ_CONFIG_REG           0x15
 #define READ_ALL_STATUS_REGS      0x65
+#define WRITE_ENABLE              0x06
+#define WRITE_STATUS_REG_1        0x01
+#define WRITE_DISABLE             0x04
+#define WRITE_STATUS_REG_2        0x31
 #define READ_STATUS_REG_1         0x05
 #define READ_STATUS_REG_2         0x35
 #define READ_STATUS_REG_3         0x15
-#define WRITE_STATUS_REG_1        0x01
-#define WRITE_STATUS_REG_2        0x31
+#define AT25FF_DEVICE_ID          0x47
+#define JEDEC_ID                  0x9F
+#define AT25FF_MANUFACTURER_ID    0x1F
+
+
+#if 0
+#define RESET_ENABLE              0x66
+#define RESET                     0x99
+#define READ_CONFIG_REG           0x15
 #define WRITE_STATUS_REG_3        0x11
 #define WRITE_ENABLE_VOL          0x50
-#define WRITE_ENABLE              0x06
-#define WRITE_DISABLE             0x04
 #define REMS                      0x90
-#define JEDEC_ID                  0x9F
 
-#define AT25FF_MANUFACTURER_ID    0x1F
-#define AT25FF_DEVICE_ID          0x47
 #define AT25FF_DEVICE_SIZE       (4096 * 1024)
 /* sector size of QSPI flash device */
 #define AT25FF_SECTOR_SIZE       (4096U)
@@ -52,7 +55,7 @@ FSP_HEADER
 /* QSPI flash page Size */
 #define PAGE_WRITE_SIZE                 (256U)
 //#define QSPI_DEVICE_START_ADDRESS    (0x60000000)
-
+#endif
 /***********************************************************************************************************************
  * Typedef definitions
  **********************************************************************************************************************/
