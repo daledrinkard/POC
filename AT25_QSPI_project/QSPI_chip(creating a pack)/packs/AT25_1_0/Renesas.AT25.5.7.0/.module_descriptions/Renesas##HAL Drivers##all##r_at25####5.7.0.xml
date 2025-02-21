@@ -48,18 +48,6 @@ extern "C" {
         <property default="g_at25${_instance}" display="General|Name" id="module.driver.at25.name" description="Module name.">
             <constraint display="Name must be a valid C symbol">testSymbol("${module.driver.at25.name}")</constraint>
         </property>
-        <property default="module.driver.at25.device_id.device_1M" display="General|Device" id="module.driver.at25.device_id" description="Select the Device.">
-            <option display="AT25xx011x" id="module.driver.at25.device_id.device_1M" value="AT25_DEVICE_1M"/>
-            <option display="AT25xx021x" id="module.driver.at25.device_id.device_2M" value="AT25_DEVICE_2M"/>
-            <option display="AT25xx041x" id="module.driver.at25.device_id.device_4M" value="AT25_DEVICE_4M"/>
-            <option display="AT25xx081x" id="module.driver.at25.device_id.device_8M" value="AT25_DEVICE_8M"/>
-            <option display="AT25xx161x" id="module.driver.at25.device_id.device_16M" value="AT25_DEVICE_16M"/>
-            <option display="AT25xx321x" id="module.driver.at25.device_id.device_32M" value="AT25_DEVICE_32M"/>
-            <option display="AT25xx641x" id="module.driver.at25.device_id.device_64M" value="AT25_DEVICE_64M"/>
-            <option display="AT25xx128x" id="module.driver.at25.device_id.device_128M" value="AT25_DEVICE_128M"/>
-            <option display="AT25xx2561x" id="module.driver.at25.device_id.device_256M" value="AT25_DEVICE_256M"/>
-            <option display="AT25xx512x" id="module.driver.at25.device_id.device_512M" value="AT25_DEVICE_512M"/>
-        </property>
 <!--        <property default="module.driver.qspi.spi_protocol.protocol_extended_spi" display="General|SPI Protocol" id="module.driver.qspi.spi_protocol" description="Select the initial SPI protocol.  SPI protocol can be changed in @ref R_QSPI_Direct().">
             <option display="Extended SPI" id="module.driver.qspi.spi_protocol.protocol_extended_spi" value="SPI_FLASH_PROTOCOL_EXTENDED_SPI"/>
             <option display="QPI" id="module.driver.qspi.spi_protocol.protocol_qpi" value="SPI_FLASH_PROTOCOL_QPI"/>
@@ -223,8 +211,7 @@ at25_instance_ctrl_t ${module.driver.at25.name}_ctrl;
 /** create a configuration structure to pass on options when the module is opened*/
 const at25_cfg_t ${module.driver.at25.name}_cfg =
 {
-    .p_qspi = (spi_flash_instance_t*) &amp;${module.driver.at25_on_at25.requires.qspi::module.driver.qspi.name},
-	.device = ${module.driver.at25.device_id}
+    .p_qspi = (spi_flash_instance_t*) &amp;${module.driver.at25_on_at25.requires.qspi::module.driver.qspi.name}
 };
 const at25_instance_t ${module.driver.at25.name} =
 {

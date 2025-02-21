@@ -4,9 +4,9 @@ cls
 echo press space to remove Renesas.AT25.5.6.0.pack from the support folder
 pause
 del /Q C:\Users\daled\.eclipse\com.renesas.platform_351115138\internal\projectgen\ra\packs\Renesas.AT25.5.6.0.pack
-echo press space to remove Renesas##HAL Drivers##all##r_at25####5.6.0.xml from the support folder modules folder
+echo press space to remove Renesas##HAL Drivers##all##r_qspi####5.6.0.xml from the support folder modules folder
 pause
-del /Q "C:\Users\daled\.eclipse\com.renesas.platform_351115138\internal\projectgen\ra\modules\Renesas##HAL Drivers##all##r_at25####5.6.0.xml"
+del /Q "C:\Users\daled\.eclipse\com.renesas.platform_351115138\internal\projectgen\ra\modules\Renesas##HAL Drivers##all##r_qspi####5.6.0.xml"
 echo press space to remove Renesas.AT25.5.6.0.pack from the install folder
 pause
 del /Q C:\Renesas\e2_studio_v2024-10\internal\projectgen\ra\packs\Renesas.AT25.5.6.0.pack

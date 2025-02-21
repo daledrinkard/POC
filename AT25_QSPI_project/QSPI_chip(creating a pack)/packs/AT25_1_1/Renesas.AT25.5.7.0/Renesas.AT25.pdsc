@@ -1,0 +1,92 @@
+<?xml version="1.0" ?>
+<package xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="1.2" xs:noNamespaceSchemaLocation="PACK.xsd">
+	<vendor>Renesas</vendor>
+	<name>AT25</name>
+	<description>CMSIS Pack for Renesas AT25</description>
+	<url>www.renesas.com</url>
+	<supportContact/>
+	<releases>
+		<release version="5.7.0">5.7.0</release>
+	</releases>
+	<conditions>
+		
+  
+		<condition id="Only_CM4_and_GCC">
+			<require Dcore="Cortex-M4"/>
+			<require Tcompiler="GCC"/>
+		</condition>
+		<condition id="Only_CM4_and_IAR">
+			<require Dcore="Cortex-M4"/>
+			<require Tcompiler="IAR"/>
+		</condition>
+		<condition id="Only_CM4_and_AC6">
+			<require Dcore="Cortex-M4"/>
+			<require Tcompiler="ARMCC"/>
+		</condition>
+		<condition id="Only_CM4_and_CLANG">
+			<require Dcore="Cortex-M4"/>
+			<require Tcompiler="CLANG"/>
+		</condition>
+		<condition id="Only_CM23_and_GCC">
+			<require Dcore="Cortex-M23"/>
+			<require Tcompiler="GCC"/>
+		</condition>
+		<condition id="Only_CM23_and_IAR">
+			<require Dcore="Cortex-M23"/>
+			<require Tcompiler="IAR"/>
+		</condition>
+		<condition id="Only_CM23_and_AC6">
+			<require Dcore="Cortex-M23"/>
+			<require Tcompiler="ARMCC"/>
+		</condition>
+		<condition id="Only_CM23_and_CLANG">
+			<require Dcore="Cortex-M23"/>
+			<require Tcompiler="CLANG"/>
+		</condition>
+		<condition id="Only_CM33_and_GCC">
+			<require Dcore="Cortex-M33"/>
+			<require Tcompiler="GCC"/>
+		</condition>
+		<condition id="Only_CM33_and_IAR">
+			<require Dcore="Cortex-M33"/>
+			<require Tcompiler="IAR"/>
+		</condition>
+		<condition id="Only_CM33_and_AC6">
+			<require Dcore="Cortex-M33"/>
+			<require Tcompiler="ARMCC"/>
+		</condition>
+		<condition id="Only_CM33_and_CLANG">
+			<require Dcore="Cortex-M33"/>
+			<require Tcompiler="CLANG"/>
+		</condition>
+		<condition id="Only_CM85_and_GCC">
+			<require Dcore="Cortex-M85"/>
+			<require Tcompiler="GCC"/>
+		</condition>
+		<condition id="Only_CM85_and_IAR">
+			<require Dcore="Cortex-M85"/>
+			<require Tcompiler="IAR"/>
+		</condition>
+		<condition id="Only_CM85_and_AC6">
+			<require Dcore="Cortex-M85"/>
+			<require Tcompiler="ARMCC"/>
+		</condition>
+		<condition id="Only_CM85_and_CLANG">
+			<require Dcore="Cortex-M85"/>
+			<require Tcompiler="CLANG"/>
+		</condition>
+	</conditions>
+	<components>
+		
+  
+		<component Cvendor="Renesas" Cclass="HAL Drivers" Cgroup="all" Csub="r_at25" Cversion="5.7.0">
+			<description>Quad Serial Peripheral Interface Flash</description>
+			<files>
+				<file category="source" name="ra/fsp/src/r_at25/r_at25.c" version="5.7.0" condition="" select=""/>
+				<file category="header" name="ra/fsp/inc/instances/r_at25.h" version="5.7.0" condition="" select=""/>
+				<file category="header" name="ra/fsp/inc/api/r_at25_api.h" version="5.7.0" condition="" select=""/>
+				<file category="document" name="document/at25_module.docx" version="5.7.0" condition="" select=""/>
+			</files>
+		</component>
+	</components>
+</package>

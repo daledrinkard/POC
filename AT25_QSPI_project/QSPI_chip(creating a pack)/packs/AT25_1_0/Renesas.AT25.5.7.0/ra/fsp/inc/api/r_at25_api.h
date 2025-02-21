@@ -37,22 +37,8 @@ FSP_HEADER
 /**********************************************************************************************************************
  * Typedef definitions
  **********************************************************************************************************************/
- typedef enum e_at25_device
-{
-    AT25_DEVICE_1M             = 1, ///< Standard Read Mode (no dummy cycles)
-    AT25_DEVICE_2M             = 2, ///< Fast Read Mode (dummy cycles between address and data)
-    AT25_DEVICE_4M             = 4, ///< Fast Read Dual Output Mode (data on 2 lines)
-    AT25_DEVICE_8M             = 8, ///< Fast Read Dual I/O Mode (address and data on 2 lines)
-    AT25_DEVICE_16M            = 16, ///< Fast Read Quad Output Mode (data on 4 lines)
-    AT25_DEVICE_32M            = 32, ///< Fast Read Quad I/O Mode (address and data on 4 lines)
-    AT25_DEVICE_64M            = 64, ///< Fast Read Quad I/O Mode (address and data on 4 lines)
-    AT25_DEVICE_128M            = 128, ///< Fast Read Quad I/O Mode (address and data on 4 lines)
-    AT25_DEVICE_256M            = 256, ///< Fast Read Quad I/O Mode (address and data on 4 lines)
-    AT25_DEVICE_512M            = 512 ///< Fast Read Quad I/O Mode (address and data on 4 lines)
-} at25_device_t;
 typedef struct at25_cfg_s {
     spi_flash_instance_t *p_qspi;
-	at25_device_t device;
 }at25_cfg_t;
 /** SPI flash control block.  Allocate an instance specific control block to pass into the SPI flash API calls.
  */

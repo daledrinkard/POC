@@ -48,11 +48,18 @@ extern "C" {
         <property default="g_at25${_instance}" display="General|Name" id="module.driver.at25.name" description="Module name.">
             <constraint display="Name must be a valid C symbol">testSymbol("${module.driver.at25.name}")</constraint>
         </property>
-<!--        <property default="module.driver.qspi.spi_protocol.protocol_extended_spi" display="General|SPI Protocol" id="module.driver.qspi.spi_protocol" description="Select the initial SPI protocol.  SPI protocol can be changed in @ref R_QSPI_Direct().">
-            <option display="Extended SPI" id="module.driver.qspi.spi_protocol.protocol_extended_spi" value="SPI_FLASH_PROTOCOL_EXTENDED_SPI"/>
-            <option display="QPI" id="module.driver.qspi.spi_protocol.protocol_qpi" value="SPI_FLASH_PROTOCOL_QPI"/>
+        <property default="module.driver.at25.device.device_device_32MB" display="General|Device" id="module.driver.at25.device" description="Select the Device">
+            <option display="AT25xx041x (4MB)" id="module.driver.qspi.device.device_4MB" value="DEVICE_4MB"/>
+            <option display="AT25xx041x (8MB)" id="module.driver.qspi.device.device_8MB" value="DEVICE_8MB"/>
+            <option display="AT25xx041x (16MB)" id="module.driver.qspi.device.device_16MB" value="DEVICE_16MB"/>
+            <option display="AT25xx041x (32MB)" id="module.driver.qspi.device.device_32MB" value="DEVICE_32MB"/>
+            <option display="AT25xx041x (64MB)" id="module.driver.qspi.device.device_64MB" value="DEVICE_64MB"/>
+            <option display="AT25xx041x (128MB)" id="module.driver.qspi.device.device_128MB" value="DEVICE_128MB"/>
+            <option display="AT25xx041x (256MB)" id="module.driver.qspi.device.device_256MB" value="DEVICE_256MB"/>
+<!--            <option display="QPI" id="module.driver.qspi.spi_protocol.protocol_qpi" value="SPI_FLASH_PROTOCOL_QPI"/>
+-->
         </property>
-        <property default="module.driver.qspi.address_bytes.address_bytes_3" display="General|Address Bytes" id="module.driver.qspi.address_bytes" description="Select the number of address bytes. Selecting '4 with 4-byte read code' converts the default read code determined in Read Mode to the 4-byte version. If 4-byte mode is selected without using 4-byte commands, the application must issue the EN4B command using @ref R_QSPI_Direct().">
+<!--        <property default="module.driver.qspi.address_bytes.address_bytes_3" display="General|Address Bytes" id="module.driver.qspi.address_bytes" description="Select the number of address bytes. Selecting '4 with 4-byte read code' converts the default read code determined in Read Mode to the 4-byte version. If 4-byte mode is selected without using 4-byte commands, the application must issue the EN4B command using @ref R_QSPI_Direct().">
             <option display="3" id="module.driver.qspi.address_bytes.address_bytes_3" value="SPI_FLASH_ADDRESS_BYTES_3"/>
             <option display="4" id="module.driver.qspi.address_bytes.address_bytes_4" value="SPI_FLASH_ADDRESS_BYTES_4"/>
             <option display="4 with 4-byte read code" id="module.driver.qspi.address_bytes.address_bytes_4_read_code_4" value="SPI_FLASH_ADDRESS_BYTES_4_4BYTE_READ_CODE"/>
