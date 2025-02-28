@@ -202,6 +202,7 @@ extern "C" {
             extern const at25_instance_t ${module.driver.at25.name};
             extern at25_instance_ctrl_t ${module.driver.at25.name}_ctrl;
             extern const at25_cfg_t ${module.driver.at25.name}_cfg;
+			extern spi_flash_instance_t const * const gp_mcuboot_xspi_instance;
 						/** AT25 */
         </header>
         <includes>

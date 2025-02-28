@@ -12,6 +12,10 @@
 #include "r_at25.h"
 #include "r_qspi.h"
 
+
+extern spi_flash_instance_t const * const gp_mcuboot_xspi_instance;
+
+
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
@@ -22,6 +26,8 @@
  * Private function prototypes
  **********************************************************************************************************************/
 static fsp_err_t at25_sub_setup_qspi(at25_ctrl_t * p_ctrl);
+static fsp_err_t get_flash_status (void);
+
 #if AT25_CFG_PARAM_CHECKING_ENABLE
 
 static fsp_err_t r_qspi_param_checking_dcom(qspi_instance_ctrl_t * p_instance_ctrl);
@@ -213,9 +219,12 @@ fsp_err_t R_AT25_Write (at25_ctrl_t    * p_ctrl,
                         uint8_t * const       p_dest,
                         uint32_t              byte_count)
 {
+    fsp_err_t err;
     at25_instance_ctrl_t* p_at25_ctrl = (at25_instance_ctrl_t*) p_ctrl;
     qspi_instance_ctrl_t* p_qspi_ctrl = (qspi_instance_ctrl_t*) p_at25_ctrl->p_qspi->p_ctrl;
-    return p_at25_ctrl->p_qspi->p_api->write(p_qspi_ctrl,p_src,p_dest,byte_count);
+    err = p_at25_ctrl->p_qspi->p_api->write(p_qspi_ctrl,p_src,p_dest,byte_count);
+    FSP_ASSERT(FSP_SUCCESS == err);
+    return get_flash_status();
 }
 
 /*******************************************************************************************************************//**
@@ -233,9 +242,13 @@ fsp_err_t R_AT25_Write (at25_ctrl_t    * p_ctrl,
  **********************************************************************************************************************/
 fsp_err_t R_AT25_Erase (at25_ctrl_t * p_ctrl, uint8_t * const p_device_address, uint32_t byte_count)
 {
+    fsp_err_t err;
     at25_instance_ctrl_t* p_at25_ctrl = (at25_instance_ctrl_t*) p_ctrl;
     qspi_instance_ctrl_t* p_qspi_ctrl = (qspi_instance_ctrl_t*) p_at25_ctrl->p_qspi->p_ctrl;
-    return p_at25_ctrl->p_qspi->p_api->erase(p_qspi_ctrl,p_device_address,byte_count);
+    err = p_at25_ctrl->p_qspi->p_api->erase(p_qspi_ctrl,p_device_address,byte_count);
+    FSP_ASSERT(FSP_SUCCESS == err);
+    return get_flash_status();
+
 }
 
 /*******************************************************************************************************************//**
@@ -418,6 +431,33 @@ static fsp_err_t at25_sub_setup_qspi(at25_ctrl_t * p_ctrl)
     {
       return err;
     }*/
+    return err;
+}
+
+static fsp_err_t get_flash_status (void)
+{
+    spi_flash_status_t status   = {.write_in_progress = true};
+    uint32_t           time_out = (UINT32_MAX);
+    fsp_err_t          err      = FSP_SUCCESS;
+
+    do
+    {
+        /* Get status from QSPI flash device */
+        err = gp_mcuboot_xspi_instance->p_api->statusGet(gp_mcuboot_xspi_instance->p_ctrl, &status);
+        if (FSP_SUCCESS != err)
+        {
+            return err;
+        }
+
+        /* Decrement time out to avoid infinite loop in case of consistent failure */
+        --time_out;
+
+        if (0U >= time_out)
+        {
+            return FSP_ERR_TIMEOUT;
+        }
+    } while (false != status.write_in_progress);
+
     return err;
 }
 /*******************************************************************************************************************//**

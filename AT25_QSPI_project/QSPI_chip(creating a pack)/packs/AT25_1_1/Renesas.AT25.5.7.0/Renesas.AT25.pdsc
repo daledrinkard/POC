@@ -8,77 +8,7 @@
 	<releases>
 		<release version="5.7.0">5.7.0</release>
 	</releases>
-	<conditions>
-		
-  
-		<condition id="Only_CM4_and_GCC">
-			<require Dcore="Cortex-M4"/>
-			<require Tcompiler="GCC"/>
-		</condition>
-		<condition id="Only_CM4_and_IAR">
-			<require Dcore="Cortex-M4"/>
-			<require Tcompiler="IAR"/>
-		</condition>
-		<condition id="Only_CM4_and_AC6">
-			<require Dcore="Cortex-M4"/>
-			<require Tcompiler="ARMCC"/>
-		</condition>
-		<condition id="Only_CM4_and_CLANG">
-			<require Dcore="Cortex-M4"/>
-			<require Tcompiler="CLANG"/>
-		</condition>
-		<condition id="Only_CM23_and_GCC">
-			<require Dcore="Cortex-M23"/>
-			<require Tcompiler="GCC"/>
-		</condition>
-		<condition id="Only_CM23_and_IAR">
-			<require Dcore="Cortex-M23"/>
-			<require Tcompiler="IAR"/>
-		</condition>
-		<condition id="Only_CM23_and_AC6">
-			<require Dcore="Cortex-M23"/>
-			<require Tcompiler="ARMCC"/>
-		</condition>
-		<condition id="Only_CM23_and_CLANG">
-			<require Dcore="Cortex-M23"/>
-			<require Tcompiler="CLANG"/>
-		</condition>
-		<condition id="Only_CM33_and_GCC">
-			<require Dcore="Cortex-M33"/>
-			<require Tcompiler="GCC"/>
-		</condition>
-		<condition id="Only_CM33_and_IAR">
-			<require Dcore="Cortex-M33"/>
-			<require Tcompiler="IAR"/>
-		</condition>
-		<condition id="Only_CM33_and_AC6">
-			<require Dcore="Cortex-M33"/>
-			<require Tcompiler="ARMCC"/>
-		</condition>
-		<condition id="Only_CM33_and_CLANG">
-			<require Dcore="Cortex-M33"/>
-			<require Tcompiler="CLANG"/>
-		</condition>
-		<condition id="Only_CM85_and_GCC">
-			<require Dcore="Cortex-M85"/>
-			<require Tcompiler="GCC"/>
-		</condition>
-		<condition id="Only_CM85_and_IAR">
-			<require Dcore="Cortex-M85"/>
-			<require Tcompiler="IAR"/>
-		</condition>
-		<condition id="Only_CM85_and_AC6">
-			<require Dcore="Cortex-M85"/>
-			<require Tcompiler="ARMCC"/>
-		</condition>
-		<condition id="Only_CM85_and_CLANG">
-			<require Dcore="Cortex-M85"/>
-			<require Tcompiler="CLANG"/>
-		</condition>
-	</conditions>
 	<components>
-		
-  
 		<component Cvendor="Renesas" Cclass="HAL Drivers" Cgroup="all" Csub="r_at25" Cversion="5.7.0">
 			<description>Quad Serial Peripheral Interface Flash</description>
 			<files>
