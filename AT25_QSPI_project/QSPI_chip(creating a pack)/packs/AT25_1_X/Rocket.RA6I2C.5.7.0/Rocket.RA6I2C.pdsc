@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<package xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="1.7.2" xs:noNamespaceSchemaLocation="PACK.xsd">
+  <vendor>Rocket</vendor>
+  <name>RA6I2C</name>
+  <description>Rocket man board</description>
+  <url>www.rocket1.com</url>
+  <supportContact>dale</supportContact>
+  <license>fred</license>
+  <releases>
+    <release version="5.7.0">5.7.0</release>
+  </releases>
+  <components>
+    <component Cclass="BSP" Cgroup="Board" Csub="Documented" Cvendor="Rocket" Cversion="5.7.0" condition="">
+      <description/>
+      <files>
+        <file category="header" condition="" name="ra/board/rocadoodle/board.h" version="5.7.0"/>
+      </files>
+    </component>
+  </components>
+</package>

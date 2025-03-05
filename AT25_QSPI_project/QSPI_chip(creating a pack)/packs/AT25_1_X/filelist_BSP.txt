@@ -1,0 +1,5 @@
+.module_descriptions
+ra
+Rocket.I2C.pdsc
+toolingSupport.xml
+userpackexportsettings.xml

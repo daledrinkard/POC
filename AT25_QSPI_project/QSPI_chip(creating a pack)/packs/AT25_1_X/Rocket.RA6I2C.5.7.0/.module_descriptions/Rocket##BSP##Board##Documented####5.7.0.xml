@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<raModuleDescription>
+  <config id="config.board.rocadoodle" path="fsp_cfg/bsp/board_cfg.h" version="0">
+    <content>#include "../../../ra/board/rocadoodle/board.h"</content>
+  </config>
+  <board config="config.board.rocadoodle" device="R7FA6M5BH3CFC" display="Rocadoodle" id="board.rocadoodle" version="0"/>
+</raModuleDescription>

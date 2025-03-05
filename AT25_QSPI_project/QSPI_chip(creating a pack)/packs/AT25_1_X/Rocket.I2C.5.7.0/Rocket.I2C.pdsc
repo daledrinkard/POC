@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<package xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="1.7.2" xs:noNamespaceSchemaLocation="PACK.xsd">
+  <vendor>Rocket</vendor>
+  <name>I2C</name>
+  <description/>
+  <url/>
+  <supportContact/>
+  <license/>
+  <releases>
+    <release version="5.7.0">5.7.0</release>
+  </releases>
+  <components>
+    <component Cclass="BSP" Cgroup="Board" Cvendor="Rocket" Cversion="5.7.0" Csub="DOC_INCLUDED" condition="">
+      <description/>
+      <files>
+        <file category="header" condition="" name="ra/board/rocket_ra6/board.h" version="5.7.0"/>
+      </files>
+    </component>
+  </components>
+</package>

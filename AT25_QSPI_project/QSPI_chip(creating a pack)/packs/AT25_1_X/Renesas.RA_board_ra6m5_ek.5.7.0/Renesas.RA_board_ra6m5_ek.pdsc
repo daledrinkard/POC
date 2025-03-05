@@ -1,0 +1,26 @@
+<?xml version="1.0" ?>
+<package xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="1.2" xs:noNamespaceSchemaLocation="PACK.xsd">
+	<vendor>Renesas</vendor>
+	<name>RA_board_ra6m5_ek</name>
+	<description>CMSIS Pack for Renesas Flexible Software Package (FSP) RA6M5-EK Board</description>
+	<url>www.renesas.com</url>
+	<supportContact/>
+	<releases>
+		<release version="5.7.0">5.7.0</release>
+	</releases>
+	<components>
+		
+  
+		<component Cvendor="Renesas" Cclass="BSP" Cgroup="Board" Csub="ra6m5_ek" Cversion="5.7.0">
+			<description>RA6M5-EK Board Support Files</description>
+			<files>
+				<file category="header" name="ra/board/ra6m5_ek/board.h" version="5.7.0" condition="" select=""/>
+				<file category="header" name="ra/board/ra6m5_ek/board_ethernet_phy.h" version="5.7.0" condition="" select=""/>
+				<file category="source" name="ra/board/ra6m5_ek/board_init.c" version="5.7.0" condition="" select=""/>
+				<file category="header" name="ra/board/ra6m5_ek/board_leds.h" version="5.7.0" condition="" select=""/>
+				<file category="header" name="ra/board/ra6m5_ek/board_init.h" version="5.7.0" condition="" select=""/>
+				<file category="source" name="ra/board/ra6m5_ek/board_leds.c" version="5.7.0" condition="" select=""/>
+			</files>
+		</component>
+	</components>
+</package>

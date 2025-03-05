@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<raModuleDescription>
+  <config id="config.board.rocket_ra6" path="fsp_cfg/bsp/board_cfg.h" version="0">
+    <content>#include "../../../ra/board/rocket_ra6/board.h"</content>
+  </config>
+  <board config="config.board.rocket_ra6" device="R7FA6M5BH3CFC" display="Rocket_RA6" id="board.rocket_ra6" version="0"/>
+</raModuleDescription>
