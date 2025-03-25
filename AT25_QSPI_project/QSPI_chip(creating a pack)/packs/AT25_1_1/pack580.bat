@@ -4,6 +4,7 @@ color 0A
 set packs7="C:\Users\daled\.eclipse\com.renesas.platform_1832973377\internal\projectgen\ra\packs\"
 set modules7="C:\Users\daled\.eclipse\com.renesas.platform_1832973377\internal\projectgen\ra\modules\"
 set xml8="Renesas##HAL Drivers##all##r_at25####5.8.0.xml"
+set mdf8="%modules7%%xml8%"
 
 cls
 echo "press space to remove 5.8.0 pack from e2studio 2025-1 support area pack folder"
@@ -11,7 +12,8 @@ pause
 del /Q %packs7%"Renesas.AT25.5.8.0.pack"
 echo "press space to remove the module description from the from e2studio 2025-1 support area modules folder"
 pause
-del /Q "%modules7%%xml8%"
+rem del /Q "%modules7%%xml8%"
+del /Q "%mdf8%"
 
 echo "press space to remove the pack file from the e2studio 2025-1 install folders"
 pause
