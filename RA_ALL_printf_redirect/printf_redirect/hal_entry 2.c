@@ -1,3 +1,10 @@
+/*  LLVM
+
+  This is from Ian and shows how to implement printf redirect when using LLVM compiler.
+  
+  
+*/
+
 #include "hal_data.h"
 #include <stdio.h>
 #include <sys/stat.h>
