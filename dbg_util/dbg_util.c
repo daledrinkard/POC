@@ -7,8 +7,15 @@
 
 #include "dbg_util.h"
 
+static volatile uint32_t dbg_flags;
 fa_t fa;
 char print_buffer[1024];
+#if DBG_USE_DBG_LOOP
+void SW1_cb(external_irq_callback_args_t * p_args);
+void SW2_cb(external_irq_callback_args_t * p_args);
+external_irq_callback_args_t SW1_args;
+external_irq_callback_args_t SW2_args;
+#endif
 /*
  *   PUBLIC
  */
@@ -147,3 +154,34 @@ char *dbg_swap_type(int i)
     }
     else return D_swap[6];
 }
+#if DBG_USE_DBG_LOOP
+void dbg_loop(void)
+{
+    volatile fsp_err_t status = 0;
+    status |= R_ICU_ExternalIrqOpen(&g_SW1_irq_ctrl, &g_SW1_irq_cfg);
+    status |= R_ICU_ExternalIrqOpen(&g_SW2_irq_ctrl, &g_SW2_irq_cfg);
+    status |= R_ICU_ExternalIrqCallbackSet(&g_SW1_irq_ctrl, &SW1_cb, NULL, &SW1_args);
+    status |= R_ICU_ExternalIrqCallbackSet(&g_SW2_irq_ctrl, &SW2_cb, NULL, &SW2_args);
+    status |= R_ICU_ExternalIrqEnable(&g_SW1_irq_ctrl);
+    status |= R_ICU_ExternalIrqEnable(&g_SW2_irq_ctrl);
+while(status != 0){}
+    printf("\nPress SW1 to refresh SW2 to boot\n");
+    do {
+        dbg_flags = 0x00000000;
+        printf("Flash grid (4k):\n");
+        dbg_print_grid((uint32_t*) 0x00000000,1024*4,32,16);
+        printf("QSPI grid (32k):\n");
+        dbg_print_grid((uint32_t*) 0x60000000,(1024*32),32,16);
+        while((dbg_flags & 0x00000003) == 0);
+    } while((dbg_flags & 0x00000002) == 0);
+}
+
+void SW1_cb(external_irq_callback_args_t * p_args)
+{
+    dbg_flags |= 0x00000001;
+}
+void SW2_cb(external_irq_callback_args_t * p_args)
+{
+    dbg_flags |= 0x00000002;
+}
+#endif

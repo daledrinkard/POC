@@ -9,6 +9,7 @@
 #define DBG_UTIL_H_
 
 #include "hal_data.h"
+#include "dbg_util_config.h"
 #include "flash_map_backend/flash_map_backend.h"
 
 typedef struct flash_area fa_t;
@@ -20,5 +21,7 @@ void dbg_print_grid(uint32_t *p,uint32_t sector_size,uint32_t sectors,uint32_t r
 void dbg_print_fmap(fa_t *p_f);
 void dbg_print_rsp_header(struct boot_rsp *p_rsp);
 char *dbg_swap_type(int i);
-
+#if DBG_USE_DBG_LOOP
+void dbg_loop(void);
+#endif
 #endif /* DBG_UTIL_H_ */
