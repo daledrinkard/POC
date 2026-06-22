@@ -10,7 +10,7 @@
  *   This is a port for the App console on RA using FSP HAL drivers for communications
  */
 
-
+#include "application_common.h"
 #include "console_port.h"
 #if   (0 == BSP_CFG_RTOS) /* Bare METAL */
 #include "hal_data.h"
@@ -109,7 +109,7 @@ static int RA_uart_read(char* data,int len, void *ctx)
 //@@@
 void RA_console_cb(uart_callback_args_t *p_args)
 {
-#if (BSP_CFG_RTOS == CONSOLE_CONFIG_RTOS_FREERTOS)
+#if (BSP_CFG_RTOS == APPCFG_RTOS_FREERTOS)
     BaseType_t xHigherPriorityTaskWoken, xResult;
     xHigherPriorityTaskWoken = pdFALSE;
 #endif
@@ -119,20 +119,20 @@ void RA_console_cb(uart_callback_args_t *p_args)
         case UART_EVENT_RX_COMPLETE:   // = (1UL << 0), ///< Receive complete event
             break;
         case UART_EVENT_TX_COMPLETE:   // = (1UL << 1), ///< Transmit complete event
-#if   (CONSOLE_CONFIG_RTOS_NONE == BSP_CFG_RTOS) /* Bare METAL */
+#if   (APPCFG_RTOS_NONE == BSP_CFG_RTOS) /* Bare METAL */
             Console.flags &= (uint32_t) ~CONSOLE_FLAG_TX_BUSY;
-#elif (CONSOLE_CONFIG_RTOS_AZURE == BSP_CFG_RTOS) /* Azure */
+#elif (APPCFG_RTOS_AZURE == BSP_CFG_RTOS) /* Azure */
     tx_semaphore_ceiling_put(&g_console_sema,1);
-#elif (CONSOLE_CONFIG_RTOS_FREERTOS == BSP_CFG_RTOS) /* Fee RTOS */
+#elif (APPCFG_RTOS_FREERTOS == BSP_CFG_RTOS) /* Fee RTOS */
 #error needs implementing
-#elif (CONSOLE_CONFIG_RTOS_ZEPHYR == BSP_CFG_RTOS) /* Zephyr */
+#elif (APPCFG_RTOS_ZEPHYR == BSP_CFG_RTOS) /* Zephyr */
 #error needs implementing
 #endif
             break;
         case UART_EVENT_RX_CHAR:       // = (1UL << 2), ///< Character received
             //process_rxchar(p_args->data);
             switch ((char) p_args->data) {
-                case '\n': h=CONSOLE_LF_EVENT;
+                case '\n': h = CONSOLE_EVENT_LF;
 #if CONSOLE_CONFIG_COMMAND_MODE
                 Console.rx_buffer[Console.rx_idx] = 0;
                 Console.cb(h,(void*) Console.rx_buffer);           /* pass the completed input buffer */
@@ -147,15 +147,15 @@ void RA_console_cb(uart_callback_args_t *p_args)
                         Console.rx_idx--;
                     }
                     break;
-                default: h=CONSOLE_CHAR_EVENT;
+                default: h = CONSOLE_EVENT_CHAR;
                 if (Console.flags & CONSOLE_FLAG_ECHO)
                 {
 
                 }
-#if CONSOLE_CONFIG_COMMAND_MODE
+#if CONSOLE_CONFIG_COMMAND_MODE /* in command mode we collect characters until a CR and then return a pointer to that string */
                 Console.rx_buffer[Console.rx_idx] = (char) p_args->data;
                 Console.rx_idx = (Console.rx_idx < (Console.rx_size - 1)) ? Console.rx_idx + 1 : Console.rx_idx;
-#else
+#else                           /* if not in command mode, every character is sent to the callback function */
                          RA_console.cb(h,(void*) &p_args->data);
 #endif
             }
@@ -171,15 +171,15 @@ void RA_console_cb(uart_callback_args_t *p_args)
         // = (1UL << 6), ///< Break detect error event
             Console.flags |= (uint32_t) ((p_args->event & 0x000000FF) << 24) | CONSOLE_FLAG_ERROR; /* set an error flag */
 
-#if (CONSOLE_CONFIG_RTOS_AZURE == BSP_CFG_RTOS) /* Azure */
+#if (APPCFG_RTOS_AZURE == BSP_CFG_RTOS) /* Azure */
             tx_semaphore_ceiling_put(Console.tx_done_sema,1); //@@@ this needs to be to local sema
-#elif (CONSOLE_CONFIG_RTOS_FREERTOS == BSP_CFG_RTOS) /* Fee RTOS */
+#elif (APPCFG_RTOS_FREERTOS == BSP_CFG_RTOS) /* Fee RTOS */
 #error needs implementing
-#elif (CONSOLE_CONFIG_RTOS_ZEPHYR == BSP_CFG_RTOS) /* Zephyr */
+#elif (APPCFG_RTOS_ZEPHYR == BSP_CFG_RTOS) /* Zephyr */
 #error needs implementing
 #endif
     }
-#if (CONSOLE_CONFIG_RTOS_FREERTOS == BSP_CFG_RTOS)
+#if (APPCFG_RTOS_FREERTOS == BSP_CFG_RTOS)
     xResult = xEventGroupClearBitsFromISR or something...
     if( xResult != pdFAIL )
     {

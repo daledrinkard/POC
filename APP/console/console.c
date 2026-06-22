@@ -121,12 +121,8 @@ int console_Exec(char* s)
 }
 int console_UpdatePane(console_pane_t *pane)
 {
-    //!!console_pane_t *p = pane;
     console_data_t *d = pane->datalist;
     char *q;
-    //!!int i;
-    //!!uint32_t xi;
-    //!!i=0;
     q = &tmb[16];
 
     while(d->w != 0)
@@ -145,7 +141,6 @@ int console_UpdatePane(console_pane_t *pane)
             case CONSOLE_DATA_STRING:
                 break;
         }
-        //sprintf(sprintf_buffer,"")
         d++;
     }
     return 0;

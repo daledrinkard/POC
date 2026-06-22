@@ -27,10 +27,10 @@
  */
 typedef enum e_console_events
 {
-  CONSOLE_NULL_EVENT = 0,
-  CONSOLE_LF_EVENT = 1,
-  CONSOLE_CHAR_EVENT = 2,
-  CONSOLE_STRING_EVENT = 3
+  CONSOLE_EVENT_NULL = 0,
+  CONSOLE_EVENT_LF = 1,
+  CONSOLE_EVENT_CHAR = 2,
+  CONSOLE_EVENT_STRING = 3
 } console_event_t;
 typedef enum e_console_data_type_s
 {
