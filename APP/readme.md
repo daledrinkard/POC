@@ -32,3 +32,4 @@ The ***application.c*** code is modified to blink the leds at a rate and pattern
 | APP_HAS_CMD_SHELL     | (0) |  application project has a command intrepreter   |  
 | APP_HAS_DEBUG_IO      | (0) |  application project embeds POP, DROP and TOG    |  
 
+Consult the how_to_use.md file for instructions on how to use these files and folders.  
