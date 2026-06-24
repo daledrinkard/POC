@@ -13,9 +13,6 @@ These macros define what components this application has.  For the **base_app** 
 | APP_HAS_CONSOLE       | (0) |  application project has a console               |  
 | APP_HAS_CMD_SHELL     | (0) |  application project has a command intrepreter   |  
 | APP_HAS_DEBUG_IO      | (0) |  application project embeds POP, DROP and TOG    |  
-  
-  
-
 |                       |     |  this is useful in debugging with logic analyzer |  
-
+  
 
