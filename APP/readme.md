@@ -16,6 +16,7 @@ It allows users to manipulate the led blink parameters at runtime using the debu
 - Copy folders into src.  
 - Consult the **APP_HAS_xxx** configuration options in application_common.h.  
 For the following \#defines that are (1), add these folders to the src folder:  
+
 | macro                |  folder to add         | comments                                 |  
 | -------------------- | ---------------------- | ---------------------------------------- |  
 | APP_HAS_CONTROLPANEL |  $project/CPAN         | panels are application specific          |  
