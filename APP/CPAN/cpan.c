@@ -1,11 +1,8 @@
 /*
- * cpan.c
- *
- *  Created on: Dec 13, 2025
- *      Author: daled
- */
-/*
- *   This is a control panel foe the AiZip LPR project
+ *        CPAN.C
+ *  
+ *  Control Panel for Blinky projects.
+ *  
  */
 #include "cpan.h"
 volatile cpan_t ControlPanel = {0};

@@ -1,8 +1,8 @@
 /*
  * console_config.h
  *
- *  Created on: Aug 5, 2025
- *      Author: daled
+ *  Configuration for the console
+ *
  */
 
 #ifndef CONSOLE_CONSOLE_CONFIG_H_

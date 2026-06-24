@@ -1,9 +1,4 @@
-/*
- * console_port.c
- *
- *  Created on: Aug 5, 2025
- *      Author: daled
- */
+
 /*
  *   CONSOLE_PORT.C
  *

@@ -43,15 +43,14 @@ const cpan_t control_panel_initial = {
         .stat = 0,
         .event = 0,
         .regs = {0},
+        /* USER */
         .leds = &g_bsp_leds  /* add the led structure */
 };
 
 void app_entry(void) {
 	R_BSP_PinAccessEnable();
 	memcpy(&App,&app_initial,sizeof(app_t)); /* initialize the app */
-#if APP_HAS_CONTROLPANEL	
 	CP = CPAN_open(&control_panel_initial);  /* open the control panel */
-#endif	
 #if APP_HAS_CONSOLE
     CN = RA_console_init("CON1", &g_console_uart, Console_callback, NULL);
 #endif		
@@ -83,6 +82,17 @@ void app_entry(void) {
                         }
                     }
                     CP->led_state ^= CP->regs[1]; // toggle the bits that are enabled
+#if APP_HAS_CONSOLE						
+                    if (App.events & SYSFLG_CONSOLE_DATA)
+                    {
+                        /* USER code */
+                        /* at this point, data has been input through the console and is accessed by CP->p_console_string */
+                        /* the default action is to execute this string a a command */
+                        console_Exec(CP->p_console_string);
+						App.events &= (uint32_t) ~SYSFLG_CONSOLE_DATA;
+                    }
+                    CPAN_POLL  /* service the control panel (if there is one) */
+#endif
                     R_BSP_SoftwareDelay(CP->regs[0], BSP_DELAY_UNITS_MILLISECONDS);
                 } while(App.state == APP_STATE_RUNNING);
                 break;
@@ -137,20 +147,24 @@ void Console_callback(console_event_t event, void *ctx)
 {
     // callback from console.
     switch(event) {
-        case CONSOLE_NULL_EVENT:
+        case CONSOLE_EVENT_NULL: /* The console has nothing to say */
             break;
-        case CONSOLE_LF_EVENT:
+        case CONSOLE_EVENT_LF:  /* The Enter key was pressed.  ctx points to a null terminated string of characters */
             CP->p_console_string = (char*) ctx;
-#if   (0 == BSP_CFG_RTOS) /* Bare METAL */
-            CP->event |= CPAN_EVENT_CONSOLE;
-#elif (1 == BSP_CFG_RTOS) /* Azure */
-            tx_event_flags_set(&g_system_event,SYSFLG_CONSOLE,TX_OR);
-#elif (2 == BSP_CFG_RTOS) /* Fee RTOS */
+#if   (BSP_CFG_RTOS == APPCFG_RTOS_NONE) /* Bare METAL */
+            App.events |= SYSFLG_CONSOLE_DATA;
+#elif (BSP_CFG_RTOS == APPCFG_RTOS_AZURE) /* Azure */
+            tx_event_flags_set(&App.events,SYSFLG_CONSOLE_DATA,TX_OR);
+#elif (BSP_CFG_RTOS == APPCFG_RTOS_FREERTOS) /* Fee RTOS */
 #error needs implementing
-#elif (3 == BSP_CFG_RTOS) /* Zephyr */
+#elif (BSP_CFG_RTOS == APPCFG_RTOS_ZEPHYR) /* Zephyr */
 #error needs implementing
 #endif
 
+            break;
+        case CONSOLE_EVENT_CHAR:
+         /* A single character is returned from the uart */
+            /* USER */
             break;
         default:;
     }

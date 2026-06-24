@@ -1,8 +1,5 @@
 /*
  * console.c
- *
- *  Created on: Aug 5, 2025
- *      Author: daled
  */
 #include "application_common.h"
 #include "console.h"

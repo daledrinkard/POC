@@ -5,11 +5,9 @@
 
 #define APP_HAS_DEBUG_IO     (0)  /* adds the ability to POP, DROP and TOG gpio pins for logic analyzer debugging */
 #define APP_HAS_CONTROLPANEL (1)  /* adds a control panel for runtime manipulation of components */
-#define APP_HAS_CONSOLE      (0)  /* adds a console to support prints to UART and input command parsing */
+#define APP_HAS_CONSOLE      (1)  /* adds a console to support prints to UART and input command parsing */
 #define APP_HAS_CMD_SHELL    (0)  /* adds a command shell to support runtime commands */
 
-//!!
-#include "hal_data.h"
 
 #if APP_HAS_CONSOLE
 #include "console/console_port.h"
@@ -31,10 +29,15 @@
 //-->#define APPCFG_BUILD_xxx       (1)
 
 /* BUILD CONFIGURATION OPTIONS */
-//-->#define APPCFG_xxx             (1)
+#define APPCFG_RTOS_NONE     (0)
+#define APPCFG_RTOS_AZURE    (1)
+#define APPCFG_RTOS_FREERTOS (2)
+#define APPCFG_RTOS_ZEPHYR   (3)
+#define APPCFG_RTOS          ( BSP_CFG_RTOS)
+//-->#define APPCFG_xxx
 
-/* define buffer placements */
-//-->#define APPCFG_ATTRIB_xxx     BSP_ALIGN_VARIABLE(16) BSP_PLACE_IN_SECTION(".sdram")          //@@@ BSP_PLACE_IN_SECTION(".ram_nocache")
+/* ATTRIBUTES  */
+//-->#define APPCFG_ATTRIB_xxx                BSP_ALIGN_VARIABLE(16) BSP_PLACE_IN_SECTION(".sdram")         
 
 /* define attributes of the system */
 //-->#define APPCFG_USB_IDLE_SLEEP  (100)  /* how many ticks to sleep whilst waiting to be told to start or check for detach */
@@ -53,7 +56,7 @@ typedef enum app_state_e {
     APP_STATE_RUNNING,
     APP_STATE_RESTART,
     APP_STATE_ERROR,
-	APP_STATE_SLEEP
+    APP_STATE_SLEEP
 } app_state_t;
 
 
@@ -68,16 +71,16 @@ typedef enum app_state_e {
 /* application context */
 typedef struct s_app {
     app_state_t state;
-#if   (0 == BSP_CFG_RTOS) /* Bare METAL */
+#if   (BSP_CFG_RTOS == APPCFG_RTOS_NONE) /* Bare METAL */
     uint32_t events;
-#elif (1 == BSP_CFG_RTOS) /* Azure */
+#elif (BSP_CFG_RTOS  == APPCFG_RTOS_AZURE) /* Azure */
 #error needs implementing
-#elif (2 == BSP_CFG_RTOS) /* Fee RTOS */
+#elif (BSP_CFG_RTOS == APPCFG_RTOS_FREERTOS) /* Fee RTOS */
 #error needs implementing
-#elif (3 == BSP_CFG_RTOS) /* Zephyr */
+#elif (BSP_CFG_RTOS == APPCFG_RTOS_ZEPHYR) /* Zephyr */
 #error needs implementing
 #endif	
-   /* USER FIELDS */
+   /* USER FIELDS */	
 } app_t;
 extern app_t App;
 

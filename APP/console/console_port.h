@@ -1,18 +1,10 @@
 /*
  * console_port.h
- *
- *  Created on: Aug 5, 2025
- *      Author: daled
  */
 
 #ifndef CONSOLE_CONSOLE_PORT_H_
 #define CONSOLE_CONSOLE_PORT_H_
-
-
-
-
 #include "console.h"
-
 #if   (0 == BSP_CFG_RTOS) /* Bare METAL */
     #include "hal_data.h"
 #elif (1 == BSP_CFG_RTOS) /* Azure */

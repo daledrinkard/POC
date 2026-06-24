@@ -15,11 +15,12 @@
 
 #define CPAN_NUM_OF_REGS          (2)
 #define CPAN_STAT_UPDATE          (0x00000001)
-/* USER DEFINE */
-
+#define CPAN_STAT_RESTART_APP     (0x00000002)
 #if APP_HAS_CONSOLE
 #define CPAN_EVENT_CONSOLE        (0x00000001)
 #endif
+/* USER DEFINE */
+
 
 #if APP_HAS_CMD_SHELL
 extern char** CPAN_stat_str;    /* these are text names for bits that are used in the commands */
