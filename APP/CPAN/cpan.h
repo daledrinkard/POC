@@ -16,9 +16,6 @@
 #define CPAN_NUM_OF_REGS          (2)
 #define CPAN_STAT_UPDATE          (0x00000001)
 #define CPAN_STAT_RESTART_APP     (0x00000002)
-#if APP_HAS_CONSOLE
-#define CPAN_EVENT_CONSOLE        (0x00000001)
-#endif
 /* USER DEFINE */
 
 
@@ -30,7 +27,6 @@ extern char** CPAN_udpate_str;
 typedef struct cpan_s {
 
     uint32_t stat;
-    uint32_t event;
     uint32_t regs[CPAN_NUM_OF_REGS];
 #if APP_HAS_CONSOLE
     char *p_console_string;
