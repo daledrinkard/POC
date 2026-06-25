@@ -18,5 +18,5 @@ pre-defined bits:
 The following commands are implemented in **CP_commands.c** (console required)  
 - **stat**  displays the current value of stat  
 - **stat** [S|C] *value* sets or clears the bits in value  
-- **creg** X [*value* ] read or write creg[X]  
+- **creg** X [*value* ] read or write creg\[X]  
 
