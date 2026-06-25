@@ -32,8 +32,8 @@ typedef struct cpan_s {
     char *p_console_string;
 #endif
     /* USER SECTION */
-    //--> bsp_leds_t *leds;
-    //--> uint32_t led_state;	
+    bsp_leds_t *leds;
+    uint32_t led_state;	
 }cpan_t;
 
 extern volatile cpan_t ControlPanel;
