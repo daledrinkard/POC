@@ -29,6 +29,11 @@
 //-->#define APPCFG_BUILD_xxx       (1)
 
 /* BUILD CONFIGURATION OPTIONS */
+#define APPCFG_RTOS_NONE     (0)
+#define APPCFG_RTOS_AZURE    (1)
+#define APPCFG_RTOS_FREERTOS (2)
+#define APPCFG_RTOS_ZEPHYR   (3)
+#define APPCFG_RTOS          ( BSP_CFG_RTOS)
 //-->#define APPCFG_xxx             (1)
 
 /* define buffer placements */
@@ -38,12 +43,22 @@
 //-->#define APPCFG_USB_IDLE_SLEEP  (100)  /* how many ticks to sleep whilst waiting to be told to start or check for detach */
 
 /*  SYSTEM FLAG DEFINITIONS */
+#define SYSFLG_APP_RESTART (0x00000001)
 #if APP_HAS_CONSOLE
-#define SYSFLG_CONSOLE_DATA (0x00000001)
+#define SYSFLG_CONSOLE_DATA (0x00000002)
 #endif
 
 //-->#define SYSFLG_xxx    (0x00000001)
-
+#if APP_HAS_CMD_SHELL
+const char* APP_SYSFLG_ansi[] = {
+	"APP RESTART",
+#if APP_HAS_CONSOLE
+    "CONSOLE DATA",
+#endif
+/* USER */
+    NULL
+};
+#endif
 
 /* APPLICATION STATE MACHINE */
 typedef enum app_state_e {
@@ -67,13 +82,13 @@ typedef enum app_state_e {
 /* application context */
 typedef struct s_app {
     app_state_t state;
-#if   (0 == BSP_CFG_RTOS) /* Bare METAL */
+#if   (APPCFG_RTOS_NONE == APPCFG_RTOS) /* Bare METAL */
     uint32_t events;
-#elif (1 == BSP_CFG_RTOS) /* Azure */
+#elif (APPCFG_RTOS_AZURE == APPCFG_RTOS) /* Azure */
 #error needs implementing
-#elif (2 == BSP_CFG_RTOS) /* Fee RTOS */
+#elif (APPCFG_RTOS_FREERTOS == APPCFG_RTOS) /* Fee RTOS */
 #error needs implementing
-#elif (3 == BSP_CFG_RTOS) /* Zephyr */
+#elif (APPCFG_RTOS_ZEPHYR == APPCFG_RTOS) /* Zephyr */
 #error needs implementing
 #endif	
    /* USER FIELDS */

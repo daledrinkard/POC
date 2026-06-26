@@ -8,13 +8,13 @@
 */
 #include "application_common.h"
 
-#if   (0 == BSP_CFG_RTOS) /* Bare METAL */
+#if   (APPCFG_RTOS_NONE == APPCFG_RTOS) /* Bare METAL */
 #include "hal_data.h"
-#elif (1 == BSP_CFG_RTOS) /* Azure */
+#elif (APPCFG_RTOS_AZURE == APPCFG_RTOS) /* Azure */
 #include "app_thread.h"
-#elif (2 == BSP_CFG_RTOS) /* Fee RTOS */
+#elif (APPCFG_RTOS_FREERTOS == APPCFG_RTOS) /* Fee RTOS */
 #include "app_thread.h"
-#elif (3 == BSP_CFG_RTOS) /* Zephyr */
+#elif (APPCFG_RTOS_ZEPHYR == APPCFG_RTOS) /* Zephyr */
 #include "app_thread.h"
 #endif
 
@@ -94,6 +94,12 @@ void app_entry(void) {
                     CPAN_POLL  /* service the control panel (if there is one) */
 #endif
                     R_BSP_SoftwareDelay(CP->regs[0], BSP_DELAY_UNITS_MILLISECONDS);
+                    if (App.events & SYSFLG_APP_RESTART)
+                    {
+                        App.state = APP_STATE_RESTART;
+                        App.events &= (uint32_t) ~SYSFLG_APP_RESTART;
+                    }
+					
                 } while(App.state == APP_STATE_RUNNING);
                 break;
             case APP_STATE_RESTART: /* shut down things and restart */
