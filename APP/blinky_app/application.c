@@ -41,7 +41,6 @@ extern bsp_leds_t g_bsp_leds;
 cpan_t *CP;
 const cpan_t control_panel_initial = { 
         .stat = 0,
-        .event = 0,
         .regs = {0},
         /* USER */
         .leds = &g_bsp_leds  /* add the led structure */

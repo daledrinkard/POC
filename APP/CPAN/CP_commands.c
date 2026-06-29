@@ -2,7 +2,7 @@
  * CP_commands.c
  *
  *  Commands for Control Panel
- * 
+ *
  */
 #include "application_common.h"
 #if APP_HAS_CMD_SHELL
@@ -11,9 +11,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "cpan.h"
+#include "CPAN/cpan.h"
 extern char command_buffer[];
 extern volatile cpan_t ControlPanel;
+
+
 static int CP_stat(char** args);
 static int CP_creg(char** args);
 static int CP_rst(char** args);
@@ -24,31 +26,20 @@ const command_t CP_cmds[] =
   {"creg",&CP_creg,"creg reg value"},
   {0,0,0}
 };
-const char* CPAN_STAT_ansi[] = {
-  "UPDATE ",
-  "RESTART ",
-  NULL
-  };
+
 static void exCP_stat_identify(void);
+volatile uint32_t peter1;
 static int CP_stat(char** args)  /* stat s value | c value | r */
 {
     uint32_t v;
     uint32_t flags = ControlPanel.stat;
-    if (args[1] == NULL) /*read*/
+    if (args[1] == NULL) /*read as a hex value*/
     {
         console_Print("\nstat flags:");
-        int i=0;
-        do
-        {
-            if ((1<<i) & flags)
-            {
-                console_Print("\n  ");
-                console_Print((char*) CPAN_STAT_ansi[i]);
-            }
-            i++;
-        } while (CPAN_STAT_ansi[i] != NULL);
+        sprintf(command_buffer,"0x%08X\n",flags);
+        console_Print(command_buffer);
     }
-    else /* write*/
+    else
     {
         if (NULL == args[2]) /* these options have no argument */
         {
@@ -58,7 +49,8 @@ static int CP_stat(char** args)  /* stat s value | c value | r */
             }
             return -1;
         }
-        v = (uint32_t) strtol(args[2],NULL,16);
+        v = (uint32_t) strtoul(args[2],NULL,16);
+        peter1 = v;
         switch (args[1][0]) {
         case 's':
         case 'S': ControlPanel.stat |= v; break;
@@ -70,19 +62,41 @@ static int CP_stat(char** args)  /* stat s value | c value | r */
 }
 static void exCP_stat_identify(void)
 {
-    int i=0;
-    do
+    bool found;
+    uint32_t flags = ControlPanel.stat;
+    for(int i=0;i<32;i++) /* look at every bit */
     {
-        sprintf(command_buffer,"(%08X) %s\n",(1 << i),CPAN_STAT_ansi[i]);
-        console_Print(command_buffer);
-        i++;
-    } while (CPAN_STAT_ansi[i] != NULL);
+        found = false;
+        if (flags & (1 << i))
+        {
+            console_Print("\n  ");
+            int j=0;
+            do
+            {
+                if (CPAN_stat_str[j].val & (1 << i))
+                {
+                    console_Print((char*) CPAN_stat_str[j].str);
+                    found = true;
+                }
+                else
+                {
+                    j++;
+                }
+            } while ( !found && (CPAN_stat_str[j].val > 0));
+            if (!found)
+            {
+                sprintf(command_buffer,"(0x%08X)", (1 << i));
+                console_Print(command_buffer);
+            }
+        }
+    }
+
 }
 static int CP_creg(char** args)
 {
     uint32_t V;
     if (NULL == args[1]) return -1;
-    uint32_t R = strtol(args[1],NULL,10);
+    uint32_t R = (uint32_t) strtoul(args[1],NULL,10);
     if (R > CPAN_NUM_OF_REGS) return -1;
     if (NULL == args[2])
     {
@@ -91,17 +105,17 @@ static int CP_creg(char** args)
         return 0;
     }
     if ((args[2][1] == 'x') || (args[2][1] == 'X'))
-      V = strtol(args[2],NULL,16);
+      V = (uint32_t) strtoul(args[2],NULL,16);
     else
-      V = strtol(args[2],NULL,10);
+      V = strtoul(args[2],NULL,10);
     ControlPanel.regs[R] = V;
     return 0;
 }
 static int CP_rst(char** args)
 {
     FSP_PARAMETER_NOT_USED(args);
-    ControlPanel.stat |= CPAN_STAT_RESTART_APP;
+    NVIC_SystemReset();
     return 0;
 }
-#endif // APP_HAS_CMD_SHELL 
+#endif // APP_HAS_CMD_SHELL
 

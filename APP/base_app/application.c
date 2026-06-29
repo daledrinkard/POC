@@ -1,17 +1,15 @@
 /*
-         APPLICATION.C
-		 
-    Base app_entry() for application development
+  BASE application.
 */
 #include "application_common.h"
 
-#if   (APPCFG_RTOS_NONE == APPCFG_RTOS) /* Bare METAL */
+#if   (0 == BSP_CFG_RTOS) /* Bare METAL */
 #include "hal_data.h"
-#elif (APPCFG_RTOS_AZURE == APPCFG_RTOS) /* Azure */
+#elif (1 == BSP_CFG_RTOS) /* Azure */
 #include "app_thread.h"
-#elif (APPCFG_RTOS_FREERTOS == APPCFG_RTOS) /* Fee RTOS */
+#elif (2 == BSP_CFG_RTOS) /* Fee RTOS */
 #include "app_thread.h"
-#elif (APPCFG_RTOS_ZEPHYR == APPCFG_RTOS) /* Zephyr */
+#elif (3 == BSP_CFG_RTOS) /* Zephyr */
 #include "app_thread.h"
 #endif
 
@@ -23,32 +21,30 @@ void Console_callback(console_event_t event, void *ctx);
 #endif
 #if APP_HAS_CONTROLPANEL
 cpan_t *CP;
-const cpan_t control_panel_initial = { 
-        .stat = 0,
-        .event = 0,
-        .regs = {0},
-};
 #endif
 /* static functions */
 static int app_func_reset(void);
 static int app_func_startup(void);
 static int app_func_restart(void);
-static uint32_t app_event_flag(bool);
+/* public functions */
+int app_event_flag_get(uint32_t,bool,uint32_t,uint32_t*);
+int app_event_flag_set(uint32_t,uint32_t*);
+int app_event_flag_clr(uint32_t,uint32_t*);
 
-/* define the initial condition of the application */
 const app_t app_initial = {
 		.state = APP_STATE_RESET,
 };
 
 void app_entry(void) {
+    uint32_t event_flag;
 	R_BSP_PinAccessEnable();
-#if APP_HAS_CONTROLPANEL
-    CP = CPAN_open(&control_panel_initial);  /* open the control panel */
-#endif
+	memcpy(&App,&app_initial,sizeof(app_t)); /* initialize the app */
+#if APP_HAS_CONTROLPANEL	
+	CP = CPAN_open(&control_panel_initial);  /* open the control panel */
+#endif	
 #if APP_HAS_CONSOLE
     CN = RA_console_init("CON1", &g_console_uart, Console_callback, NULL);
-#endif	
-	memcpy(&App,&app_initial,sizeof(app_t));
+#endif		
 	while (1) {
         switch (App.state) {
             case APP_STATE_RESET: /* initialize things */
@@ -62,10 +58,21 @@ void app_entry(void) {
                 APP_INFO_PRINT("\nAPP RUNNING\n");
                 /* TODO: add your own code here */
                 do { /* hang in this state */
-                    if (App.events & SYSFLG_APP_RESTART)
+                    /* USER code */
+#if APP_HAS_CONSOLE
+                    if (0 == app_event_flag_get(SYSFLG_CONSOLE_DATA,true,1,&event_flag))
+                    {
+                        /* USER code */
+                        /* at this point, data has been input through the console and is accessed by CP->p_console_string */
+                        /* the default action is to execute this string a a command */
+                        console_Exec(CP->p_console_string);
+                    }
+                    CPAN_POLL  /* service the control panel (if there is one) */
+#endif
+                    R_BSP_SoftwareDelay(CP->regs[0], BSP_DELAY_UNITS_MILLISECONDS);
+                    if (0 == app_event_flag_get(SYSFLG_APP_RESTART,true,1,&event_flag))
                     {
                         App.state = APP_STATE_RESTART;
-                        App.events &= (uint32_t) ~SYSFLG_APP_RESTART;
                     }
                 } while(App.state == APP_STATE_RUNNING);
                 break;
@@ -76,7 +83,11 @@ void app_entry(void) {
                 APP_ERR_PRINT("\nAPP ERROR\n");
                 while(1){}
                 break;
-	    
+			case APP_STATE_SLEEP:
+			    __DSB();
+			    __WFI();
+			    App.state = APP_STATE_RUNNING;
+			    break;
 	    }
 	}
 }
@@ -96,11 +107,122 @@ static int app_func_restart(void)
     APP_INFO_PRINT("\nAPP RESTART\n");
     return 0;
 }
-static uint32_t app_event_flag(bool block)
+int app_event_flag_get(uint32_t msk,bool clr,uint32_t timeout,uint32_t *flgs)
 {
     uint32_t flg;
+    bool block = (timeout == 0) ? false : true;
+#if   (APPCFG_RTOS_NONE == APPCFG_RTOS) /* Bare METAL */
+    do {
+        flg = App.events;
+        if (block)
+        {
+            if ( (flg & msk) || (0 == timeout))
+            {
+                block = false;
+            }
+            else
+            {
+                if (0xFFFFFFFF != timeout)
+                {
+                    timeout--;
+                    if (0 == timeout)
+                    {
+                        return -1;
+                    }
+                }
+                R_BSP_SoftwareDelay(1,BSP_DELAY_UNITS_MILLISECONDS);
+            }
+        }
+    } while(block);
+    if (clr)
+    {
+        App.events &= ~msk;  /*note flg returns the bit that is cleared here */
+    }
+#elif (APPCFG_RTOS_AZURE == APPCFG_RTOS) /* Azure */
+#error needs implementing
+#elif (APPCFG_RTOS_FREERTOS == APPCFG_RTOS) /* Fee RTOS */
+#error needs implementing
+#elif (APPCFG_RTOS_ZEPHYR == APPCFG_RTOS) /* Zephyr */
+#error needs implementing
+#endif
+    if (NULL != flgs)
+    {
+        *flgs = flg;
+    }
+    return 0;
+}
 
-    return flg;
+int app_event_flag_set(uint32_t val,uint32_t *flgs)
+{
+
+#if   (APPCFG_RTOS_NONE == APPCFG_RTOS) /* Bare METAL */
+    App.events |= val;
+    if (NULL != flgs) *flgs = App.events;
+#elif (APPCFG_RTOS_AZURE == APPCFG_RTOS) /* Azure */
+#error needs implementing
+#elif (APPCFG_RTOS_FREERTOS == APPCFG_RTOS) /* Fee RTOS */
+#error needs implementing
+#elif (APPCFG_RTOS_ZEPHYR == APPCFG_RTOS) /* Zephyr */
+#error needs implementing
+#endif
+    return 0;
+}
+int app_event_flag_clr(uint32_t val,uint32_t *flgs)
+{
+
+#if   (APPCFG_RTOS_NONE == APPCFG_RTOS) /* Bare METAL */
+    App.events &= ~val;
+    if (NULL != flgs) *flgs = App.events;
+#elif (APPCFG_RTOS_AZURE == APPCFG_RTOS) /* Azure */
+#error needs implementing
+#elif (APPCFG_RTOS_FREERTOS == APPCFG_RTOS) /* Fee RTOS */
+#error needs implementing
+#elif (APPCFG_RTOS_ZEPHYR == APPCFG_RTOS) /* Zephyr */
+#error needs implementing
+#endif
+    return 0;
+}
+int app_event_flag_geti(uint32_t msk,bool clr,uint32_t timeout,uint32_t *flgs)
+{
+    uint32_t flg;
+    bool block = (timeout == 0) ? false : true;
+#if   (APPCFG_RTOS_NONE == APPCFG_RTOS) /* Bare METAL */
+    return app_event_flag_geti(msk,clr,timeout,flgs);
+#elif (APPCFG_RTOS_AZURE == APPCFG_RTOS) /* Azure */
+#error needs implementing
+#elif (APPCFG_RTOS_FREERTOS == APPCFG_RTOS) /* Fee RTOS */
+#error needs implementing
+#elif (APPCFG_RTOS_ZEPHYR == APPCFG_RTOS) /* Zephyr */
+#error needs implementing
+#endif
+}
+
+int app_event_flag_seti(uint32_t val,uint32_t *flgs)
+{
+
+#if   (APPCFG_RTOS_NONE == APPCFG_RTOS) /* Bare METAL */
+    return app_event_flag_set(val,flgs);
+#elif (APPCFG_RTOS_AZURE == APPCFG_RTOS) /* Azure */
+#error needs implementing
+#elif (APPCFG_RTOS_FREERTOS == APPCFG_RTOS) /* Fee RTOS */
+#error needs implementing
+#elif (APPCFG_RTOS_ZEPHYR == APPCFG_RTOS) /* Zephyr */
+#error needs implementing
+#endif
+
+}
+int app_event_flag_clri(uint32_t val,uint32_t *flgs)
+{
+
+#if   (APPCFG_RTOS_NONE == APPCFG_RTOS) /* Bare METAL */
+    return app_event_flag_clr(val,flgs);
+#elif (APPCFG_RTOS_AZURE == APPCFG_RTOS) /* Azure */
+#error needs implementing
+#elif (APPCFG_RTOS_FREERTOS == APPCFG_RTOS) /* Fee RTOS */
+#error needs implementing
+#elif (APPCFG_RTOS_ZEPHYR == APPCFG_RTOS) /* Zephyr */
+#error needs implementing
+#endif
 }
 
 /* _____      _ _ _                _      ______                _   _
@@ -115,20 +237,15 @@ void Console_callback(console_event_t event, void *ctx)
 {
     // callback from console.
     switch(event) {
-        case CONSOLE_NULL_EVENT:
+        case CONSOLE_EVENT_NULL: /* The console has nothing to say */
             break;
-        case CONSOLE_LF_EVENT:
+        case CONSOLE_EVENT_LF:  /* The Enter key was pressed.  ctx points to a null terminated string of characters */
             CP->p_console_string = (char*) ctx;
-#if   (0 == BSP_CFG_RTOS) /* Bare METAL */
-            CP->event |= CPAN_EVENT_CONSOLE;
-#elif (1 == BSP_CFG_RTOS) /* Azure */
-            tx_event_flags_set(&g_system_event,SYSFLG_CONSOLE,TX_OR);
-#elif (2 == BSP_CFG_RTOS) /* Fee RTOS */
-#error needs implementing
-#elif (3 == BSP_CFG_RTOS) /* Zephyr */
-#error needs implementing
-#endif
-
+            app_event_flag_seti(SYSFLG_CONSOLE_DATA, NULL);
+            break;
+        case CONSOLE_EVENT_CHAR:
+         /* A single character is returned from the uart */
+            /* USER */
             break;
         default:;
     }

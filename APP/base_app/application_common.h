@@ -34,31 +34,21 @@
 #define APPCFG_RTOS_FREERTOS (2)
 #define APPCFG_RTOS_ZEPHYR   (3)
 #define APPCFG_RTOS          ( BSP_CFG_RTOS)
-//-->#define APPCFG_xxx             (1)
+//-->#define APPCFG_xxx
 
-/* define buffer placements */
-//-->#define APPCFG_ATTRIB_xxx     BSP_ALIGN_VARIABLE(16) BSP_PLACE_IN_SECTION(".sdram")          //@@@ BSP_PLACE_IN_SECTION(".ram_nocache")
+/* ATTRIBUTES  */
+//-->#define APPCFG_ATTRIB_xxx                BSP_ALIGN_VARIABLE(16) BSP_PLACE_IN_SECTION(".sdram")         
 
 /* define attributes of the system */
 //-->#define APPCFG_USB_IDLE_SLEEP  (100)  /* how many ticks to sleep whilst waiting to be told to start or check for detach */
 
 /*  SYSTEM FLAG DEFINITIONS */
-#define SYSFLG_APP_RESTART (0x00000001)
+#define SYSFLG_APP_RESTART  (0x00000001)
 #if APP_HAS_CONSOLE
 #define SYSFLG_CONSOLE_DATA (0x00000002)
 #endif
+//-->#define SYSFLG_xxx    (0x00000004)
 
-//-->#define SYSFLG_xxx    (0x00000001)
-#if APP_HAS_CMD_SHELL
-const char* APP_SYSFLG_ansi[] = {
-	"APP RESTART",
-#if APP_HAS_CONSOLE
-    "CONSOLE DATA",
-#endif
-/* USER */
-    NULL
-};
-#endif
 
 /* APPLICATION STATE MACHINE */
 typedef enum app_state_e {
@@ -67,30 +57,36 @@ typedef enum app_state_e {
     APP_STATE_RUNNING,
     APP_STATE_RESTART,
     APP_STATE_ERROR,
-	APP_STATE_SLEEP
+    APP_STATE_SLEEP
 } app_state_t;
 
+#if APP_HAS_CMD_SHELL
+typedef struct lookup_s {
+    uint32_t val;
+    char* str;
+} lookup_t;
+#endif
 
 
 #if APP_HAS_CONTROLPANEL
-#define CPAN_POLL {	if (ControlPanel.stat & CPAN_STAT_UPDATE) CPAN_update();}
+#define CPAN_POLL { if (ControlPanel.stat & CPAN_STAT_UPDATE) CPAN_update();}
 #else
-#define CPAN_POLL {	}
+#define CPAN_POLL { }
 
 #endif
 
 /* application context */
 typedef struct s_app {
     app_state_t state;
-#if   (APPCFG_RTOS_NONE == APPCFG_RTOS) /* Bare METAL */
+#if   (BSP_CFG_RTOS == APPCFG_RTOS_NONE) /* Bare METAL */
     uint32_t events;
-#elif (APPCFG_RTOS_AZURE == APPCFG_RTOS) /* Azure */
+#elif (BSP_CFG_RTOS  == APPCFG_RTOS_AZURE) /* Azure */
 #error needs implementing
-#elif (APPCFG_RTOS_FREERTOS == APPCFG_RTOS) /* Fee RTOS */
+#elif (BSP_CFG_RTOS == APPCFG_RTOS_FREERTOS) /* Fee RTOS */
 #error needs implementing
-#elif (APPCFG_RTOS_ZEPHYR == APPCFG_RTOS) /* Zephyr */
+#elif (BSP_CFG_RTOS == APPCFG_RTOS_ZEPHYR) /* Zephyr */
 #error needs implementing
-#endif	
+#endif
    /* USER FIELDS */
 } app_t;
 extern app_t App;
@@ -101,7 +97,13 @@ extern app_t App;
 #if APP_HAS_CONTROLPANEL
 #include "CPAN/cpan.h"
 #endif
-
+/* PUBLISHED functions */
+int app_event_flag_get(uint32_t,bool,uint32_t,uint32_t*);
+int app_event_flag_set(uint32_t,uint32_t*);
+int app_event_flag_clr(uint32_t,uint32_t*);
+int app_event_flag_geti(uint32_t,bool,uint32_t,uint32_t*);
+int app_event_flag_seti(uint32_t,uint32_t*);
+int app_event_flag_clri(uint32_t,uint32_t*);
 
 #endif /* APPLICATION_COMMON_H_ */
 
