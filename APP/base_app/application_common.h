@@ -2,6 +2,10 @@
 #define APPLICATION_COMMON_H_
 
 #include <stdint.h>
+#include "bsp_api.h"
+
+
+
 
 #define APP_HAS_DEBUG_IO     (0)  /* adds the ability to POP, DROP and TOG gpio pins for logic analyzer debugging */
 #define APP_HAS_CONTROLPANEL (0)  /* adds a control panel for runtime manipulation of components */
@@ -24,7 +28,6 @@
 #endif
 
 
-
 /* BUILD MODULE OPTIONS */
 //-->#define APPCFG_BUILD_xxx       (1)
 
@@ -34,6 +37,15 @@
 #define APPCFG_RTOS_FREERTOS (2)
 #define APPCFG_RTOS_ZEPHYR   (3)
 #define APPCFG_RTOS          ( BSP_CFG_RTOS)
+#if   (APPCFG_RTOS == APPCFG_RTOS_NONE) /* Bare METAL */
+#include "hal_data.h"
+#elif (APPCFG_RTOS == APPCFG_RTOS_AZURE) /* Azure */
+#include "app_thread.h"
+#elif (APPCFG_RTOS == APPCFG_RTOS_FREERTOS) /* Fee RTOS */
+#include "app_thread.h"
+#elif (APPCFG_RTOS == APPCFG_RTOS_ZEPHYR) /* Zephyr */
+#include "app_thread.h"
+#endif
 //-->#define APPCFG_xxx
 
 /* ATTRIBUTES  */
@@ -72,19 +84,18 @@ typedef struct lookup_s {
 #define CPAN_POLL { if (ControlPanel.stat & CPAN_STAT_UPDATE) CPAN_update();}
 #else
 #define CPAN_POLL { }
-
 #endif
 
 /* application context */
 typedef struct s_app {
     app_state_t state;
-#if   (BSP_CFG_RTOS == APPCFG_RTOS_NONE) /* Bare METAL */
+#if   (APPCFG_RTOS == APPCFG_RTOS_NONE) /* Bare METAL */
     uint32_t events;
-#elif (BSP_CFG_RTOS  == APPCFG_RTOS_AZURE) /* Azure */
+#elif (APPCFG_RTOS  == APPCFG_RTOS_AZURE) /* Azure */
+    TX_EVENT_FLAGS_GROUP events;
+#elif (APPCFG_RTOS == APPCFG_RTOS_FREERTOS) /* Fee RTOS */
 #error needs implementing
-#elif (BSP_CFG_RTOS == APPCFG_RTOS_FREERTOS) /* Fee RTOS */
-#error needs implementing
-#elif (BSP_CFG_RTOS == APPCFG_RTOS_ZEPHYR) /* Zephyr */
+#elif (APPCFG_RTOS == APPCFG_RTOS_ZEPHYR) /* Zephyr */
 #error needs implementing
 #endif
    /* USER FIELDS */

@@ -3,15 +3,7 @@
 */
 #include "application_common.h"
 
-#if   (0 == BSP_CFG_RTOS) /* Bare METAL */
-#include "hal_data.h"
-#elif (1 == BSP_CFG_RTOS) /* Azure */
-#include "app_thread.h"
-#elif (2 == BSP_CFG_RTOS) /* Fee RTOS */
-#include "app_thread.h"
-#elif (3 == BSP_CFG_RTOS) /* Zephyr */
-#include "app_thread.h"
-#endif
+
 
 app_t App;
 
@@ -27,32 +19,43 @@ static int app_func_reset(void);
 static int app_func_startup(void);
 static int app_func_restart(void);
 /* public functions */
-int app_event_flag_get(uint32_t,bool,uint32_t,uint32_t*);
-int app_event_flag_set(uint32_t,uint32_t*);
-int app_event_flag_clr(uint32_t,uint32_t*);
+
 
 const app_t app_initial = {
-		.state = APP_STATE_RESET,
+        .state = APP_STATE_RESET,
+        .events = {0}
 };
 
 void app_entry(void) {
     uint32_t event_flag;
-	R_BSP_PinAccessEnable();
-	memcpy(&App,&app_initial,sizeof(app_t)); /* initialize the app */
-#if APP_HAS_CONTROLPANEL	
-	CP = CPAN_open(&control_panel_initial);  /* open the control panel */
-#endif	
+    R_BSP_PinAccessEnable();
+    memcpy(&App,&app_initial,sizeof(app_t)); /* initialize the app */
+#if   (APPCFG_RTOS == APPCFG_RTOS_NONE) /* Bare METAL */
+    App.event = 0x00000000;
+#elif (APPCFG_RTOS == APPCFG_RTOS_AZURE) /* Azure */
+    UINT err;
+    err = tx_event_flags_create(&App.events,(CHAR*) "app_event");
+    while(TX_SUCCESS != err); //@@@ needs fixin...
+#elif (APPCFG_RTOS == APPCFG_RTOS_FREERTOS) /* Fee RTOS */
+#include "app_thread.h"
+#elif (APPCFG_RTOS == APPCFG_RTOS_ZEPHYR) /* Zephyr */
+#include "app_thread.h"
+#endif
+
+#if APP_HAS_CONTROLPANEL
+    CP = CPAN_open(&control_panel_initial);  /* open the control panel */
+#endif
 #if APP_HAS_CONSOLE
     CN = RA_console_init("CON1", &g_console_uart, Console_callback, NULL);
-#endif		
-	while (1) {
+#endif
+    while (1) {
         switch (App.state) {
             case APP_STATE_RESET: /* initialize things */
-            	App.state =  (0 == app_func_reset()) ? APP_STATE_STARTUP : APP_STATE_ERROR;
-           	    break;
+                App.state =  (0 == app_func_reset()) ? APP_STATE_STARTUP : APP_STATE_ERROR;
+                break;
             case APP_STATE_STARTUP:  /* start things */
                 App.state =  (0 == app_func_startup()) ? APP_STATE_RUNNING : APP_STATE_ERROR;
-            	break;
+                break;
             /* MAIN LOOP PROCESSING*/
             case APP_STATE_RUNNING:  /* process things */
                 APP_INFO_PRINT("\nAPP RUNNING\n");
@@ -62,15 +65,15 @@ void app_entry(void) {
 #if APP_HAS_CONSOLE
                     if (0 == app_event_flag_get(SYSFLG_CONSOLE_DATA,true,1,&event_flag))
                     {
-                        /* USER code */
                         /* at this point, data has been input through the console and is accessed by CP->p_console_string */
                         /* the default action is to execute this string a a command */
                         console_Exec(CP->p_console_string);
                     }
                     CPAN_POLL  /* service the control panel (if there is one) */
 #endif
-                    R_BSP_SoftwareDelay(CP->regs[0], BSP_DELAY_UNITS_MILLISECONDS);
-                    if (0 == app_event_flag_get(SYSFLG_APP_RESTART,true,1,&event_flag))
+//!!                    R_BSP_SoftwareDelay(CP->regs[0], BSP_DELAY_UNITS_MILLISECONDS);
+                    /* USER code end */
+                    if (0 == app_event_flag_get(SYSFLG_APP_RESTART,true,1,&event_flag)) /*DWR timeout must be 1 */
                     {
                         App.state = APP_STATE_RESTART;
                     }
@@ -78,18 +81,18 @@ void app_entry(void) {
                 break;
             case APP_STATE_RESTART: /* shut down things and restart */
                 App.state =  (0 == app_func_restart()) ? APP_STATE_STARTUP : APP_STATE_ERROR;
-            	break;
+                break;
             case APP_STATE_ERROR:
                 APP_ERR_PRINT("\nAPP ERROR\n");
                 while(1){}
                 break;
-			case APP_STATE_SLEEP:
-			    __DSB();
-			    __WFI();
-			    App.state = APP_STATE_RUNNING;
-			    break;
-	    }
-	}
+            case APP_STATE_SLEEP:
+                __DSB();
+                __WFI();
+                App.state = APP_STATE_RUNNING;
+                break;
+        }
+    }
 }
 
 static int app_func_startup(void)
@@ -110,8 +113,8 @@ static int app_func_restart(void)
 int app_event_flag_get(uint32_t msk,bool clr,uint32_t timeout,uint32_t *flgs)
 {
     uint32_t flg;
-    bool block = (timeout == 0) ? false : true;
 #if   (APPCFG_RTOS_NONE == APPCFG_RTOS) /* Bare METAL */
+    bool block = (timeout == 0) ? false : true;
     do {
         flg = App.events;
         if (block)
@@ -139,7 +142,14 @@ int app_event_flag_get(uint32_t msk,bool clr,uint32_t timeout,uint32_t *flgs)
         App.events &= ~msk;  /*note flg returns the bit that is cleared here */
     }
 #elif (APPCFG_RTOS_AZURE == APPCFG_RTOS) /* Azure */
-#error needs implementing
+    if (clr)
+    {
+        tx_event_flags_get(&App.events, msk, TX_OR_CLEAR,(ULONG*)  &flg, timeout);
+    }
+    else
+    {
+        tx_event_flags_get(&App.events, msk, TX_OR, (ULONG*) &flg, timeout);
+    }
 #elif (APPCFG_RTOS_FREERTOS == APPCFG_RTOS) /* Fee RTOS */
 #error needs implementing
 #elif (APPCFG_RTOS_ZEPHYR == APPCFG_RTOS) /* Zephyr */
@@ -159,7 +169,11 @@ int app_event_flag_set(uint32_t val,uint32_t *flgs)
     App.events |= val;
     if (NULL != flgs) *flgs = App.events;
 #elif (APPCFG_RTOS_AZURE == APPCFG_RTOS) /* Azure */
-#error needs implementing
+    tx_event_flags_set(&App.events,val,TX_OR);
+    if (NULL != flgs)
+    {
+        tx_event_flags_get(&App.events,(ULONG) 0,TX_OR,(ULONG*) flgs,TX_NO_WAIT);
+    }
 #elif (APPCFG_RTOS_FREERTOS == APPCFG_RTOS) /* Fee RTOS */
 #error needs implementing
 #elif (APPCFG_RTOS_ZEPHYR == APPCFG_RTOS) /* Zephyr */
@@ -174,7 +188,11 @@ int app_event_flag_clr(uint32_t val,uint32_t *flgs)
     App.events &= ~val;
     if (NULL != flgs) *flgs = App.events;
 #elif (APPCFG_RTOS_AZURE == APPCFG_RTOS) /* Azure */
-#error needs implementing
+    tx_event_flags_set(&App.events,(ULONG) ~val,TX_AND);
+    if (NULL != flgs)
+    {
+        tx_event_flags_get(&App.events,0,TX_OR,(ULONG*) flgs,TX_NO_WAIT);
+    }
 #elif (APPCFG_RTOS_FREERTOS == APPCFG_RTOS) /* Fee RTOS */
 #error needs implementing
 #elif (APPCFG_RTOS_ZEPHYR == APPCFG_RTOS) /* Zephyr */
@@ -184,12 +202,12 @@ int app_event_flag_clr(uint32_t val,uint32_t *flgs)
 }
 int app_event_flag_geti(uint32_t msk,bool clr,uint32_t timeout,uint32_t *flgs)
 {
-    uint32_t flg;
-    bool block = (timeout == 0) ? false : true;
+//!!    uint32_t flg;
+//!!    bool block = (timeout == 0) ? false : true;
 #if   (APPCFG_RTOS_NONE == APPCFG_RTOS) /* Bare METAL */
-    return app_event_flag_geti(msk,clr,timeout,flgs);
+    return app_event_flag_get(msk,clr,timeout,flgs);
 #elif (APPCFG_RTOS_AZURE == APPCFG_RTOS) /* Azure */
-#error needs implementing
+    return app_event_flag_get(msk,clr,timeout,flgs);
 #elif (APPCFG_RTOS_FREERTOS == APPCFG_RTOS) /* Fee RTOS */
 #error needs implementing
 #elif (APPCFG_RTOS_ZEPHYR == APPCFG_RTOS) /* Zephyr */
@@ -203,7 +221,7 @@ int app_event_flag_seti(uint32_t val,uint32_t *flgs)
 #if   (APPCFG_RTOS_NONE == APPCFG_RTOS) /* Bare METAL */
     return app_event_flag_set(val,flgs);
 #elif (APPCFG_RTOS_AZURE == APPCFG_RTOS) /* Azure */
-#error needs implementing
+    return app_event_flag_set(val,flgs);
 #elif (APPCFG_RTOS_FREERTOS == APPCFG_RTOS) /* Fee RTOS */
 #error needs implementing
 #elif (APPCFG_RTOS_ZEPHYR == APPCFG_RTOS) /* Zephyr */
@@ -217,7 +235,7 @@ int app_event_flag_clri(uint32_t val,uint32_t *flgs)
 #if   (APPCFG_RTOS_NONE == APPCFG_RTOS) /* Bare METAL */
     return app_event_flag_clr(val,flgs);
 #elif (APPCFG_RTOS_AZURE == APPCFG_RTOS) /* Azure */
-#error needs implementing
+    return app_event_flag_clr(val,flgs);
 #elif (APPCFG_RTOS_FREERTOS == APPCFG_RTOS) /* Fee RTOS */
 #error needs implementing
 #elif (APPCFG_RTOS_ZEPHYR == APPCFG_RTOS) /* Zephyr */
