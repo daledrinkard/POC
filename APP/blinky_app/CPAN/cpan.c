@@ -31,4 +31,9 @@ void CPAN_update(void)
 {
     /* USER code */
     ControlPanel.stat &= (uint32_t) ~CPAN_STAT_UPDATE;
+    if (ControlPanel.stat & CPAN_STAT_RESTART_APP)
+    {
+        app_event_flag_set(SYSFLG_APP_RESTART, NULL);
+        ControlPanel.stat &= (uint32_t) ~CPAN_STAT_RESTART_APP;
+    }
 }

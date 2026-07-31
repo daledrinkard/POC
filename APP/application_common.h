@@ -113,7 +113,7 @@ extern app_t App;
 #include "POP/pop.h"
 #endif
 #if APP_HAS_CONTROLPANEL
-#include "CPAN/cpan.h"
+#include "cpan.h"
 #endif
 /* PUBLISHED functions */
 int app_event_flag_get(uint32_t msk,app_flag_ctl_t ctl, uint32_t timeout,uint32_t *flgs);

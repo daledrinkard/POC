@@ -1,5 +1,5 @@
 /*
-  BASE application.
+  BASE X application.
 */
 #include "application_common.h"
 #if   (APPCFG_RTOS == APPCFG_RTOS_NONE) /* Bare METAL */
@@ -50,9 +50,7 @@ void app_entry(void) {
 #error needs implementing
 #endif
 
-#if APP_HAS_CONTROLPANEL
-    CP = CPAN_open(&control_panel_initial);  /* open the control panel */
-#endif
+
 #if APP_HAS_CONSOLE
     CN = RA_console_init("CON1", &g_console_uart, Console_callback, NULL);
 #endif
@@ -70,6 +68,9 @@ void app_entry(void) {
                 do { /* hang in this state */
                     /* USER code */
                     app_func_run();
+//#if APP_HAS_CONTROLPANEL
+//                    CPAN_POLL  /* service the control panel */
+//#endif
 #if APP_HAS_CONSOLE
                     if (0 == app_event_flag_get(SYSFLG_CONSOLE_DATA,APP_FLAG_OR_CLEAR,0,&event_flag))
                     {
@@ -77,7 +78,6 @@ void app_entry(void) {
                         /* the default action is to execute this string a a command */
                         console_Exec(CP->p_console_string);
                     }
-                    CPAN_POLL  /* service the control panel (if there is one) */
 #endif
 //!!                    R_BSP_SoftwareDelay(CP->regs[0], BSP_DELAY_UNITS_MILLISECONDS);
                     /* USER code end */
