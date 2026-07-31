@@ -2,9 +2,13 @@
 #define APPLICATION_COMMON_H_
 
 #include <stdint.h>
+#include "bsp_api.h"
+
+
+
 
 #define APP_HAS_DEBUG_IO     (0)  /* adds the ability to POP, DROP and TOG gpio pins for logic analyzer debugging */
-#define APP_HAS_CONTROLPANEL (1)  /* adds a control panel for runtime manipulation of components */
+#define APP_HAS_CONTROLPANEL (0)  /* adds a control panel for runtime manipulation of components */
 #define APP_HAS_CONSOLE      (0)  /* adds a console to support prints to UART and input command parsing */
 #define APP_HAS_CMD_SHELL    (0)  /* adds a command shell to support runtime commands */
 
@@ -24,7 +28,6 @@
 #endif
 
 
-
 /* BUILD MODULE OPTIONS */
 //-->#define APPCFG_BUILD_xxx       (1)
 
@@ -34,6 +37,15 @@
 #define APPCFG_RTOS_FREERTOS (2)
 #define APPCFG_RTOS_ZEPHYR   (3)
 #define APPCFG_RTOS          ( BSP_CFG_RTOS)
+#if   (APPCFG_RTOS == APPCFG_RTOS_NONE) /* Bare METAL */
+#include "hal_data.h"
+#elif (APPCFG_RTOS == APPCFG_RTOS_AZURE) /* Azure */
+#include "app_thread.h"
+#elif (APPCFG_RTOS == APPCFG_RTOS_FREERTOS) /* Fee RTOS */
+#include "app_thread.h"
+#elif (APPCFG_RTOS == APPCFG_RTOS_ZEPHYR) /* Zephyr */
+#include "app_thread.h"
+#endif
 //-->#define APPCFG_xxx
 
 /* ATTRIBUTES  */
@@ -58,7 +70,14 @@ typedef enum app_state_e {
     APP_STATE_RESTART,
     APP_STATE_ERROR,
     APP_STATE_SLEEP
+    /*USER*/
 } app_state_t;
+typedef enum app_flag_ctl_e {
+    APP_FLAG_OR,
+    APP_FLAG_OR_CLEAR,
+    APP_FLAG_AND,
+    APP_FLAG_AND_CLEAR
+}app_flag_ctl_t;
 
 #if APP_HAS_CMD_SHELL
 typedef struct lookup_s {
@@ -72,19 +91,18 @@ typedef struct lookup_s {
 #define CPAN_POLL { if (ControlPanel.stat & CPAN_STAT_UPDATE) CPAN_update();}
 #else
 #define CPAN_POLL { }
-
 #endif
 
 /* application context */
 typedef struct s_app {
     app_state_t state;
-#if   (BSP_CFG_RTOS == APPCFG_RTOS_NONE) /* Bare METAL */
+#if   (APPCFG_RTOS == APPCFG_RTOS_NONE) /* Bare METAL */
     uint32_t events;
-#elif (BSP_CFG_RTOS  == APPCFG_RTOS_AZURE) /* Azure */
+#elif (APPCFG_RTOS  == APPCFG_RTOS_AZURE) /* Azure */
+    TX_EVENT_FLAGS_GROUP events;
+#elif (APPCFG_RTOS == APPCFG_RTOS_FREERTOS) /* Fee RTOS */
 #error needs implementing
-#elif (BSP_CFG_RTOS == APPCFG_RTOS_FREERTOS) /* Fee RTOS */
-#error needs implementing
-#elif (BSP_CFG_RTOS == APPCFG_RTOS_ZEPHYR) /* Zephyr */
+#elif (APPCFG_RTOS == APPCFG_RTOS_ZEPHYR) /* Zephyr */
 #error needs implementing
 #endif
    /* USER FIELDS */
@@ -98,12 +116,13 @@ extern app_t App;
 #include "CPAN/cpan.h"
 #endif
 /* PUBLISHED functions */
-int app_event_flag_get(uint32_t,bool,uint32_t,uint32_t*);
+int app_event_flag_get(uint32_t msk,app_flag_ctl_t ctl, uint32_t timeout,uint32_t *flgs);
 int app_event_flag_set(uint32_t,uint32_t*);
 int app_event_flag_clr(uint32_t,uint32_t*);
 int app_event_flag_geti(uint32_t,bool,uint32_t,uint32_t*);
 int app_event_flag_seti(uint32_t,uint32_t*);
 int app_event_flag_clri(uint32_t,uint32_t*);
+void app_delay_ms(uint32_t);
 
 #endif /* APPLICATION_COMMON_H_ */
 

@@ -11,7 +11,7 @@ It provides a basic structure for adding additional components.
 This application provides an example of how to use the control panel to manipulate LEDs.  
 Based on the classic "Blinky" template, this project extends that with LED control based on a control panel.  
 It allows users to manipulate the led blink parameters at runtime using the debugger.  
-  
+
 ## 3. Add components
 - Copy folders into src.  
 - Consult the **APP_HAS_xxx** configuration options in application_common.h.  
