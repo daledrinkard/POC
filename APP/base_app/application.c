@@ -1,5 +1,7 @@
 /*
-  BASE X application.
+  BASE application.
+  This is the base application driver for the APP examples framework.
+  
 */
 #include "application_common.h"
 #if   (APPCFG_RTOS == APPCFG_RTOS_NONE) /* Bare METAL */
@@ -15,7 +17,7 @@
 app_t App;
 
 #if APP_HAS_CONSOLE
-console_t *CN;
+console_t *CN; 
 void Console_callback(console_event_t event, void *ctx);
 #endif
 #if APP_HAS_CONTROLPANEL
@@ -29,11 +31,18 @@ int app_func_run     (void);
 /* public functions */
 
 
+/* application initializer */
 const app_t app_initial = {
         .state = APP_STATE_RESET,
         .events = {0}
 };
 
+/**
+      Application entry function.
+	  Call this from hal_entry or the application thread entry function.
+	  
+	  This function implements the application state machine.
+**/
 void app_entry(void) {
     uint32_t event_flag;
     R_BSP_PinAccessEnable();
@@ -68,9 +77,9 @@ void app_entry(void) {
                 do { /* hang in this state */
                     /* USER code */
                     app_func_run();
-//#if APP_HAS_CONTROLPANEL
-//                    CPAN_POLL  /* service the control panel */
-//#endif
+#if APP_HAS_CONTROLPANEL
+                    CPAN_POLL  /* service the control panel */
+#endif
 #if APP_HAS_CONSOLE
                     if (0 == app_event_flag_get(SYSFLG_CONSOLE_DATA,APP_FLAG_OR_CLEAR,0,&event_flag))
                     {
@@ -79,7 +88,6 @@ void app_entry(void) {
                         console_Exec(CP->p_console_string);
                     }
 #endif
-//!!                    R_BSP_SoftwareDelay(CP->regs[0], BSP_DELAY_UNITS_MILLISECONDS);
                     /* USER code end */
                     if (0 == app_event_flag_get(SYSFLG_APP_RESTART,APP_FLAG_OR_CLEAR,0,&event_flag))
                     {
