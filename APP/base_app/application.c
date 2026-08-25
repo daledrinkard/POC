@@ -28,6 +28,7 @@ int app_func_reset   (void);
 int app_func_startup (void);
 int app_func_restart (void);
 int app_func_run     (void);
+void app_func_error   (int);
 /* public functions */
 
 
@@ -129,6 +130,11 @@ BSP_WEAK_REFERENCE int app_func_restart(void)
 BSP_WEAK_REFERENCE int app_func_run(void)
 {
     return 0;
+}
+BSP_WEAK_REFERENCE void app_func_error(int err)
+{
+    FSP_PARAMETER_NOT_USED(err);
+    /** **/
 }
 int app_event_flag_get(uint32_t msk,app_flag_ctl_t ctl, uint32_t timeout,uint32_t *flgs)
 {
