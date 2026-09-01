@@ -1,7 +1,11 @@
-#include "application_common.h"
-#include "USBX_hmsc.h"
-#include "ux_api.h"
-#include "ux_host_class_storage.h"
+#include "../application_common.h" // IWYU pragma: keep
+#include "./USBX_hmsc.h" // IWYU pragma: keep
+//#include "ux_api.h"
+//#include "ux_host_class_storage.h"
+
+#if !(APP_HAS_CONTROLPANEL && APP_HAS_CMD_SHELL && APP_HAS_CONSOLE)
+#error "This project requires APP_HAS_CONTROLPANEL, APP_HAS_CMD_SHELL and APP_HAS_CONSOLE to be enabled in application_common.h"
+#endif
 
 #define RESET_VALUE 0
 hmsc_t HMSC;
@@ -9,17 +13,56 @@ hmsc_t HMSC;
 static UINT apl_change_function (ULONG event, UX_HOST_CLASS * host_class, VOID * instance);
 static void time_stamping(void);
 static void assign_month_value(time_format_t * time, char * read_buffer);
+
+/**
+  _______ _                        _      ______       _              
+ |__   __| |                      | |    |  ____|     | |             
+    | |  | |__  _ __ ___  __ _  __| |    | |__   _ __ | |_ _ __ _   _ 
+    | |  | '_ \| '__/ _ \/ _` |/ _` |    |  __| | '_ \| __| '__| | | |
+    | |  | | | | | |  __/ (_| | (_| |    | |____| | | | |_| |  | |_| |
+    |_|  |_| |_|_|  \___|\__,_|\__,_|    |______|_| |_|\__|_|   \__, |
+                                                                 __/ |
+                                                                |___/ */
 void USBX_hmsc_entry(void)
 {
     switch (HMSC.state) {
+        case HMSC_STATE_RESET: /* wait for the drivers to be initialized */
+            app_event_flag_get(SYSFLG_APP_START_HMSC,APP_FLAG_AND_CLEAR,TX_WAIT_FOREVER, NULL);
+            HMSC.state = HMSC_STATE_DISMOUNT;
+            break;
         case HMSC_STATE_DISMOUNT:
+            app_event_flag_get(SYSFLG_USB_PLUG_IN,APP_FLAG_AND_CLEAR,TX_WAIT_FOREVER, NULL);
+            HMSC.state = HMSC_STATE_MOUNT;
             break;
         case HMSC_STATE_MOUNT:
+            if (UX_SUCCESS == ux_host_class_storage_media_check(HMSC.p_media))
+            {
+                HMSC.state = HMSC_STATE_MOUNTED;
+            }
+            else
+            {
+                HMSC.state = HMSC_STATE_DISMOUNT;
+            }
             break;
         case HMSC_STATE_MOUNTED:
             break;
     }
 }
+
+/**
+                          __                  _   _                 
+     /\                  / _|                | | (_)                
+    /  \   _ __  _ __   | |_ _   _ _ __   ___| |_ _  ___  _ __  ___ 
+   / /\ \ | '_ \| '_ \  |  _| | | | '_ \ / __| __| |/ _ \| '_ \/ __|
+  / ____ \| |_) | |_) | | | | |_| | | | | (__| |_| | (_) | | | \__ \
+ /_/    \_\ .__/| .__/  |_|  \__,_|_| |_|\___|\__|_|\___/|_| |_|___/
+          | |   | |                                                 
+          |_|   |_|                                                              
+ */
+/**
+ * @brief     This function is used to initialize the USBX host stack and USB driver.
+ * @retval    0 on success, -1 on failure
+ */
 int app_func_reset   (void)
 {
     UINT       ux_return;
@@ -62,6 +105,8 @@ int app_func_reset   (void)
 }
 int app_func_startup (void)
 {
+    ULONG flg;
+    app_event_flag_set(SYSFLG_APP_START_HMSC, (unsigned int *) &flg);
     return 0;
 }
 int app_func_restart (void)
@@ -152,11 +197,11 @@ static void time_stamping(void)
 
         /* Date and Time extracted from MACROs are converted to time format so that,
          *  this can be used to add time stamping to the files on SD card */
-        HMSC.g_set_time.date = atoi(&read_time[4]);
-        HMSC.g_set_time.year = atoi(&read_time[7]);
-        HMSC.g_set_time.hour = atoi(&read_time[12]);
-        HMSC.g_set_time.min  = atoi(&read_time[15]);
-        HMSC.g_set_time.sec  = atoi(&read_time[18]);
+        HMSC.g_set_time.date = (UINT) atoi(&read_time[4]);
+        HMSC.g_set_time.year = (UINT) atoi(&read_time[7]);
+        HMSC.g_set_time.hour = (UINT) atoi(&read_time[12]);
+        HMSC.g_set_time.min  = (UINT) atoi(&read_time[15]);
+        HMSC.g_set_time.sec  = (UINT) atoi(&read_time[18]);
 
         if(HMSC.g_set_time.date > DATE_VALUE_CHECK)
         {

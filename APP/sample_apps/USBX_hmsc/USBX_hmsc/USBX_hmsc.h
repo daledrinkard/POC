@@ -117,9 +117,10 @@ typedef struct s_hfile {
     FX_FILE     file_h;	
 }hfile_t;
 typedef enum e_hmsc_states {
-    HMSC_STATE_DISMOUNT = 0,
-    HMSC_STATE_MOUNT = 1,
-    HMSC_STATE_MOUNTED = 2
+    HMSC_STATE_RESET = 0,
+    HMSC_STATE_DISMOUNT = 1,
+    HMSC_STATE_MOUNT = 2,
+    HMSC_STATE_MOUNTED = 3
 }hmsc_states_t;
 typedef enum e_hmsc_error_codes {
     HMSC_ERROR_NONE = 0,

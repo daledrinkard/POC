@@ -6,7 +6,12 @@
  */
 #include "cpan.h"
 volatile cpan_t ControlPanel = {0};
-
+void app_func_poll_cpan(void);
+void app_func_poll_cpan(void)
+{
+    /** **/
+    if (ControlPanel.stat & CPAN_STAT_UPDATE) CPAN_update();
+}
 #if APP_HAS_CMD_SHELL
 const char* CPAN_stat_str[] = {
 	"Update",

@@ -1,0 +1,79 @@
+{
+	"configurations" : 
+	[
+		{
+			"abstractTargets" : [],
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-b5805d5c08fd3d92def4.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16.4"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "demo0",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "demo0.elf::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-demo0.elf-Debug-9eb2483c8acdc16fe6e6.json",
+					"name" : "demo0.elf",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "generate_sbd_demo0::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-generate_sbd_demo0-Debug-e89131d211ca264adf40.json",
+					"name" : "generate_sbd_demo0",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "open_rasc_demo0::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-open_rasc_demo0-Debug-0dbbe18c6bfee5efd50b.json",
+					"name" : "open_rasc_demo0",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Repo/POC/RS_D620/WORKSPACE/demo0/build/Debug",
+		"source" : "C:/Repo/POC/RS_D620/WORKSPACE/demo0"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 11
+	}
+}

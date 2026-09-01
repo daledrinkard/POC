@@ -1,7 +1,11 @@
+/*
+            BLINKY app
+*/
 #include "application_common.h"
-/* For Blinky app, create a control panel for the leds.  */
+#if !APP_HAS_CONTROLPANEL
+#error This app requires a control panel be defined.
+#endif
 extern bsp_leds_t g_bsp_leds;
-/* weak overrides */
 int app_func_reset   (void);
 int app_func_startup (void);
 int app_func_restart (void);
