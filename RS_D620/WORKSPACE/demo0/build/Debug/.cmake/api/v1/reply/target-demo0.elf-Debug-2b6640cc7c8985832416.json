@@ -315,7 +315,12 @@
 				33,
 				34,
 				35,
-				36
+				36,
+				37,
+				38,
+				39,
+				40,
+				41
 			]
 		}
 	],
@@ -550,7 +555,12 @@
 				33,
 				34,
 				35,
-				36
+				36,
+				37,
+				38,
+				39,
+				40,
+				41
 			]
 		}
 	],
@@ -783,6 +793,16 @@
 				3
 			],
 			"compileGroupIndex" : 0,
+			"path" : "ra/fsp/src/r_sci_uart/r_sci_uart.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 3,
+			"backtraces" : 
+			[
+				3
+			],
+			"compileGroupIndex" : 0,
 			"path" : "ra_gen/common_data.c",
 			"sourceGroupIndex" : 0
 		},
@@ -863,6 +883,26 @@
 				3
 			],
 			"compileGroupIndex" : 0,
+			"path" : "src/console/console.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 3,
+			"backtraces" : 
+			[
+				3
+			],
+			"compileGroupIndex" : 0,
+			"path" : "src/console/console_port.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 3,
+			"backtraces" : 
+			[
+				3
+			],
+			"compileGroupIndex" : 0,
 			"path" : "src/hal_entry.c",
 			"sourceGroupIndex" : 0
 		},
@@ -924,6 +964,26 @@
 			],
 			"compileGroupIndex" : 0,
 			"path" : "src/sequencer/power_module.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 3,
+			"backtraces" : 
+			[
+				3
+			],
+			"compileGroupIndex" : 0,
+			"path" : "src/simulator.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 3,
+			"backtraces" : 
+			[
+				3
+			],
+			"compileGroupIndex" : 0,
+			"path" : "src/simulator_script.c",
 			"sourceGroupIndex" : 0
 		}
 	],

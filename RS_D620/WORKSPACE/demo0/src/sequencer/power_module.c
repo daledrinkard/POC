@@ -5,6 +5,7 @@
  *
  */
 #include "power_module.h"
+#include "simulator.h" //@@@ do something with this
 #define DATAFLASH_RECORD_SIZE (BSP_FEATURE_FLASH_HP_DF_BLOCK_SIZE) /* 64 bytes: one data-flash erase block */
 #define DATAFLASH_CRC_SIZE    (2)                                  /* CRC-16 appended to the end of every record */
 
@@ -65,40 +66,44 @@ typedef enum power_rail_state_e {
     PWR_RAIL_FAULT
 } power_rail_state_t;
  */
-    for (uint8_t i = 0; i < PowerController.num_rails; i++)
+    volatile power_rail_t     *rail = PowerController.rails; //@@@ volatile only for debugging, remove later
+    volatile power_rail_map_t *map  = PowerController.map; //@@@ volatile only for debugging, remove later
+    for (uint8_t i = 0; i < 8; i++) //@@@ hard constant heer
     {
-        power_rail_t *rail = &PowerController.rails[i];
+        if (true == rail->cfg->enabled)
+        {
         if (PWR_MON_ANALOG == rail->cfg->monitor_type)
         {
-            rail->monitor_mv = adc_raw_to_mv(ADC_data[i], rail->adc_convert);
+            rail->ctrl->monitor_mv = adc_raw_to_mv(ADC_data[map->ADC0_index], rail->ctrl->adc_convert);
+            rail->ctrl->monitor_c  = adc_raw_to_mv(ADC_data[map->ADC1_index], rail->ctrl->adc_convert); //@@@ this not right
         }
-        if (false == rail->cfg->enabled)
-        {
-            continue;
-        }
-        switch (rail->state)
+        switch (rail->ctrl->state)
         {
             case PWR_RAIL_OFF:
-                 if (PowerController.state == PWR_SEQ_SEQUENCING_UP)
+                 if (PowerController.ctrl->state == PWR_SEQ_SEQUENCING_UP)
                  {
-                     rail->cnt = rail->cfg->on_delay_ms * 10;
-                     rail->state = (rail->cnt) ? PWR_RAIL_SEQ_ON : PWR_RAIL_ON ;
+                     rail->ctrl->cnt = rail->cfg->on_delay_ms * 10;
+                     rail->ctrl->state = (rail->ctrl->cnt) ? PWR_RAIL_SEQ_ON : PWR_RAIL_ON ;
                  }
                 break;
             case PWR_RAIL_SEQ_ON:
-            if (rail->cnt == 0)
+            if (rail->ctrl->cnt == 0)
             {
-                rail->state = PWR_RAIL_ON;
+                rail->ctrl->state = PWR_RAIL_ON;
+                     simulator_start(i); /* start the simulator for this rail */
+                     rail->ctrl->cnt = rail->cfg->timeout_ms * 10; /* start the timeout counter */
             }
             else
             {
-                rail->cnt--;
+                rail->ctrl->cnt--;
             }
               break;
             case PWR_RAIL_FAULT:
                 /* USER CODE: handle faulted rail */
                 break;
             case PWR_RAIL_ON:
+            rail->ctrl->cnt = (rail->ctrl->cnt == 0) ? 0 : rail->ctrl->cnt - 1;
+                 //@@@ check for voltage out of range stuff...
                 //@@@ check for voltage out of range stuff...
                 /* USER CODE: handle on rail */
                 break;
@@ -115,6 +120,9 @@ typedef enum power_rail_state_e {
                 /* USER CODE: handle unknown state */
                 break;
         }
+        rail++;
+        map++;  
+    }
     }
 }
     uint8_t record[DF_POWER_RAIL_RECORD_SIZE];
@@ -177,6 +185,25 @@ static void pwr_dataflash_update(uint8_t *p,uint8_t *data,uint16_t len )
     } while (FLASH_STATUS_IDLE != status);
 
 }
+/*
+    Verifies the CRC-16/CCITT trailer of a DF_POWER_RAIL_RECORD_SIZE (128)
+    byte record in data flash, addressed by `p`. Data flash is memory-mapped
+    for reads, so the block is read directly from `p` - no R_FLASH_HP driver
+    call needed (unlike pwr_dataflash_update, which must go through the
+    driver to erase/program).
+
+    Returns true if the CRC-16 stored in the last DATAFLASH_CRC_SIZE bytes of
+    the block matches the CRC computed over the preceding
+    (DF_POWER_RAIL_RECORD_SIZE - DATAFLASH_CRC_SIZE) bytes, false otherwise
+    (blank/erased flash, corrupted record, etc).
+*/
+bool pwr_dataflash_check(const uint8_t *p)
+{
+    uint16_t crc    = crc16_ccitt(p, DF_POWER_RAIL_RECORD_SIZE - DATAFLASH_CRC_SIZE);
+    uint16_t stored = (uint16_t) (p[DF_POWER_RAIL_RECORD_SIZE - DATAFLASH_CRC_SIZE]
+                                   | (p[DF_POWER_RAIL_RECORD_SIZE - DATAFLASH_CRC_SIZE + 1] << 8));
+    return (crc == stored);
+}
 void pwr_mod_update_config(uint16_t rail_index,uint8_t *data,uint16_t len )
 {
     uint32_t p;
@@ -186,6 +213,12 @@ void pwr_mod_update_config(uint16_t rail_index,uint8_t *data,uint16_t len )
 void pwr_seq_update_config(uint8_t *data,uint16_t len )
 {
     uint32_t p;
-    p = DF_POWER_RAIL_CONFIG_ADDR;
+    p = DF_SEQUENCER_CONFIG_ADDR;
+    pwr_dataflash_update((uint8_t*) p,data,len);
+}
+void pwr_seq_update_map(uint8_t *data,uint16_t len )
+{
+    uint32_t p;
+    p = DF_POWER_RAIL_MAP_ADDR;
     pwr_dataflash_update((uint8_t*) p,data,len);
 }

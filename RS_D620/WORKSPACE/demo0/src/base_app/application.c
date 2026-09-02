@@ -4,7 +4,9 @@
   
 */
 #include "application_common.h"
+#include "cpan.h"
 #include "hal_data.h"
+#include "simulator.h"
 #if   (APPCFG_RTOS == APPCFG_RTOS_NONE) /* Bare METAL */
 #elif (APPCFG_RTOS == APPCFG_RTOS_AZURE) /* Azure */
 #include "app_thread.h"
@@ -69,6 +71,7 @@ void app_entry(void) {
     while (1) {
         switch (App.state) {
             case APP_STATE_RESET: /* initialize things */
+                simulator_init();
                 App.state =  (0 == app_func_reset()) ? APP_STATE_STARTUP : APP_STATE_ERROR;
                 break;
             case APP_STATE_STARTUP:  /* start things */
@@ -80,6 +83,7 @@ void app_entry(void) {
                 do { /* hang in this state */
                     /* USER code */
                     app_func_run();
+                    simulator_run();
 #if APP_HAS_CONTROLPANEL
                     app_func_poll_cpan();
 #endif
@@ -88,7 +92,7 @@ void app_entry(void) {
                     {
                         /* at this point, data has been input through the console and is accessed by CP->p_console_string */
                         /* the default action is to execute this string a a command */
-                        console_Exec(CP->p_console_string);
+                        console_Exec(ControlPanel.p_console_string);
                     }
 #endif
                     /* USER code end */
@@ -318,7 +322,7 @@ void Console_callback(console_event_t event, void *ctx)
         case CONSOLE_EVENT_NULL: /* The console has nothing to say */
             break;
         case CONSOLE_EVENT_LF:  /* The Enter key was pressed.  ctx points to a null terminated string of characters */
-            CP->p_console_string = (char*) ctx;
+            ControlPanel.p_console_string = (char*) ctx;
             app_event_flag_seti(SYSFLG_CONSOLE_DATA, NULL);
             break;
         case CONSOLE_EVENT_CHAR:

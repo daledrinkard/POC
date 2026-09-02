@@ -275,6 +275,16 @@ build CMakeFiles/demo0.elf.dir/ra/fsp/src/r_ioport/r_ioport.c.obj: C_COMPILER__d
   OBJECT_FILE_DIR = CMakeFiles\demo0.elf.dir\ra\fsp\src\r_ioport
   TARGET_SUPPORT_DIR = CMakeFiles\demo0.elf.dir
 
+build CMakeFiles/demo0.elf.dir/ra/fsp/src/r_sci_uart/r_sci_uart.c.obj: C_COMPILER__demo0.2eelf_unscanned_Debug C$:/Repo/POC/RS_D620/WORKSPACE/demo0/ra/fsp/src/r_sci_uart/r_sci_uart.c || cmake_object_order_depends_target_demo0.elf
+  CONFIG = Debug
+  DEFINES = -D_RA_CORE=CM33 -D_RA_ORDINAL=1 -D_RENESAS_RA_
+  DEP_FILE = CMakeFiles\demo0.elf.dir\ra\fsp\src\r_sci_uart\r_sci_uart.c.obj.d
+  FLAGS = -g -g -O2 -mfloat-abi=hard --target=arm-none-eabi -mcpu=cortex-m33 -mfpu=fpv5-sp-d16 -Wunused -Wuninitialized -Wall -Wextra -Wmissing-declarations -Wconversion -Wpointer-arith -Wshadow -Waggregate-return -Wno-parentheses-equality -Wfloat-equal -fshort-enums -fno-unroll-loops -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -mthumb -mlittle-endian -std=c99 -MP -Os
+  INCLUDES = -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/ra/arm/CMSIS_6/CMSIS/Core/Include -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/ra/fsp/inc -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/ra/fsp/inc/api -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/ra/fsp/inc/instances -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/ra_cfg/fsp_cfg -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/ra_cfg/fsp_cfg/bsp -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/ra_gen -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/src -IC:/Repo/POC/RS_D620/WORKSPACE/demo0 -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/build/Debug -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/src/sequencer/CPAN
+  OBJECT_DIR = CMakeFiles\demo0.elf.dir
+  OBJECT_FILE_DIR = CMakeFiles\demo0.elf.dir\ra\fsp\src\r_sci_uart
+  TARGET_SUPPORT_DIR = CMakeFiles\demo0.elf.dir
+
 build CMakeFiles/demo0.elf.dir/ra_gen/common_data.c.obj: C_COMPILER__demo0.2eelf_unscanned_Debug C$:/Repo/POC/RS_D620/WORKSPACE/demo0/ra_gen/common_data.c || cmake_object_order_depends_target_demo0.elf
   CONFIG = Debug
   DEFINES = -D_RA_CORE=CM33 -D_RA_ORDINAL=1 -D_RENESAS_RA_
@@ -355,6 +365,26 @@ build CMakeFiles/demo0.elf.dir/src/base_app/application.c.obj: C_COMPILER__demo0
   OBJECT_FILE_DIR = CMakeFiles\demo0.elf.dir\src\base_app
   TARGET_SUPPORT_DIR = CMakeFiles\demo0.elf.dir
 
+build CMakeFiles/demo0.elf.dir/src/console/console.c.obj: C_COMPILER__demo0.2eelf_unscanned_Debug C$:/Repo/POC/RS_D620/WORKSPACE/demo0/src/console/console.c || cmake_object_order_depends_target_demo0.elf
+  CONFIG = Debug
+  DEFINES = -D_RA_CORE=CM33 -D_RA_ORDINAL=1 -D_RENESAS_RA_
+  DEP_FILE = CMakeFiles\demo0.elf.dir\src\console\console.c.obj.d
+  FLAGS = -g -g -O2 -mfloat-abi=hard --target=arm-none-eabi -mcpu=cortex-m33 -mfpu=fpv5-sp-d16 -Wunused -Wuninitialized -Wall -Wextra -Wmissing-declarations -Wconversion -Wpointer-arith -Wshadow -Waggregate-return -Wno-parentheses-equality -Wfloat-equal -fshort-enums -fno-unroll-loops -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -mthumb -mlittle-endian -std=c99 -MP -Os
+  INCLUDES = -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/ra/arm/CMSIS_6/CMSIS/Core/Include -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/ra/fsp/inc -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/ra/fsp/inc/api -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/ra/fsp/inc/instances -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/ra_cfg/fsp_cfg -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/ra_cfg/fsp_cfg/bsp -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/ra_gen -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/src -IC:/Repo/POC/RS_D620/WORKSPACE/demo0 -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/build/Debug -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/src/sequencer/CPAN
+  OBJECT_DIR = CMakeFiles\demo0.elf.dir
+  OBJECT_FILE_DIR = CMakeFiles\demo0.elf.dir\src\console
+  TARGET_SUPPORT_DIR = CMakeFiles\demo0.elf.dir
+
+build CMakeFiles/demo0.elf.dir/src/console/console_port.c.obj: C_COMPILER__demo0.2eelf_unscanned_Debug C$:/Repo/POC/RS_D620/WORKSPACE/demo0/src/console/console_port.c || cmake_object_order_depends_target_demo0.elf
+  CONFIG = Debug
+  DEFINES = -D_RA_CORE=CM33 -D_RA_ORDINAL=1 -D_RENESAS_RA_
+  DEP_FILE = CMakeFiles\demo0.elf.dir\src\console\console_port.c.obj.d
+  FLAGS = -g -g -O2 -mfloat-abi=hard --target=arm-none-eabi -mcpu=cortex-m33 -mfpu=fpv5-sp-d16 -Wunused -Wuninitialized -Wall -Wextra -Wmissing-declarations -Wconversion -Wpointer-arith -Wshadow -Waggregate-return -Wno-parentheses-equality -Wfloat-equal -fshort-enums -fno-unroll-loops -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -mthumb -mlittle-endian -std=c99 -MP -Os
+  INCLUDES = -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/ra/arm/CMSIS_6/CMSIS/Core/Include -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/ra/fsp/inc -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/ra/fsp/inc/api -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/ra/fsp/inc/instances -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/ra_cfg/fsp_cfg -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/ra_cfg/fsp_cfg/bsp -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/ra_gen -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/src -IC:/Repo/POC/RS_D620/WORKSPACE/demo0 -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/build/Debug -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/src/sequencer/CPAN
+  OBJECT_DIR = CMakeFiles\demo0.elf.dir
+  OBJECT_FILE_DIR = CMakeFiles\demo0.elf.dir\src\console
+  TARGET_SUPPORT_DIR = CMakeFiles\demo0.elf.dir
+
 build CMakeFiles/demo0.elf.dir/src/hal_entry.c.obj: C_COMPILER__demo0.2eelf_unscanned_Debug C$:/Repo/POC/RS_D620/WORKSPACE/demo0/src/hal_entry.c || cmake_object_order_depends_target_demo0.elf
   CONFIG = Debug
   DEFINES = -D_RA_CORE=CM33 -D_RA_ORDINAL=1 -D_RENESAS_RA_
@@ -425,6 +455,26 @@ build CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj: C_COMPILER__dem
   OBJECT_FILE_DIR = CMakeFiles\demo0.elf.dir\src\sequencer
   TARGET_SUPPORT_DIR = CMakeFiles\demo0.elf.dir
 
+build CMakeFiles/demo0.elf.dir/src/simulator.c.obj: C_COMPILER__demo0.2eelf_unscanned_Debug C$:/Repo/POC/RS_D620/WORKSPACE/demo0/src/simulator.c || cmake_object_order_depends_target_demo0.elf
+  CONFIG = Debug
+  DEFINES = -D_RA_CORE=CM33 -D_RA_ORDINAL=1 -D_RENESAS_RA_
+  DEP_FILE = CMakeFiles\demo0.elf.dir\src\simulator.c.obj.d
+  FLAGS = -g -g -O2 -mfloat-abi=hard --target=arm-none-eabi -mcpu=cortex-m33 -mfpu=fpv5-sp-d16 -Wunused -Wuninitialized -Wall -Wextra -Wmissing-declarations -Wconversion -Wpointer-arith -Wshadow -Waggregate-return -Wno-parentheses-equality -Wfloat-equal -fshort-enums -fno-unroll-loops -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -mthumb -mlittle-endian -std=c99 -MP -Os
+  INCLUDES = -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/ra/arm/CMSIS_6/CMSIS/Core/Include -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/ra/fsp/inc -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/ra/fsp/inc/api -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/ra/fsp/inc/instances -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/ra_cfg/fsp_cfg -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/ra_cfg/fsp_cfg/bsp -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/ra_gen -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/src -IC:/Repo/POC/RS_D620/WORKSPACE/demo0 -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/build/Debug -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/src/sequencer/CPAN
+  OBJECT_DIR = CMakeFiles\demo0.elf.dir
+  OBJECT_FILE_DIR = CMakeFiles\demo0.elf.dir\src
+  TARGET_SUPPORT_DIR = CMakeFiles\demo0.elf.dir
+
+build CMakeFiles/demo0.elf.dir/src/simulator_script.c.obj: C_COMPILER__demo0.2eelf_unscanned_Debug C$:/Repo/POC/RS_D620/WORKSPACE/demo0/src/simulator_script.c || cmake_object_order_depends_target_demo0.elf
+  CONFIG = Debug
+  DEFINES = -D_RA_CORE=CM33 -D_RA_ORDINAL=1 -D_RENESAS_RA_
+  DEP_FILE = CMakeFiles\demo0.elf.dir\src\simulator_script.c.obj.d
+  FLAGS = -g -g -O2 -mfloat-abi=hard --target=arm-none-eabi -mcpu=cortex-m33 -mfpu=fpv5-sp-d16 -Wunused -Wuninitialized -Wall -Wextra -Wmissing-declarations -Wconversion -Wpointer-arith -Wshadow -Waggregate-return -Wno-parentheses-equality -Wfloat-equal -fshort-enums -fno-unroll-loops -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -mthumb -mlittle-endian -std=c99 -MP -Os
+  INCLUDES = -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/ra/arm/CMSIS_6/CMSIS/Core/Include -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/ra/fsp/inc -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/ra/fsp/inc/api -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/ra/fsp/inc/instances -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/ra_cfg/fsp_cfg -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/ra_cfg/fsp_cfg/bsp -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/ra_gen -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/src -IC:/Repo/POC/RS_D620/WORKSPACE/demo0 -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/build/Debug -IC:/Repo/POC/RS_D620/WORKSPACE/demo0/src/sequencer/CPAN
+  OBJECT_DIR = CMakeFiles\demo0.elf.dir
+  OBJECT_FILE_DIR = CMakeFiles\demo0.elf.dir\src
+  TARGET_SUPPORT_DIR = CMakeFiles\demo0.elf.dir
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target demo0.elf
@@ -433,7 +483,7 @@ build CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj: C_COMPILER__dem
 #############################################
 # Link the executable demo0.elf
 
-build demo0.elf: C_EXECUTABLE_LINKER__demo0.2eelf_Debug CMakeFiles/demo0.elf.dir/ra/board/ra6m5_ek/board_init.c.obj CMakeFiles/demo0.elf.dir/ra/board/ra6m5_ek/board_leds.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/cmsis/Device/RENESAS/Source/startup.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/cmsis/Device/RENESAS/Source/system.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_clocks.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_common.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_delay.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_group_irq.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_guard.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_io.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_ipc.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_irq.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_macl.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_ospi_b.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_register_protection.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_sbrk.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_sdram.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_security.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/ra6m5/bsp_linker.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/r_flash_hp/r_flash_hp.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/r_gpt/r_gpt.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/r_ioport/r_ioport.c.obj CMakeFiles/demo0.elf.dir/ra_gen/common_data.c.obj CMakeFiles/demo0.elf.dir/ra_gen/hal_data.c.obj CMakeFiles/demo0.elf.dir/ra_gen/main.c.obj CMakeFiles/demo0.elf.dir/ra_gen/pin_data.c.obj CMakeFiles/demo0.elf.dir/ra_gen/vector_data.c.obj CMakeFiles/demo0.elf.dir/src/POP/pop.c.obj CMakeFiles/demo0.elf.dir/src/base_app/AP_commands.c.obj CMakeFiles/demo0.elf.dir/src/base_app/application.c.obj CMakeFiles/demo0.elf.dir/src/hal_entry.c.obj CMakeFiles/demo0.elf.dir/src/hal_warmstart.c.obj CMakeFiles/demo0.elf.dir/src/sequencer/CPAN/CP_commands.c.obj CMakeFiles/demo0.elf.dir/src/sequencer/CPAN/cpan.c.obj CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj
+build demo0.elf: C_EXECUTABLE_LINKER__demo0.2eelf_Debug CMakeFiles/demo0.elf.dir/ra/board/ra6m5_ek/board_init.c.obj CMakeFiles/demo0.elf.dir/ra/board/ra6m5_ek/board_leds.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/cmsis/Device/RENESAS/Source/startup.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/cmsis/Device/RENESAS/Source/system.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_clocks.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_common.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_delay.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_group_irq.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_guard.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_io.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_ipc.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_irq.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_macl.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_ospi_b.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_register_protection.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_sbrk.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_sdram.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_security.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/ra6m5/bsp_linker.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/r_flash_hp/r_flash_hp.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/r_gpt/r_gpt.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/r_ioport/r_ioport.c.obj CMakeFiles/demo0.elf.dir/ra/fsp/src/r_sci_uart/r_sci_uart.c.obj CMakeFiles/demo0.elf.dir/ra_gen/common_data.c.obj CMakeFiles/demo0.elf.dir/ra_gen/hal_data.c.obj CMakeFiles/demo0.elf.dir/ra_gen/main.c.obj CMakeFiles/demo0.elf.dir/ra_gen/pin_data.c.obj CMakeFiles/demo0.elf.dir/ra_gen/vector_data.c.obj CMakeFiles/demo0.elf.dir/src/POP/pop.c.obj CMakeFiles/demo0.elf.dir/src/base_app/AP_commands.c.obj CMakeFiles/demo0.elf.dir/src/base_app/application.c.obj CMakeFiles/demo0.elf.dir/src/console/console.c.obj CMakeFiles/demo0.elf.dir/src/console/console_port.c.obj CMakeFiles/demo0.elf.dir/src/hal_entry.c.obj CMakeFiles/demo0.elf.dir/src/hal_warmstart.c.obj CMakeFiles/demo0.elf.dir/src/sequencer/CPAN/CP_commands.c.obj CMakeFiles/demo0.elf.dir/src/sequencer/CPAN/cpan.c.obj CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj CMakeFiles/demo0.elf.dir/src/simulator.c.obj CMakeFiles/demo0.elf.dir/src/simulator_script.c.obj
   CONFIG = Debug
   FLAGS = -g
   LINK_FLAGS = -mfloat-abi=hard --target=arm-none-eabi -mcpu=cortex-m33 -mfpu=fpv5-sp-d16 -Wunused -Wuninitialized -Wall -Wextra -Wmissing-declarations -Wconversion -Wpointer-arith -Wshadow -Waggregate-return -Wno-parentheses-equality -Wfloat-equal -fshort-enums -fno-unroll-loops -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -mthumb -mlittle-endian -T script/fsp.lld -Wl,-Map=C:/Repo/POC/RS_D620/WORKSPACE/demo0/build/Debug/demo0.map -Wl,--gc-sections -Wl,--cref -Wl,--icf=none -o C:/Repo/POC/RS_D620/WORKSPACE/demo0/build/Debug/demo0.elf -Wl,-z,norelro

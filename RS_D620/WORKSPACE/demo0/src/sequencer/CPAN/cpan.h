@@ -18,7 +18,7 @@
 #define CPAN_STAT_UPDATE          (0x00000001)
 #define CPAN_STAT_RESTART_APP     (0x00000002)
 /* USER DEFINE */
-
+#define CPAN_ADC_CHANNELS        (16)  /* number of ADC channels to simulate */
 
 #if APP_HAS_CMD_SHELL
 extern char** CPAN_stat_str;    /* these are text names for bits that are used in the commands */
@@ -38,6 +38,7 @@ typedef struct cpan_s {
     R_PORT0_Type* port_base[1];
     uint32_t port_shadow[1];
     uint32_t port_enable[1];
+    uint16_t adc_value[CPAN_ADC_CHANNELS]; //@@@ make this a define
 }cpan_t;
 
 extern volatile cpan_t ControlPanel;

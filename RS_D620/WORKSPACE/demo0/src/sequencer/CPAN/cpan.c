@@ -26,6 +26,10 @@ cpan_t* CPAN_open(const cpan_t* p)
     {
         memcpy((cpan_t*) &ControlPanel,p,sizeof(cpan_t));
     }
+    for(int i=0;i<CPAN_ADC_CHANNELS;i++) //@@@ make this a define
+    {
+        ControlPanel.adc_value[i] = 3200;
+    }
     return (cpan_t*) &ControlPanel;
 }
 void CPAN_clear(void)

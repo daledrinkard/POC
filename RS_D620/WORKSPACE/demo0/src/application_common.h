@@ -9,12 +9,12 @@
 
 #define APP_HAS_DEBUG_IO     (1)  /* adds the ability to POP, DROP and TOG gpio pins for logic analyzer debugging */
 #define APP_HAS_CONTROLPANEL (1)  /* adds a control panel for runtime manipulation of components */
-#define APP_HAS_CONSOLE      (0)  /* adds a console to support prints to UART and input command parsing */
+#define APP_HAS_CONSOLE      (1)  /* adds a console to support prints to UART and input command parsing */
 #define APP_HAS_CMD_SHELL    (0)  /* adds a command shell to support runtime commands */
 
 
 #if APP_HAS_CONSOLE
-#include "console/console_port.h"
+#include "console/console_port.h" //IWYU pragma: keep
 #if APP_HAS_CMD_SHELL
 #include "commands/commands.h"
 #endif
@@ -64,6 +64,7 @@
 //-->#define SYSFLG_xxx    (0x00000004)
 
 #define DF_SEQUENCER_CONFIG_ADDR  (0x08000000)  /* dataflash address for the power sequencer configuration */
+#define DF_POWER_RAIL_MAP_ADDR    (0x08000080)  /* dataflash address for the power rail map */
 #define DF_POWER_RAIL_CONFIG_ADDR (0x08000100)  /* dataflash address for the power rail configurations */
 #define DF_POWER_RAIL_RECORD_SIZE (0x80)
 
