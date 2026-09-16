@@ -320,7 +320,9 @@
 				38,
 				39,
 				40,
-				41
+				41,
+				42,
+				43
 			]
 		}
 	],
@@ -560,7 +562,9 @@
 				38,
 				39,
 				40,
-				41
+				41,
+				42,
+				43
 			]
 		}
 	],
@@ -783,6 +787,16 @@
 				3
 			],
 			"compileGroupIndex" : 0,
+			"path" : "ra/fsp/src/r_icu/r_icu.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 3,
+			"backtraces" : 
+			[
+				3
+			],
+			"compileGroupIndex" : 0,
 			"path" : "ra/fsp/src/r_ioport/r_ioport.c",
 			"sourceGroupIndex" : 0
 		},
@@ -944,6 +958,16 @@
 			],
 			"compileGroupIndex" : 0,
 			"path" : "src/sequencer/app_sequencer.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 3,
+			"backtraces" : 
+			[
+				3
+			],
+			"compileGroupIndex" : 0,
+			"path" : "src/sequencer/comm_bus.c",
 			"sourceGroupIndex" : 0
 		},
 		{

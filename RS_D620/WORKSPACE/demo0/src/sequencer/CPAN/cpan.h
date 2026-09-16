@@ -34,10 +34,12 @@ typedef struct cpan_s {
 #endif
     /* USER SECTION */
     bsp_leds_t *leds;
+    external_irq_instance_t *p_SW1;
     uint32_t led_state;	
     R_PORT0_Type* port_base[1];
     uint32_t port_shadow[1];
     uint32_t port_enable[1];
+    uint32_t port_last[1];
     uint16_t adc_value[CPAN_ADC_CHANNELS]; //@@@ make this a define
 }cpan_t;
 

@@ -37,12 +37,17 @@ static char command_buffer[CONSOLE_RX_BUFFER_LEN];
 /*
  *    Port functions for RA
  */
+extern void comm_cb(uart_callback_args_t *p_args);
 
 console_t* RA_console_init(char *name, const uart_instance_t *uart,void* cb,void *sema)
 {
     fsp_err_t err;
     err = uart->p_api->open(uart->p_ctrl,uart->p_cfg);
+#if 1    //@@@ this is a hack to get the comm bus working, but it should be a separate console
+    err |= uart->p_api->callbackSet(uart->p_ctrl,&comm_cb,NULL,&RA_CB_args);
+#else
     err |= uart->p_api->callbackSet(uart->p_ctrl,&RA_console_cb,NULL,&RA_CB_args);
+#endif    
     if (FSP_SUCCESS == err)
     {
         strncpy(&Console.name[0],name,CONSOLE_NAME_SIZE);

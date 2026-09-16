@@ -100,6 +100,7 @@ void app_entry(void) {
                     {
                         App.state = APP_STATE_RESTART;
                     }
+                    /*** WFI  ***/
                     while(0 != app_event_flag_get(SYSFLG_PWR_SERVICE,APP_FLAG_OR_CLEAR,0,&event_flag))
                     {
                     }

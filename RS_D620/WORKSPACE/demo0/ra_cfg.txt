@@ -155,7 +155,7 @@ FSP Configuration
       P002 167 ADC0_AN002 ARDUINO_A2 - - "Analog mode" - None "ADC0: AN002; ADC1: AN102; ICU0: IRQ08" - IO - - 
       P003 166 ADC0_AN003 ARDUINO_A3 - - "Analog mode" - None "ADC0: AN003" - IO - - 
       P004 165 GPIO SW2 - IRQ09 "Input mode" - None "ADC0: AN004; ICU0: IRQ09" - IO - - 
-      P005 164 GPIO SW1 - IRQ10 "Input mode" - None "ADC0: AN005; ICU0: IRQ10" - IO - - 
+      P005 164 ICU0_IRQ10 SW1 - IRQ10 "IRQ mode" - None "ADC0: AN005; ICU0: IRQ10" - IO - - 
       P006 163 GPIO LED1 - None "Output mode (Initial Low)" CMOS - "ADC0: AN006; ICU0: IRQ11" - IO - - 
       P007 162 GPIO LED2 - - "Output mode (Initial Low)" CMOS - "ADC0: AN007" - IO - - 
       P008 161 GPIO LED3 - None "Output mode (Initial Low)" CMOS - "ADC0: AN008; ICU0: IRQ12" - IO - - 
@@ -531,6 +531,9 @@ FSP Configuration
     RS-485 Support: Disable
     IrDA Support: Disabled
     
+  Module "External IRQ (r_icu)"
+    Parameter Checking: Default (BSP)
+    
   HAL
     Instance "g_ioport I/O Port (r_ioport)"
       Name: g_ioport
@@ -615,7 +618,7 @@ FSP Configuration
       
     Instance "g_T0 Timer, General PWM (r_gpt)"
       General: Name: g_T0
-      General: Channel: 2
+      General: Channel: 0
       General: Mode: Periodic
       General: Period: 100
       General: Compare Match: Compare Match A: Status: Disabled
@@ -707,4 +710,80 @@ FSP Configuration
       Interrupts: Transmit Data Empty Interrupt Priority: Priority 12
       Interrupts: Transmit End Interrupt Priority: Priority 12
       Interrupts: Error Interrupt Priority: Priority 12
+      
+    Instance "g_T2 Timer, General PWM (r_gpt)"
+      General: Name: g_T2
+      General: Channel: 2
+      General: Mode: One-Shot
+      General: Period: 5
+      General: Compare Match: Compare Match A: Status: Disabled
+      General: Compare Match: Compare Match A: Compare match value: 0x10000
+      General: Compare Match: Compare Match B: Status: Disabled
+      General: Compare Match: Compare Match B: Compare match value: 0x10000
+      General: Compare Match: Compare Match C: Status: Disabled
+      General: Compare Match: Compare Match C: Compare match value: 0x10000
+      General: Compare Match: Compare Match D: Status: Disabled
+      General: Compare Match: Compare Match D: Compare match value: 0x10000
+      General: Compare Match: Compare Match E: Status: Disabled
+      General: Compare Match: Compare Match E: Compare match value: 0x10000
+      General: Compare Match: Compare Match F: Status: Disabled
+      General: Compare Match: Compare Match F: Compare match value: 0x10000
+      General: Period Unit: Milliseconds
+      Output: Custom Waveform: GTIOA: Initial Output Level: Pin Level Low
+      Output: Custom Waveform: GTIOA: Cycle End Output Level: Pin Level Retain
+      Output: Custom Waveform: GTIOA: Compare Match Output Level: Pin Level Retain
+      Output: Custom Waveform: GTIOA: Retain Output Level at Count Stop: Disabled
+      Output: Custom Waveform: GTIOB: Initial Output Level: Pin Level Low
+      Output: Custom Waveform: GTIOB: Cycle End Output Level: Pin Level Retain
+      Output: Custom Waveform: GTIOB: Compare Match Output Level: Pin Level Retain
+      Output: Custom Waveform: GTIOB: Retain Output Level at Count Stop: Disabled
+      Output: Custom Waveform: Custom Waveform Enable: Disabled
+      Output: Duty Cycle Percent (only applicable in PWM mode): 50
+      Output: GTIOCA Output Enabled: False
+      Output: GTIOCA Stop Level: Pin Level Low
+      Output: GTIOCB Output Enabled: False
+      Output: GTIOCB Stop Level: Pin Level Low
+      Input: Count Up Source: 
+      Input: Count Down Source: 
+      Input: Start Source: 
+      Input: Stop Source: 
+      Input: Clear Source: 
+      Input: Capture A Source: 
+      Input: Capture B Source: 
+      Input: Noise Filter A Sampling Clock Select: No Filter
+      Input: Noise Filter B Sampling Clock Select: No Filter
+      Pin Polarity: GTIOCnA Polarity: Normal
+      Pin Polarity: GTIOCnB Polarity: Normal
+      Interrupts: Callback: T2_cb
+      Interrupts: Overflow/Crest Interrupt Priority: Priority 10
+      Interrupts: Capture/Compare match A Interrupt Priority: Disabled
+      Interrupts: Capture/Compare match B Interrupt Priority: Disabled
+      Interrupts: Compare Match C Interrupt Priority: Disabled
+      Interrupts: Compare Match D Interrupt Priority: Disabled
+      Interrupts: Compare Match E Interrupt Priority: Disabled
+      Interrupts: Compare Match F Interrupt Priority: Disabled
+      Interrupts: Underflow/Trough Interrupt Priority: Disabled
+      Extra Features: Extra Features: Disabled
+      Extra Features: Output Disable: POEG Link: POEG Channel 0
+      Extra Features: Output Disable: Output Disable POEG Trigger: 
+      Extra Features: ADC Trigger: Start Event Trigger (Channels with GTINTAD only): 
+      Extra Features: ADC Trigger: ADC A Compare Match (Raw Counts): 0
+      Extra Features: ADC Trigger: ADC B Compare Match (Raw Counts): 0
+      Extra Features: Dead Time (Value range varies with Channel): Dead Time Count Up (Raw Counts): 0
+      Extra Features: Dead Time (Value range varies with Channel): Dead Time Count Down (Raw Counts) (Channels with GTDVD only): 0
+      Extra Features: Interrupt Skipping (Channels with GTITC only): Interrupt to Count: None
+      Extra Features: Interrupt Skipping (Channels with GTITC only): Interrupt Skip Count: 0
+      Extra Features: Interrupt Skipping (Channels with GTITC only): Skip ADC Events: None
+      Extra Features: Output Disable: GTIOCA Disable Setting: Disable Prohibited
+      Extra Features: Output Disable: GTIOCB Disable Setting: Disable Prohibited
+      
+    Instance "g_SW1 External IRQ (r_icu)"
+      Name: g_SW1
+      Channel: 10
+      Trigger: Falling
+      Digital Filtering: Enabled
+      Filter Source: PCLK filter
+      Digital Filtering Sample Clock (Only valid when Digital Filtering is Enabled): PCLK / 64
+      Callback: SW1_cb
+      Pin Interrupt Priority: Priority 12
       

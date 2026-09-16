@@ -85,8 +85,12 @@
             <slot name="PB01.CM33" secure="true"/>
         </peripheral>
         <peripheral name="GPT1.CM33" group="GPT" security="s"/>
-        <peripheral name="GPT2.CM33" group="GPT" security="s"/>
+        <peripheral name="GPT0.CM33" group="GPT" security="s"/>
         <peripheral name="SCI0.CM33" group="SCI" security="s"/>
+        <peripheral name="GPT2.CM33" group="GPT" security="s"/>
+        <peripheral name="ICU_EXT_IRQ.CM33">
+            <slot name="ICU_EXT_IRQ10.CM33" secure="true"/>
+        </peripheral>
         <peripheral name="ICU.CM33">
             <slot name="IRQ0.CM33" secure="true"/>
             <slot name="IRQ1.CM33" secure="true"/>
@@ -95,6 +99,8 @@
             <slot name="IRQ4.CM33" secure="true"/>
             <slot name="IRQ5.CM33" secure="true"/>
             <slot name="IRQ6.CM33" secure="true"/>
+            <slot name="IRQ7.CM33" secure="true"/>
+            <slot name="IRQ8.CM33" secure="true"/>
         </peripheral>
     </partition>
 </azone>

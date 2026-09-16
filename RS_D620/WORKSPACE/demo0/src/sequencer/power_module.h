@@ -24,6 +24,7 @@
 #define PWR_MAX_CASCADE     (4)  /* ucd91320 1: cascade up to 4 devices to sequence up to 128 rails */
 /* USER DEFINE */
 
+#define PWR_FLAG_ENABLE     (0x00000001)
 /* how a rail's output is measured (ucd91320 4: MONx = analog or digital monitor, or GPIO) */
 typedef enum power_monitor_type_e {
     PWR_MON_NONE,
@@ -54,6 +55,7 @@ typedef enum power_fault_type_e {
 
 /* overall sequencer state machine (ucd91320 6.1: power-on/off sequencing + fault shutdown) */
 typedef enum power_sequencer_state_e {
+    PWR_SEQ_RESET,
     PWR_SEQ_IDLE,
     PWR_SEQ_SEQUENCING_UP,
     PWR_SEQ_RUN,
@@ -96,7 +98,7 @@ typedef struct power_rail_ctrl_s {
 typedef struct power_rail_map_s {
     uint8_t en_port;
     uint8_t en_pin_bit;
-    uint8_t ADC0_index;
+    uint8_t ADC0_index; //@@@ may also be an IO for fault.
     uint8_t ADC1_index;
 }power_rail_map_t;
 /* runtime state of a single rail */
@@ -134,9 +136,13 @@ typedef struct power_controller_cfg_s {
 
 } power_controller_cfg_t;
 typedef struct power_controller_ctrl_s {
-    /* USER SECTION */
     power_sequencer_state_t  state;
     power_fault_log_t        fault_log;
+    uint32_t                 rails_ready;
+    uint32_t                 rails_enabled;
+    uint32_t                 rails_faulted;
+    uint32_t                 event; 
+    uint8_t                  page; /* for future expansion, e.g. PMBus page-select */
 } power_controller_ctrl_t;
 /*
  * Power sequencer / system manager object.
@@ -149,8 +155,6 @@ typedef struct power_controller_s {
     power_controller_cfg_t  *cfg;
     power_controller_ctrl_t *ctrl;
     power_rail_map_t        *map;//[PWR_MAX_RAILS];   /* mapping data is in SRAM */
-
-    /* USER SECTION */
 } power_controller_t;
 
 extern const power_controller_t PowerController;

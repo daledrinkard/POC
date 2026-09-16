@@ -92,6 +92,7 @@
       <configSetting altId="iic1.sda.p511" configurationId="iic1.sda" peripheral="IIC1"/>
       <configSetting altId="iic2.scl.p415" configurationId="iic2.scl" peripheral="IIC2"/>
       <configSetting altId="iic2.sda.p414" configurationId="iic2.sda" peripheral="IIC2"/>
+      <configSetting altId="irq0.irq10.p005" configurationId="irq0.irq10" isUsedByDriver="true" peripheral="ICU0"/>
       <configSetting altId="p000.gpio_mode.gpio_mode_an" configurationId="p000.gpio_mode"/>
       <configSetting altId="p001.gpio_mode.gpio_mode_an" configurationId="p001.gpio_mode"/>
       <configSetting altId="p002.gpio_mode.gpio_mode_an" configurationId="p002.gpio_mode"/>
@@ -99,9 +100,8 @@
       <configSetting altId="p004.input" configurationId="p004"/>
       <configSetting altId="p004.gpio_irq.gpio_irq_enabled" configurationId="p004.gpio_irq"/>
       <configSetting altId="p004.gpio_mode.gpio_mode_in" configurationId="p004.gpio_mode"/>
-      <configSetting altId="p005.input" configurationId="p005"/>
       <configSetting altId="p005.gpio_irq.gpio_irq_enabled" configurationId="p005.gpio_irq"/>
-      <configSetting altId="p005.gpio_mode.gpio_mode_in" configurationId="p005.gpio_mode"/>
+      <configSetting altId="p005.gpio_mode.gpio_mode_irq" configurationId="p005.gpio_mode"/>
       <configSetting altId="p006.output.low" configurationId="p006"/>
       <configSetting altId="p006.gpio_mode.gpio_mode_out.low" configurationId="p006.gpio_mode"/>
       <configSetting altId="p007.output.low" configurationId="p007"/>

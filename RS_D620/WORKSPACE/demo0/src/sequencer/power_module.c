@@ -72,37 +72,38 @@ typedef enum power_rail_state_e {
     {
         if (true == rail->cfg->enabled)
         {
-        if (PWR_MON_ANALOG == rail->cfg->monitor_type)
-        {
-            rail->ctrl->monitor_mv = adc_raw_to_mv(ADC_data[map->ADC0_index], rail->ctrl->adc_convert);
-            rail->ctrl->monitor_c  = adc_raw_to_mv(ADC_data[map->ADC1_index], rail->ctrl->adc_convert); //@@@ this not right
-        }
-        switch (rail->ctrl->state)
-        {
-            case PWR_RAIL_OFF:
-                 if (PowerController.ctrl->state == PWR_SEQ_SEQUENCING_UP)
-                 {
-                     rail->ctrl->cnt = rail->cfg->on_delay_ms * 10;
-                     rail->ctrl->state = (rail->ctrl->cnt) ? PWR_RAIL_SEQ_ON : PWR_RAIL_ON ;
-                 }
-                break;
-            case PWR_RAIL_SEQ_ON:
-            if (rail->ctrl->cnt == 0)
+            if (PWR_MON_ANALOG == rail->cfg->monitor_type)
             {
-                rail->ctrl->state = PWR_RAIL_ON;
-                     simulator_start(i); /* start the simulator for this rail */
-                     rail->ctrl->cnt = rail->cfg->timeout_ms * 10; /* start the timeout counter */
+                rail->ctrl->monitor_mv = adc_raw_to_mv(ADC_data[map->ADC0_index], rail->ctrl->adc_convert);
+                rail->ctrl->monitor_c  = adc_raw_to_mv(ADC_data[map->ADC1_index], rail->ctrl->adc_convert); //@@@ this not right
             }
-            else
+            switch (rail->ctrl->state)
             {
-                rail->ctrl->cnt--;
-            }
-              break;
+                case PWR_RAIL_OFF:
+                     if (PowerController.ctrl->state == PWR_SEQ_SEQUENCING_UP)
+                     {
+                         rail->ctrl->cnt = rail->cfg->on_delay_ms * 10;
+                         rail->ctrl->state = (rail->ctrl->cnt) ? PWR_RAIL_SEQ_ON : PWR_RAIL_ON ;
+                     }
+                     break;
+                case PWR_RAIL_SEQ_ON:
+                     if (rail->ctrl->cnt == 0)
+                     {
+                         rail->ctrl->state = PWR_RAIL_ON;
+                         simulator_start(i); /* start the simulator for this rail */
+                         rail->ctrl->cnt = rail->cfg->timeout_ms * 10; /* start the timeout counter */
+                         PowerController.ctrl->rails_ready |= (1 << i);
+                     }
+                     else
+                     {
+                         rail->ctrl->cnt--;
+                     }
+                     break;
             case PWR_RAIL_FAULT:
                 /* USER CODE: handle faulted rail */
                 break;
             case PWR_RAIL_ON:
-            rail->ctrl->cnt = (rail->ctrl->cnt == 0) ? 0 : rail->ctrl->cnt - 1;
+                rail->ctrl->cnt = (rail->ctrl->cnt == 0) ? 0 : rail->ctrl->cnt - 1;
                  //@@@ check for voltage out of range stuff...
                 //@@@ check for voltage out of range stuff...
                 /* USER CODE: handle on rail */
