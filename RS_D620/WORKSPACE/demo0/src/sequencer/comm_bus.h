@@ -21,6 +21,7 @@ typedef enum
     COMM_STATE_START,
     COMM_STATE_ADDRESS,
     COMM_STATE_COMMAND,
+//    COMM_STATE_MFG_CMD,  /* not supported in TI part */
     COMM_STATE_DATA,
     COMM_STATE_FAULT
 } comm_state_type_t;
@@ -31,6 +32,7 @@ typedef struct PB_comm_s
     comm_state_type_t state;
     uint8_t address;
     uint8_t command;
+//    uint8_t mfg_cmd;    /* not supported in TI device */
     uint8_t data_len;
     uint8_t read_write;
     uint8_t data[COMM_DATA_SIZE];

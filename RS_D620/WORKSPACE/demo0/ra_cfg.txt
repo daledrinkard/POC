@@ -547,8 +547,8 @@ FSP Configuration
       Name: g_dataflash
       Data Flash Background Operation: Enabled
       Callback: dataflash_cb
-      Flash Ready Interrupt Priority: Priority 12
-      Flash Error Interrupt Priority: Priority 12
+      Flash Ready Interrupt Priority: Priority 1
+      Flash Error Interrupt Priority: Priority 1
       
     Instance "g_T1 Timer, General PWM (r_gpt)"
       General: Name: g_T1
@@ -684,7 +684,7 @@ FSP Configuration
       
     Instance "g_console_uart UART (r_sci_uart)"
       General: Name: g_console_uart
-      General: Channel: 0
+      General: Channel: 7
       General: Data Bits: 8bits
       General: Parity: None
       General: Stop Bits: 1bit
@@ -786,4 +786,33 @@ FSP Configuration
       Digital Filtering Sample Clock (Only valid when Digital Filtering is Enabled): PCLK / 64
       Callback: SW1_cb
       Pin Interrupt Priority: Priority 12
+      
+    Instance "g_comm_uart UART (r_sci_uart)"
+      General: Name: g_comm_uart
+      General: Channel: 0
+      General: Data Bits: 8bits
+      General: Parity: None
+      General: Stop Bits: 1bit
+      Baud: Baud Rate: 115200
+      Baud: Baud Rate Modulation: Disabled
+      Baud: Max Error (%): 5
+      Flow Control: CTS/RTS Selection: Hardware RTS
+      Flow Control: Software RTS Port: Disabled
+      Flow Control: Software RTS Pin: Disabled
+      Extra: Clock Source: Internal Clock
+      Extra: Start bit detection: Falling Edge
+      Extra: Noise Filter: Disable
+      Extra: Receive FIFO Trigger Level: Max
+      Extra: IrDA: Enable: Disabled
+      Extra: IrDA: RXD Polarity Switching: Normal
+      Extra: IrDA: TXD Polarity Switching: Normal
+      Extra: RS-485: DE Pin: Disable
+      Extra: RS-485: DE Pin Polarity: Active High
+      Extra: RS-485: DE Port Number: Disabled
+      Extra: RS-485: DE Pin Number: Disabled
+      Interrupts: Callback: comm_cb
+      Interrupts: Receive Interrupt Priority: Priority 12
+      Interrupts: Transmit Data Empty Interrupt Priority: Priority 12
+      Interrupts: Transmit End Interrupt Priority: Priority 12
+      Interrupts: Error Interrupt Priority: Priority 12
       

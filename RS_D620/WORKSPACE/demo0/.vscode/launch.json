@@ -12,5 +12,12 @@
       "images": []
     }
   ],
+  "setupCommands": [
+  {
+    "description": "Set GDB output radix to hex",
+    "text": "set output-radix 16"
+  }
+],
+
   "version": "0.2.0"
 }

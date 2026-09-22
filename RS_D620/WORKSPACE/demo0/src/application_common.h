@@ -63,10 +63,17 @@
 #define SYSFLG_DATAFLASH_READY (0x00000008)
 //-->#define SYSFLG_xxx    (0x00000004)
 
-#define DF_SEQUENCER_CONFIG_ADDR  (0x08000000)  /* dataflash address for the power sequencer configuration */
-#define DF_POWER_RAIL_MAP_ADDR    (0x08000080)  /* dataflash address for the power rail map */
-#define DF_POWER_RAIL_CONFIG_ADDR (0x08000100)  /* dataflash address for the power rail configurations */
-#define DF_POWER_RAIL_RECORD_SIZE (0x80)
+#define DF_POWER_BASE_ADDR        (0x08000000) 
+#define DF_POWER_PINMAP_SIZE      (0x80)  /* needs 128 bytes, 32 rails each having 4 bytes */
+#define DF_POWER_FLTMAP_SIZE      (0x80)  /* needs 57 bytes */
+#define DF_POWER_CONFIG_SIZE      (0x40)
+#define DF_POWER_RAIL_RECORD_SIZE (0x40)
+#define DF_POWER_LARGEST_SIZE     (DF_POWER_PINMAP_SIZE) /* choose largest consumer */
+
+#define DF_SEQUENCER_CONFIG_ADDR  (DF_POWER_BASE_ADDR)  /* dataflash address for the power sequencer configuration */
+#define DF_POWER_RAIL_PINMAP_ADDR (DF_SEQUENCER_CONFIG_ADDR  + DF_POWER_CONFIG_SIZE)
+#define DF_POWER_RAIL_FLTMAP_ADDR (DF_POWER_RAIL_PINMAP_ADDR + DF_POWER_PINMAP_SIZE)
+#define DF_POWER_RAIL_CONFIG_ADDR (DF_POWER_RAIL_FLTMAP_ADDR + DF_POWER_FLTMAP_SIZE)  /* dataflash address for the power rail configurations */
 
 /* APPLICATION STATE MACHINE */
 typedef enum app_state_e {

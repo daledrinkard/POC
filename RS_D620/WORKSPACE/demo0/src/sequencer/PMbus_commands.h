@@ -16,6 +16,7 @@
 
 #ifndef PMBUS_COMMANDS_H_
 #define PMBUS_COMMANDS_H_
+#include <stdint.h>
 /* USER INCLUDE */
 
 #define PMBUS_OPERATION_ON_OFF       (0x80) /* bit 7 = 1: ON, 0: OFF */
@@ -226,5 +227,7 @@ typedef enum pmbus_command_e {
     PMBUS_CMD_PMBUS_EXTENDED_COMMAND        = 0xFF
 } pmbus_command_t;
 
+/* PUBLISHED functions */
+void PMbus_write_execute(pmbus_command_t command, uint8_t *data, uint16_t data_len);
 
 #endif /* PMBUS_COMMANDS_H_ */

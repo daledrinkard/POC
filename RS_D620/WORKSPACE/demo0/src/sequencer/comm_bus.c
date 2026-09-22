@@ -30,39 +30,15 @@ int comm_service(void)
     }
     return 0;
 }
-
+//extern uint8_t *PMbus_write_execute(uint8_t command, uint8_t *data, uint16_t len);
 static uint32_t comm_parse_command(void);
 static uint32_t comm_parse_command(void)
 {
-    switch ((pmbus_command_t) PB_Comm.command)
+    if (PB_Comm.read_write == 'W')
     {
-        case PMBUS_CMD_PAGE:
-            //@@@ PowerController.ctrl->page = PB_Comm.data[0];
-            break;
-        case PMBUS_CMD_OPERATION:
-            break;
-        case PMBUS_CMD_ON_OFF_CONFIG:
-            break;
-        case PMBUS_CMD_CLEAR_FAULTS:
-            break;
-        case PMBUS_CMD_PHASE:
-            break;
-        case PMBUS_CMD_PASSKEY:
-            break;
-        case PMBUS_CMD_ACCESS_CONTROL:
-            break;
-        case PMBUS_CMD_WRITE_PROTECT:
-            break;
-        case PMBUS_CMD_STORE_DEFAULT_ALL:
-            break;
-        case PMBUS_CMD_RESTORE_DEFAULT_ALL:
-            break;
-
-        default:
-            POPR();
-            PB_Comm.state = COMM_STATE_FAULT;
+      PMbus_write_execute(PB_Comm.command,PB_Comm.data,PB_Comm.data_len);
     }
-    return 0;
+    //@@@ what do you do to read?????
 }
 
 /**
@@ -95,7 +71,6 @@ void comm_cb(uart_callback_args_t *p_args)
         case UART_EVENT_RX_COMPLETE:   // = (1UL << 0), ///< Receive complete event
             break;
         case UART_EVENT_TX_COMPLETE:   // = (1UL << 1), ///< Transmit complete event
-            Console.flags &= (uint32_t) ~CONSOLE_FLAG_TX_BUSY;        
             break;
         case UART_EVENT_RX_CHAR:       // = (1UL << 2), ///< Character received
             if ((data == ' ') || (data == '\n') || (data == '\r')) {
@@ -138,17 +113,33 @@ void comm_cb(uart_callback_args_t *p_args)
                     {
                         bx = 1;
                         cx = 0;
-                        PB_Comm.state = COMM_STATE_DATA;
+//                        PB_Comm.state = (PB_Comm.command == 0xFE) ? COMM_STATE_MFG_CMD : COMM_STATE_DATA ; /* not supported in TI part
+                        PB_Comm.state = COMM_STATE_DATA ;
                     }
                     else
                     {
                         bx--;
                     }
                     break;
+//                case COMM_STATE_MFG_CMD:
+//                    PB_Comm.mfg_cmd |= (data > '9') ? (data - 'A' + 10) : (data - '0');
+//                    PB_Comm.mfg_cmd = PB_Comm.command << (4*bx);
+//                    if (bx == 0)
+//                    {
+//                        bx = 1;
+//                        cx = 0;
+//                        PB_Comm.state = COMM_STATE_DATA;
+//                    }
+//                    else
+//                    {
+//                        bx--;
+//                    }
+//                    break;
                 case COMM_STATE_DATA:
                     switch(data) 
                     {
                         case COMM_EOP:
+                            PB_Comm.data_len = cx;
                             comm_parse_command();
                             PB_Comm.state = COMM_STATE_IDLE;
                             break;
@@ -182,7 +173,7 @@ void comm_cb(uart_callback_args_t *p_args)
         // = (1UL << 4), ///< Mode fault error event
         // = (1UL << 5), ///< FIFO Overflow error event
         // = (1UL << 6), ///< Break detect error event
-            Console.flags |= (uint32_t) ((p_args->event & 0x000000FF) << 24) | CONSOLE_FLAG_ERROR; /* set an error flag */
+ //@@@           Console.flags |= (uint32_t) ((p_args->event & 0x000000FF) << 24) | CONSOLE_FLAG_ERROR; /* set an error flag */
 
 #if (APPCFG_RTOS_AZURE == BSP_CFG_RTOS) /* Azure */
             tx_semaphore_ceiling_put(Console.tx_done_sema,1); //@@@ this needs to be to local sema

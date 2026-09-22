@@ -126,7 +126,8 @@ typedef enum power_rail_state_e {
     }
     }
 }
-    uint8_t record[DF_POWER_RAIL_RECORD_SIZE];
+
+uint8_t record[DF_POWER_LARGEST_SIZE];
 
 static void pwr_dataflash_update(uint8_t *p,uint8_t *data,uint16_t len )
 
@@ -144,17 +145,22 @@ static void pwr_dataflash_update(uint8_t *p,uint8_t *data,uint16_t len )
     in RAM, the destination block is erased, then the record is written in one shot -
     data flash bits can only be programmed 1->0, so the target must be erased first.
 */
+volatile uint16_t blkcnt;
+    blkcnt = ((len / DATAFLASH_RECORD_SIZE)+1);
     static bool dataflash_open = false;
     fsp_err_t err;
     flash_status_t status;
-
-    memset(record, 0xFF, sizeof(record));   /* fill remaining bytes with FF */
+    //@@@ could be more efficient
+#if 1 //@@@ fill unused space with FF    
+    memset(record, 0xFF, blkcnt * DATAFLASH_RECORD_SIZE);   /* fill remaining bytes with FF */
+#endif    
     memcpy(record, data, len);              /* the caller's data */
 
+#if 0
     uint16_t crc = crc16_ccitt(record, DATAFLASH_RECORD_SIZE - DATAFLASH_CRC_SIZE);
     record[DATAFLASH_RECORD_SIZE - DATAFLASH_CRC_SIZE]     = (uint8_t) (crc & 0xFF);
     record[DATAFLASH_RECORD_SIZE - DATAFLASH_CRC_SIZE + 1] = (uint8_t) (crc >> 8);
-
+#endif
     if (!dataflash_open)
     {
         err = R_FLASH_HP_Open(&g_dataflash_ctrl, &g_dataflash_cfg);
@@ -165,17 +171,22 @@ static void pwr_dataflash_update(uint8_t *p,uint8_t *data,uint16_t len )
         dataflash_open = true;
     }
 
-    err = R_FLASH_HP_Erase(&g_dataflash_ctrl, (uint32_t)p, DF_POWER_RAIL_RECORD_SIZE/DATAFLASH_RECORD_SIZE); /* erase the one block this record occupies */
+    err = R_FLASH_HP_Erase(&g_dataflash_ctrl, (uint32_t)p, blkcnt); /* erase the one block this record occupies */
+//    err = R_FLASH_HP_Erase(&g_dataflash_ctrl, 0x08000000, 1); /* erase the one block this record occupies */
     if (FSP_SUCCESS != err)
     {
-        while(1);;
+        while(1);
     }
     do /* g_dataflash_cfg.data_flash_bgo == true -> erase/write complete asynchronously */
     {
         R_FLASH_HP_StatusGet(&g_dataflash_ctrl, &status);
     } while (FLASH_STATUS_IDLE != status);
 
-    err = R_FLASH_HP_Write(&g_dataflash_ctrl, (uint32_t) record, (uint32_t)p, DATAFLASH_RECORD_SIZE);
+#if 1 //@@@ fill space with FF
+    err = R_FLASH_HP_Write(&g_dataflash_ctrl, (uint32_t) record, (uint32_t)p, blkcnt * DATAFLASH_RECORD_SIZE);
+#else
+    err = R_FLASH_HP_Write(&g_dataflash_ctrl, (uint32_t) record, (uint32_t)p, len);
+#endif    
     if (FSP_SUCCESS != err)
     {
         while(1);
@@ -220,6 +231,12 @@ void pwr_seq_update_config(uint8_t *data,uint16_t len )
 void pwr_seq_update_map(uint8_t *data,uint16_t len )
 {
     uint32_t p;
-    p = DF_POWER_RAIL_MAP_ADDR;
+    p = DF_POWER_RAIL_PINMAP_ADDR;
+    pwr_dataflash_update((uint8_t*) p,data,len);
+}
+void pwr_seq_update_fault(uint8_t *data,uint16_t len )
+{
+    uint32_t p;
+    p = DF_POWER_RAIL_FLTMAP_ADDR;
     pwr_dataflash_update((uint8_t*) p,data,len);
 }

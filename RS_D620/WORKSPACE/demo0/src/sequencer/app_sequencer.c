@@ -1,6 +1,7 @@
 /*
             SEQUENCER app
 */
+#include "application_common.h"
 #include "cpan.h"
 #include "app_sequencer.h"
 #include "hal_data.h"
@@ -45,7 +46,8 @@ const power_controller_t PowerController = {
     .rails = (power_rail_t*)            &power_rails[0], 
     .cfg = (power_controller_cfg_t *)   DF_SEQUENCER_CONFIG_ADDR,
     .ctrl = (power_controller_ctrl_t *) &controller_ctrl_scratch,
-    .map = (power_rail_map_t *)         DF_POWER_RAIL_MAP_ADDR
+    .map = (power_rail_map_t *)         DF_POWER_RAIL_PINMAP_ADDR,
+    .faults = (power_fault_output_t *)  DF_POWER_RAIL_FLTMAP_ADDR
 };
 int app_func_reset   (void)
 {
@@ -53,7 +55,7 @@ int app_func_reset   (void)
     POP0();
 
 
-    #if 0 // only do this once, on first run, to initialize the data flash with default values
+    #if 1 // only do this once, on first run, to initialize the data flash with default values
      pwr_mod_update_config(0,(uint8_t*) &power_analog_3300,sizeof(power_rail_cfg_t));
      pwr_mod_update_config(1,(uint8_t*) &power_analog_5000,sizeof(power_rail_cfg_t));
      pwr_mod_update_config(2,(uint8_t*) &power_analog_1200,sizeof(power_rail_cfg_t));
@@ -70,6 +72,7 @@ int app_func_reset   (void)
 
 
     CP = CPAN_open(&control_panel_initial);  /* open the control panel */
+    R_SCI_UART_Open(&g_comm_uart_ctrl, &g_comm_uart_cfg); //@@@ should be in comm_init();
     R_PORT1->PCNTR3 = 0x00000000;
     R_PORT1->PCNTR4 = 0x00000000; 
     return (CP == NULL) ? -1 : 0;

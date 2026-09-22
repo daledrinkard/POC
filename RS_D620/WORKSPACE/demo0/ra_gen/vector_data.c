@@ -7,12 +7,16 @@
                         [0] = fcu_frdyi_isr, /* FCU FRDYI (Flash ready interrupt) */
             [1] = fcu_fiferr_isr, /* FCU FIFERR (Flash access error interrupt) */
             [2] = gpt_counter_overflow_isr, /* GPT0 COUNTER OVERFLOW (Overflow) */
-            [3] = sci_uart_rxi_isr, /* SCI0 RXI (Receive data full) */
-            [4] = sci_uart_txi_isr, /* SCI0 TXI (Transmit data empty) */
-            [5] = sci_uart_tei_isr, /* SCI0 TEI (Transmit end) */
-            [6] = sci_uart_eri_isr, /* SCI0 ERI (Receive error) */
+            [3] = sci_uart_rxi_isr, /* SCI7 RXI (Receive data full) */
+            [4] = sci_uart_txi_isr, /* SCI7 TXI (Transmit data empty) */
+            [5] = sci_uart_tei_isr, /* SCI7 TEI (Transmit end) */
+            [6] = sci_uart_eri_isr, /* SCI7 ERI (Receive error) */
             [7] = gpt_counter_overflow_isr, /* GPT2 COUNTER OVERFLOW (Overflow) */
             [8] = r_icu_isr, /* ICU IRQ10 (External pin interrupt 10) */
+            [9] = sci_uart_rxi_isr, /* SCI0 RXI (Receive data full) */
+            [10] = sci_uart_txi_isr, /* SCI0 TXI (Transmit data empty) */
+            [11] = sci_uart_tei_isr, /* SCI0 TEI (Transmit end) */
+            [12] = sci_uart_eri_isr, /* SCI0 ERI (Receive error) */
         };
         #if BSP_FEATURE_ICU_HAS_IELSR
         const bsp_interrupt_event_t g_interrupt_event_link_select[BSP_ICU_VECTOR_NUM_ENTRIES] =
@@ -20,12 +24,16 @@
             [0] = BSP_PRV_VECT_ENUM(EVENT_FCU_FRDYI,GROUP0), /* FCU FRDYI (Flash ready interrupt) */
             [1] = BSP_PRV_VECT_ENUM(EVENT_FCU_FIFERR,GROUP1), /* FCU FIFERR (Flash access error interrupt) */
             [2] = BSP_PRV_VECT_ENUM(EVENT_GPT0_COUNTER_OVERFLOW,GROUP2), /* GPT0 COUNTER OVERFLOW (Overflow) */
-            [3] = BSP_PRV_VECT_ENUM(EVENT_SCI0_RXI,GROUP3), /* SCI0 RXI (Receive data full) */
-            [4] = BSP_PRV_VECT_ENUM(EVENT_SCI0_TXI,GROUP4), /* SCI0 TXI (Transmit data empty) */
-            [5] = BSP_PRV_VECT_ENUM(EVENT_SCI0_TEI,GROUP5), /* SCI0 TEI (Transmit end) */
-            [6] = BSP_PRV_VECT_ENUM(EVENT_SCI0_ERI,GROUP6), /* SCI0 ERI (Receive error) */
+            [3] = BSP_PRV_VECT_ENUM(EVENT_SCI7_RXI,GROUP3), /* SCI7 RXI (Receive data full) */
+            [4] = BSP_PRV_VECT_ENUM(EVENT_SCI7_TXI,GROUP4), /* SCI7 TXI (Transmit data empty) */
+            [5] = BSP_PRV_VECT_ENUM(EVENT_SCI7_TEI,GROUP5), /* SCI7 TEI (Transmit end) */
+            [6] = BSP_PRV_VECT_ENUM(EVENT_SCI7_ERI,GROUP6), /* SCI7 ERI (Receive error) */
             [7] = BSP_PRV_VECT_ENUM(EVENT_GPT2_COUNTER_OVERFLOW,GROUP7), /* GPT2 COUNTER OVERFLOW (Overflow) */
             [8] = BSP_PRV_VECT_ENUM(EVENT_ICU_IRQ10,GROUP0), /* ICU IRQ10 (External pin interrupt 10) */
+            [9] = BSP_PRV_VECT_ENUM(EVENT_SCI0_RXI,GROUP1), /* SCI0 RXI (Receive data full) */
+            [10] = BSP_PRV_VECT_ENUM(EVENT_SCI0_TXI,GROUP2), /* SCI0 TXI (Transmit data empty) */
+            [11] = BSP_PRV_VECT_ENUM(EVENT_SCI0_TEI,GROUP3), /* SCI0 TEI (Transmit end) */
+            [12] = BSP_PRV_VECT_ENUM(EVENT_SCI0_ERI,GROUP4), /* SCI0 ERI (Receive error) */
         };
         #endif
         #endif

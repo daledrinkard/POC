@@ -120,8 +120,13 @@ typedef struct power_fault_log_s {
     uint8_t                 count;
     bool                    black_box_valid; /* first-fault snapshot captured, must be cleared before reuse */
 } power_fault_log_t;
+typedef struct power_fault_output_s {
+  uint32_t fault_mask[4];  //@@@ arbitrary needs a define
+  uint16_t fault_pins[4];  //@@@
+  uint32_t GPI_mask[4];    //@@@
+  uint8_t other_mask;
+} power_fault_output_t;
 typedef struct power_controller_cfg_s {
-    /* USER SECTION */
     uint8_t                  active_rail_group;  /* 0..PWR_MAX_RAIL_GROUPS-1, selected via GPI Controlled Rail Groups */
     uint8_t                  pmbus_address;      /* ucd91320 6.3.2: 7-bit PMBus address (PMBUS_ADDRx pins) */
     uint8_t                  cascade_id;         /* 0..PWR_MAX_CASCADE-1 */
@@ -155,6 +160,7 @@ typedef struct power_controller_s {
     power_controller_cfg_t  *cfg;
     power_controller_ctrl_t *ctrl;
     power_rail_map_t        *map;//[PWR_MAX_RAILS];   /* mapping data is in SRAM */
+    power_fault_output_t    *faults;
 } power_controller_t;
 
 extern const power_controller_t PowerController;
@@ -167,4 +173,5 @@ bool pwr_dataflash_check(const uint8_t *p);
 void pwr_mod_update_config(uint16_t rail_index,uint8_t *data,uint16_t len );
 void pwr_seq_update_config(uint8_t *data,uint16_t len );
 void pwr_seq_update_map(uint8_t *data,uint16_t len );
+void pwr_seq_update_fault(uint8_t *data,uint16_t len );
 #endif /* POWER_MODULE_H_ */

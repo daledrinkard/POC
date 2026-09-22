@@ -231,8 +231,8 @@
       <configSetting altId="sci0.txd.p411" configurationId="sci0.txd" isUsedByDriver="true" peripheral="SCI0"/>
       <configSetting altId="sci6.scl.p505" configurationId="sci6.scl" peripheral="SCI6"/>
       <configSetting altId="sci6.sda.p506" configurationId="sci6.sda" peripheral="SCI6"/>
-      <configSetting altId="sci7.rxd.p614" configurationId="sci7.rxd" peripheral="SCI7"/>
-      <configSetting altId="sci7.txd.p613" configurationId="sci7.txd" peripheral="SCI7"/>
+      <configSetting altId="sci7.rxd.p614" configurationId="sci7.rxd" isUsedByDriver="true" peripheral="SCI7"/>
+      <configSetting altId="sci7.txd.p613" configurationId="sci7.txd" isUsedByDriver="true" peripheral="SCI7"/>
       <configSetting altId="usbfs0.ovrcura.p501" configurationId="usbfs0.ovrcura" peripheral="USB_FS0"/>
       <configSetting altId="usbfs0.vbus.p407" configurationId="usbfs0.vbus" peripheral="USB_FS0"/>
       <configSetting altId="usbfs0.vbusen.p500" configurationId="usbfs0.vbusen" peripheral="USB_FS0"/>
