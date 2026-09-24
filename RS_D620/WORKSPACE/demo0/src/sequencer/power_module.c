@@ -68,7 +68,7 @@ typedef enum power_rail_state_e {
  */
     volatile power_rail_t     *rail = PowerController.rails; //@@@ volatile only for debugging, remove later
     volatile power_rail_map_t *map  = PowerController.map; //@@@ volatile only for debugging, remove later
-    for (uint8_t i = 0; i < 8; i++) //@@@ hard constant heer
+    for (uint8_t i = 0; i < PWR_MAX_RAILS; i++)
     {
         if (true == rail->cfg->enabled)
         {
@@ -216,19 +216,19 @@ bool pwr_dataflash_check(const uint8_t *p)
                                    | (p[DF_POWER_RAIL_RECORD_SIZE - DATAFLASH_CRC_SIZE + 1] << 8));
     return (crc == stored);
 }
-void pwr_mod_update_config(uint16_t rail_index,uint8_t *data,uint16_t len )
+void pwr_rail_store_config(uint16_t rail_index,uint8_t *data,uint16_t len )
 {
     uint32_t p;
     p = DF_POWER_RAIL_CONFIG_ADDR + (DF_POWER_RAIL_RECORD_SIZE * rail_index);
     pwr_dataflash_update((uint8_t*) p,data,len);
 }
-void pwr_seq_update_config(uint8_t *data,uint16_t len )
+void pwr_seq_store_config(uint8_t *data,uint16_t len )
 {
     uint32_t p;
     p = DF_SEQUENCER_CONFIG_ADDR;
     pwr_dataflash_update((uint8_t*) p,data,len);
 }
-void pwr_seq_update_map(uint8_t *data,uint16_t len )
+void pwr_seq_store_map(uint8_t *data,uint16_t len )
 {
     uint32_t p;
     p = DF_POWER_RAIL_PINMAP_ADDR;
@@ -239,4 +239,29 @@ void pwr_seq_update_fault(uint8_t *data,uint16_t len )
     uint32_t p;
     p = DF_POWER_RAIL_FLTMAP_ADDR;
     pwr_dataflash_update((uint8_t*) p,data,len);
+}
+void pwr_seq_store_all(void)
+{
+    pwr_seq_store_config((uint8_t*) PowerController.cfg,sizeof(power_controller_cfg_t));
+    for(int i=0;i<PWR_MAX_RAILS;i++)
+    {
+        pwr_rail_store_config((uint16_t) i,(uint8_t*) PowerController.rails[i].cfg,sizeof(power_rail_cfg_t));
+    }
+}
+void pwr_seg_restore_all(void)
+{
+//    pwr_seq_store_config((uint8_t*) PowerController.cfg,sizeof(power_controller_cfg_t));
+    memcpy((uint8_t*) PowerController.cfg,(uint8_t*)  PowerController.cfg_store,sizeof(power_controller_cfg_t));
+    for(int i=0;i<PWR_MAX_RAILS;i++)
+    {
+        memcpy((uint8_t*) PowerController.rails[i].cfg, (uint8_t*) PowerController.rails[i].cfg_store,sizeof(power_rail_cfg_t));
+    }
+}
+void pwr_seq_update_monitor(uint8_t *data,uint16_t len)
+{
+   memcpy((uint8_t*) &PowerController.cfg->monitor,data,len);
+}
+void pwr_seq_update_cfg(uint8_t *p, uint8_t *q, uint16_t len)
+{
+   memcpy(p,q,len);
 }

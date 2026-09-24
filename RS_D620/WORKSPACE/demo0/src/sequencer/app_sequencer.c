@@ -18,7 +18,7 @@ extern const power_rail_cfg_t power_analog_1200;
 extern const power_rail_cfg_t power_digital_2400;
 extern const power_rail_cfg_t power_digital_OFFLINE;
 extern const power_controller_cfg_t power_controller_basic;
-extern const power_rail_map_t power_rail_maps[8];
+extern const power_rail_map_t power_rail_maps[PWR_MAX_RAILS];
 //extern const power_rail_t power_rail_initial;
 const cpan_t control_panel_initial = { 
         .stat = 0,
@@ -32,22 +32,20 @@ const cpan_t control_panel_initial = {
         .port_enable = {0},
         .adc_value =   {0}
 };
-/*power_rail_cfg_t power_rail_cfg_array[PWR_MAX_RAILS] = {
-    [0] = { .nominal_mv = 3300, .ov_threshold_mv = 3600, .uv_threshold_mv = 3000, .on_delay_ms = 10, .off_delay_ms = 10, .timeout_ms = 100, .dependency_mask = 0x00000000, .rail_group_mask = 0x01, .monitor_type = PWR_MON_ANALOG, .margin_capable = true, .margin_high_pct = 10, .margin_low_pct = -10, .enable_active_high = true },
-    [1] = { .nominal_mv = 5000, .ov_threshold_mv = 5500, .uv_threshold_mv = 4500, .on_delay_ms = 20, .off_delay_ms = 20, .timeout_ms = 200, .dependency_mask = 0x00000001, .rail_group_mask = 0x02, .monitor_type = PWR_MON_DIGITAL, .margin_capable = false, .margin_high_pct = 0, .margin_low_pct = 0, .enable_active_high = false },
-    [2] = { .nominal_mv = 12000, .ov_threshold_mv = 13000, .uv_threshold_mv = 11000, .on_delay_ms = 30, .off_delay_ms = 30, .timeout_ms = 300, .dependency_mask = 0x00000003, .rail_group_mask = 0x04, .monitor_type = PWR_MON_NONE, .margin_capable = false, .margin_high_pct = 0, .margin_low_pct = 0, .enable_active_high = true },
-    [3] = { .nominal_mv = 18000, .ov_threshold_mv = 20000, .uv_threshold_mv = 16000, .on_delay_ms = 40, .off_delay_ms = 40, .timeout_ms = 400, .dependency_mask = 0x00000007, .rail_group_mask = 0x08, .monitor_type = PWR_MON_ANALOG, .margin_capable = true, .margin_high_pct = -5, .margin_low_pct = -15, .enable_active_high = false },
-    [4] ... [PWR_MAX_RAILS-1] ... // Add more configurations as needed
-};*/
-power_rail_ctrl_t        rail_ctrl_scratch[8];
+
+power_rail_cfg_t         rail_cfg_scratch[PWR_MAX_RAILS];
+power_rail_ctrl_t        rail_ctrl_scratch[PWR_MAX_RAILS];
 power_controller_ctrl_t  controller_ctrl_scratch;
-extern const power_rail_t power_rails[8];
+extern const power_rail_t power_rails[PWR_MAX_RAILS];
+power_controller_cfg_t controller_cfg_scratch;
 const power_controller_t PowerController = {    
-    .rails = (power_rail_t*)            &power_rails[0], 
-    .cfg = (power_controller_cfg_t *)   DF_SEQUENCER_CONFIG_ADDR,
-    .ctrl = (power_controller_ctrl_t *) &controller_ctrl_scratch,
-    .map = (power_rail_map_t *)         DF_POWER_RAIL_PINMAP_ADDR,
-    .faults = (power_fault_output_t *)  DF_POWER_RAIL_FLTMAP_ADDR
+    .rails =     (power_rail_t*)              &power_rails[0], 
+    .cfg =       (power_controller_cfg_t *)   &controller_cfg_scratch,
+    .cfg_store = (power_controller_cfg_t *)   DF_SEQUENCER_CONFIG_ADDR,
+    .ctrl =      (power_controller_ctrl_t *)  &controller_ctrl_scratch,
+    .map =       (power_rail_map_t *)         DF_POWER_RAIL_PINMAP_ADDR,
+    .faults =    (power_fault_output_t *)     DF_POWER_RAIL_FLTMAP_ADDR,
+    .GPIO =      (power_sequencer_IO_t *)     &power_sequencer_IO
 };
 int app_func_reset   (void)
 {
@@ -55,18 +53,18 @@ int app_func_reset   (void)
     POP0();
 
 
-    #if 1 // only do this once, on first run, to initialize the data flash with default values
-     pwr_mod_update_config(0,(uint8_t*) &power_analog_3300,sizeof(power_rail_cfg_t));
-     pwr_mod_update_config(1,(uint8_t*) &power_analog_5000,sizeof(power_rail_cfg_t));
-     pwr_mod_update_config(2,(uint8_t*) &power_analog_1200,sizeof(power_rail_cfg_t));
-     pwr_mod_update_config(3,(uint8_t*) &power_digital_2400,sizeof(power_rail_cfg_t));
-     pwr_mod_update_config(4,(uint8_t*) &power_digital_OFFLINE,sizeof(power_rail_cfg_t));
+    #if 1 // only do this once, on first run, if the addresses of the dataflash segments change.
+     pwr_rail_store_config(0,(uint8_t*) &power_analog_3300,sizeof(power_rail_cfg_t));
+     pwr_rail_store_config(1,(uint8_t*) &power_analog_5000,sizeof(power_rail_cfg_t));
+     pwr_rail_store_config(2,(uint8_t*) &power_analog_1200,sizeof(power_rail_cfg_t));
+     pwr_rail_store_config(3,(uint8_t*) &power_digital_2400,sizeof(power_rail_cfg_t));
+     pwr_rail_store_config(4,(uint8_t*) &power_digital_OFFLINE,sizeof(power_rail_cfg_t));
     for(int i=5;i<PWR_MAX_RAILS;i++)
     {
-         pwr_mod_update_config(i,(uint8_t*)&power_digital_OFFLINE,sizeof(power_rail_cfg_t));
+         pwr_rail_store_config(i,(uint8_t*)&power_digital_OFFLINE,sizeof(power_rail_cfg_t));
     }
-    pwr_seq_update_config((uint8_t *)&power_controller_basic,sizeof(power_controller_cfg_t));
-    pwr_seq_update_map((uint8_t *)&power_rail_maps,sizeof(power_rail_maps)); //@@@ hard constant
+    pwr_seq_store_config((uint8_t *)&power_controller_basic,sizeof(power_controller_cfg_t));
+    pwr_seq_store_map((uint8_t *)&power_rail_maps,sizeof(power_rail_maps)); //@@@ hard constant
     #endif
     PowerController.ctrl->event = 0;
 
@@ -80,16 +78,11 @@ int app_func_reset   (void)
 int app_func_startup (void)
 {
     APP_INFO_PRINT("\nSEQUENCER STARTUP\n");
-    /**
-     *   Start the timer to generate a periodic interrupt for the sequencer to poll the ADC and update the power rail states.
-     *   The timer is configured to generate an interrupt every 100ms, which is suitable for the sequencer's needs. The timer callback function will handle the ADC polling and state updates.
-     *   The timer is opened, enabled, and started. The callback function T0_cb will be called on each timer interrupt.
-     *   The timer is configured in the RA configuration files (ra_gen/hal_data.h and ra_gen/hal_entry.c) with the appropriate settings for the desired period and callback function.
-     *   The timer is a GPT (General Purpose Timer) instance, and the R_GPT_Open, R_GPT_Enable, and R_GPT_Start functions are used to control the timer.
-     */
+/*  T0 sets the cadence for the system.  it is always running.*/
     R_GPT_Open  (&g_T0_ctrl, &g_T0_cfg);
     R_GPT_Enable(&g_T0_ctrl);
     R_GPT_Start (&g_T0_ctrl);
+/*  SW1 starts the sequencer */    
     R_ICU_ExternalIrqOpen(&g_SW1_ctrl, &g_SW1_cfg);
     R_ICU_ExternalIrqEnable(&g_SW1_ctrl);    
     DROP0();

@@ -16,6 +16,17 @@ void PMbus_write_execute(pmbus_command_t command, uint8_t *data, uint16_t data_l
         case PMBUS_CMD_PAGE:
             PowerController.ctrl->page = *data;
             break;
+        case PMBUS_CMD_STORE_DEFAULT_ALL:          /* USER CODE */ 
+            //@@@ 
+            pwr_seq_store_all();
+            break;
+//        case PMBUS_CMD_RESTORE_DEFAULT_ALL:        /* USER CODE */ break;
+//        case PMBUS_CMD_STORE_DEFAULT_CODE:         /* USER CODE */ break;
+//        case PMBUS_CMD_RESTORE_DEFAULT_CODE:       /* USER CODE */ break;
+//        case PMBUS_CMD_STORE_USER_ALL:             /* USER CODE */ break;
+//        case PMBUS_CMD_RESTORE_USER_ALL:           /* USER CODE */ break;
+//        case PMBUS_CMD_STORE_USER_CODE:            /* USER CODE */ break;
+//        case PMBUS_CMD_RESTORE_USER_CODE:          /* USER CODE */ break;
 #if 0 /* not implemented yet */            
         case PMBUS_CMD_OPERATION:                  /* USER CODE */ break;
         case PMBUS_CMD_ON_OFF_CONFIG:              /* USER CODE */ break;
@@ -24,14 +35,6 @@ void PMbus_write_execute(pmbus_command_t command, uint8_t *data, uint16_t data_l
         case PMBUS_CMD_PASSKEY:                    /* USER CODE */ break;
         case PMBUS_CMD_ACCESS_CONTROL:             /* USER CODE */ break;
         case PMBUS_CMD_WRITE_PROTECT:              /* USER CODE */ break;
-        case PMBUS_CMD_STORE_DEFAULT_ALL:          /* USER CODE */ break;
-        case PMBUS_CMD_RESTORE_DEFAULT_ALL:        /* USER CODE */ break;
-        case PMBUS_CMD_STORE_DEFAULT_CODE:         /* USER CODE */ break;
-        case PMBUS_CMD_RESTORE_DEFAULT_CODE:       /* USER CODE */ break;
-        case PMBUS_CMD_STORE_USER_ALL:             /* USER CODE */ break;
-        case PMBUS_CMD_RESTORE_USER_ALL:           /* USER CODE */ break;
-        case PMBUS_CMD_STORE_USER_CODE:            /* USER CODE */ break;
-        case PMBUS_CMD_RESTORE_USER_CODE:          /* USER CODE */ break;
         case PMBUS_CMD_CAPABILITY:                 /* USER CODE */ break;
         case PMBUS_CMD_QUERY:                      /* USER CODE */ break;
         case PMBUS_CMD_SMBALERT_MASK:              /* USER CODE */ break;
@@ -172,9 +175,23 @@ void PMbus_write_execute(pmbus_command_t command, uint8_t *data, uint16_t data_l
         case PMBUS_CMD_MONITOR_CONFIG:             /* USER CODE */ 
             // 1 byte per monitor pin.  There are 32 monitor pins
             // 7:5 is encoded: 0=no monitor, 1=Analog, 2=temp, 3=current(NS), 4=voltage compare(NS), 5= input voltage(NS) 6=Digital monitor
+            pwr_seq_update_monitor(data,data_len);
             break;
         case PMBUS_CMD_SEQ_CONFIG:                 /* USER CODE */ 
             break;
+        case PMBUS_CMD_RESEQUENCE:                 /* USER CODE */ 
+            pwr_seq_update_cfg((uint8_t*) &PowerController.cfg->resequence,data,data_len);
+            break;
+        case PMBUS_CMD_GPO_CONFIG_INDEX:           /* USER CODE */ 
+            PowerController.ctrl->gpo_index = *data;
+            break;
+        case PMBUS_CMD_GPO_CONFIG:                 /* USER CODE */ 
+        
+            break;
+        case PMBUS_CMD_GPI_CONFIG:                 /* USER CODE */ 
+            pwr_seq_update_cfg((uint8_t *) &PowerController.cfg->GPI_config,data,data_len);
+            break;
+
 #if 0 /* not implemented yet*/        
         case PMBUS_CMD_VOUT_CAL_MONITOR:           /* USER CODE */ break;
         case PMBUS_CMD_SYSTEM_RESET_CONFIG:        /* USER CODE */ break;
@@ -187,7 +204,6 @@ void PMbus_write_execute(pmbus_command_t command, uint8_t *data, uint16_t data_l
         case PMBUS_CMD_SOFT_RESET:                 /* USER CODE */ break;
         case PMBUS_CMD_RESET_COUNT:                /* USER CODE */ break;
         case PMBUS_CMD_PIN_SELECTED_RAIL_STATES:   /* USER CODE */ break;
-        case PMBUS_CMD_RESEQUENCE:                 /* USER CODE */ break;
         case PMBUS_CMD_CONSTANTS:                  /* USER CODE */ break;
         case PMBUS_CMD_PWM_SELECT:                 /* USER CODE */ break;
         case PMBUS_CMD_PWM_CONFIG:                 /* USER CODE */ break;
@@ -210,9 +226,6 @@ void PMbus_write_execute(pmbus_command_t command, uint8_t *data, uint16_t data_l
         case PMBUS_CMD_MFR_STATUS:                 /* USER CODE */ break;
         case PMBUS_CMD_GPI_FAULT_RESPONSES:        /* USER CODE */ break;
         case PMBUS_CMD_MARGIN_CONFIG:              /* USER CODE */ break;
-        case PMBUS_CMD_GPO_CONFIG_INDEX:           /* USER CODE */ break;
-        case PMBUS_CMD_GPO_CONFIG:                 /* USER CODE */ break;
-        case PMBUS_CMD_GPI_CONFIG:                 /* USER CODE */ break;
         case PMBUS_CMD_GPIO_SELECT:                /* USER CODE */ break;
         case PMBUS_CMD_GPIO_CONFIG:                /* USER CODE */ break;
         case PMBUS_CMD_MISC_CONFIG:                /* USER CODE */ break;

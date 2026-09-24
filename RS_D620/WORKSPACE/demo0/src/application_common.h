@@ -71,6 +71,7 @@
 #define DF_POWER_LARGEST_SIZE     (DF_POWER_PINMAP_SIZE) /* choose largest consumer */
 
 #define DF_SEQUENCER_CONFIG_ADDR  (DF_POWER_BASE_ADDR)  /* dataflash address for the power sequencer configuration */
+#define DF_MONITOR_CONFIG_ADDR    ()
 #define DF_POWER_RAIL_PINMAP_ADDR (DF_SEQUENCER_CONFIG_ADDR  + DF_POWER_CONFIG_SIZE)
 #define DF_POWER_RAIL_FLTMAP_ADDR (DF_POWER_RAIL_PINMAP_ADDR + DF_POWER_PINMAP_SIZE)
 #define DF_POWER_RAIL_CONFIG_ADDR (DF_POWER_RAIL_FLTMAP_ADDR + DF_POWER_FLTMAP_SIZE)  /* dataflash address for the power rail configurations */
