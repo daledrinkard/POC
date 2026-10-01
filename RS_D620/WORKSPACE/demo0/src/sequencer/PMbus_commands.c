@@ -5,22 +5,40 @@
 #include "sequencer/power_module.h"
 
 /* USER */
+/*
+     These functions are called in an interrupt context.
 
-void PMbus_write_execute(pmbus_command_t command, uint8_t *data, uint16_t data_len)
+*/
+
+int PMbus_execute(pmbus_command_t command, uint8_t *data, uint16_t data_len, uint8_t RW) /* 0=read 1=write*/
 {
     (void) data;
     (void) data_len;
     switch (command)
     {
         /* core PMBus commands (00h-CFh) */
-        case PMBUS_CMD_PAGE:
-            PowerController.ctrl->page = *data;
+        case PMBUS_CMD_PAGE: /* R/W */
+            if (RW){ PowerController.ctrl->page = *data;}
+            else   { *data = PowerController.ctrl->page;}
+            return 1;
+        case PMBUS_CMD_OPERATION: /* R/W */ 
+            break;
+        case PMBUS_CMD_ON_OFF_CONFIG:              /* USER CODE */ 
+            break;
+        case PMBUS_CMD_CLEAR_FAULTS:               /* USER CODE */ 
             break;
         case PMBUS_CMD_STORE_DEFAULT_ALL:          /* USER CODE */ 
-            //@@@ 
             pwr_seq_store_all();
             break;
-//        case PMBUS_CMD_RESTORE_DEFAULT_ALL:        /* USER CODE */ break;
+        case PMBUS_CMD_CAPABILITY:                 /* USER CODE */ 
+            break;
+        case PMBUS_CMD_VOUT_MODE:                  /* USER CODE */ 
+            break;
+        case PMBUS_CMD_VOUT_COMMAND:               /* USER CODE */ 
+            break;
+
+
+            //        case PMBUS_CMD_RESTORE_DEFAULT_ALL:        /* USER CODE */ break;
 //        case PMBUS_CMD_STORE_DEFAULT_CODE:         /* USER CODE */ break;
 //        case PMBUS_CMD_RESTORE_DEFAULT_CODE:       /* USER CODE */ break;
 //        case PMBUS_CMD_STORE_USER_ALL:             /* USER CODE */ break;
@@ -28,18 +46,12 @@ void PMbus_write_execute(pmbus_command_t command, uint8_t *data, uint16_t data_l
 //        case PMBUS_CMD_STORE_USER_CODE:            /* USER CODE */ break;
 //        case PMBUS_CMD_RESTORE_USER_CODE:          /* USER CODE */ break;
 #if 0 /* not implemented yet */            
-        case PMBUS_CMD_OPERATION:                  /* USER CODE */ break;
-        case PMBUS_CMD_ON_OFF_CONFIG:              /* USER CODE */ break;
-        case PMBUS_CMD_CLEAR_FAULTS:               /* USER CODE */ break;
         case PMBUS_CMD_PHASE:                      /* USER CODE */ break;
         case PMBUS_CMD_PASSKEY:                    /* USER CODE */ break;
         case PMBUS_CMD_ACCESS_CONTROL:             /* USER CODE */ break;
         case PMBUS_CMD_WRITE_PROTECT:              /* USER CODE */ break;
-        case PMBUS_CMD_CAPABILITY:                 /* USER CODE */ break;
         case PMBUS_CMD_QUERY:                      /* USER CODE */ break;
         case PMBUS_CMD_SMBALERT_MASK:              /* USER CODE */ break;
-        case PMBUS_CMD_VOUT_MODE:                  /* USER CODE */ break;
-        case PMBUS_CMD_VOUT_COMMAND:               /* USER CODE */ break;
         case PMBUS_CMD_VOUT_TRIM:                  /* USER CODE */ break;
         case PMBUS_CMD_VOUT_CAL_OFFSET:            /* USER CODE */ break;
         case PMBUS_CMD_VOUT_MAX:                   /* USER CODE */ break;
@@ -170,17 +182,21 @@ void PMbus_write_execute(pmbus_command_t command, uint8_t *data, uint16_t data_l
         /* UCD91320 manufacturer-specific commands (D0h-FDh) */
         /* must be set along with the GPI_CONFIG may change things... let's see */
         case PMBUS_CMD_FAULT_PIN_CONFIG:           /* USER CODE */ 
-            pwr_seq_update_fault(data,data_len );
+            if (RW) {pwr_seq_store_fault_config(data,data_len ); return data_len;}
+            else { return pwr_seq_read_fault_config(data); }
             break;
         case PMBUS_CMD_MONITOR_CONFIG:             /* USER CODE */ 
-            // 1 byte per monitor pin.  There are 32 monitor pins
+            // 1 byte per monitor pin.  There are 32 monitor pins (24 analog and 8 digital only)
             // 7:5 is encoded: 0=no monitor, 1=Analog, 2=temp, 3=current(NS), 4=voltage compare(NS), 5= input voltage(NS) 6=Digital monitor
-            pwr_seq_update_monitor(data,data_len);
+            if (RW)  {pwr_seq_update_monitor(data,data_len);}
+            else     {pwr_seq_read_monitor(data,data_len);}
             break;
         case PMBUS_CMD_SEQ_CONFIG:                 /* USER CODE */ 
+            pwr_seq_update_seqcfg(PowerController.ctrl->page,data,data_len);
             break;
-        case PMBUS_CMD_RESEQUENCE:                 /* USER CODE */ 
-            pwr_seq_update_cfg((uint8_t*) &PowerController.cfg->resequence,data,data_len);
+        case PMBUS_CMD_RESEQUENCE: /*0xDE*/                /* USER CODE */ 
+            if (RW) pwr_seq_update_cfg((uint8_t*) &PowerController.cfg->resequence,data,data_len);
+            else    pwr_seq_update_cfg(data, (uint8_t*) &PowerController.cfg->resequence,data_len);
             break;
         case PMBUS_CMD_GPO_CONFIG_INDEX:           /* USER CODE */ 
             PowerController.ctrl->gpo_index = *data;
@@ -189,7 +205,8 @@ void PMbus_write_execute(pmbus_command_t command, uint8_t *data, uint16_t data_l
         
             break;
         case PMBUS_CMD_GPI_CONFIG:                 /* USER CODE */ 
-            pwr_seq_update_cfg((uint8_t *) &PowerController.cfg->GPI_config,data,data_len);
+            if (RW) pwr_seq_update_cfg((uint8_t *) &PowerController.cfg->GPI_config,data,data_len);
+            else    pwr_seq_update_cfg(data, (uint8_t *) &PowerController.cfg->GPI_config,data_len);
             break;
 
 #if 0 /* not implemented yet*/        

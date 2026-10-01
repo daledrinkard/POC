@@ -228,17 +228,36 @@ void pwr_seq_store_config(uint8_t *data,uint16_t len )
     p = DF_SEQUENCER_CONFIG_ADDR;
     pwr_dataflash_update((uint8_t*) p,data,len);
 }
+uint16_t pwr_seq_read_config(uint8_t *data,uint16_t len )
+{
+    memcpy(data,PowerController.cfg,sizeof(power_controller_cfg_t)); /* read from RAM*/
+//    memcpy(data,PowerController.cfg_store,sizeof(power_controller_cfg_t)); /* read from Dataflash */
+    return sizeof(power_controller_cfg_t);
+}
 void pwr_seq_store_map(uint8_t *data,uint16_t len )
 {
     uint32_t p;
     p = DF_POWER_RAIL_PINMAP_ADDR;
     pwr_dataflash_update((uint8_t*) p,data,len);
 }
-void pwr_seq_update_fault(uint8_t *data,uint16_t len )
+void pwr_seq_store_fault_config(uint8_t *data,uint16_t len )
 {
     uint32_t p;
     p = DF_POWER_RAIL_FLTMAP_ADDR;
     pwr_dataflash_update((uint8_t*) p,data,len);
+}
+/*
+    Reads the fault configuration record back from data flash at
+    DF_POWER_RAIL_FLTMAP_ADDR into `data`. Data flash is memory-mapped for
+    reads, so this copies directly from the address - no R_FLASH_HP driver
+    call needed (see pwr_dataflash_check()).
+
+    Returns the number of bytes copied (DF_POWER_FLTMAP_SIZE).
+*/
+uint16_t pwr_seq_read_fault_config(uint8_t *data)
+{
+    memcpy(data, (uint8_t*) DF_POWER_RAIL_FLTMAP_ADDR, sizeof(power_fault_output_t));
+    return sizeof(power_fault_output_t);
 }
 void pwr_seq_store_all(void)
 {
@@ -248,7 +267,7 @@ void pwr_seq_store_all(void)
         pwr_rail_store_config((uint16_t) i,(uint8_t*) PowerController.rails[i].cfg,sizeof(power_rail_cfg_t));
     }
 }
-void pwr_seg_restore_all(void)
+void pwr_seq_restore_all(void)
 {
 //    pwr_seq_store_config((uint8_t*) PowerController.cfg,sizeof(power_controller_cfg_t));
     memcpy((uint8_t*) PowerController.cfg,(uint8_t*)  PowerController.cfg_store,sizeof(power_controller_cfg_t));
@@ -264,4 +283,18 @@ void pwr_seq_update_monitor(uint8_t *data,uint16_t len)
 void pwr_seq_update_cfg(uint8_t *p, uint8_t *q, uint16_t len)
 {
    memcpy(p,q,len);
+}
+volatile power_controller_SEQCFG_t *px;
+void pwr_seq_update_seqcfg(uint8_t rail_index,uint8_t *src,uint16_t data_len)
+{
+//@@@   power_controller_SEQCFG_t *p = &PowerController.rails[rail_index].cfg->SEQ_config;
+//@@@  parameter check of data_len
+   px = &PowerController.rails[rail_index].cfg->SEQ_config;
+   uint8_t *p = (uint8_t*) px;
+   p = p + 2; //@@@ skip the pad at the beginning of the data structure.
+   memcpy((uint8_t*) p,src,13);
+   p += 14;
+   src += 13;
+   memcpy((uint8_t*) p,src,16);
+   
 }

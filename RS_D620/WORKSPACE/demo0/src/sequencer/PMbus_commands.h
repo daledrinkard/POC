@@ -228,6 +228,6 @@ typedef enum pmbus_command_e {
 } pmbus_command_t;
 
 /* PUBLISHED functions */
-void PMbus_write_execute(pmbus_command_t command, uint8_t *data, uint16_t data_len);
+int PMbus_execute(pmbus_command_t command, uint8_t *data, uint16_t data_len, uint8_t RW);
 
 #endif /* PMBUS_COMMANDS_H_ */

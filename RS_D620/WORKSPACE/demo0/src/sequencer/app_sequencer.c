@@ -10,6 +10,7 @@
 #include "r_ioport.h"       // IWYU pragma: keep
 #include "POP/pop.h"
 #include "simulator.h"
+#include "comm_bus.h"
 extern bsp_leds_t g_bsp_leds;
 extern cpan_t *CP;
 extern const power_rail_cfg_t power_analog_3300;
@@ -44,7 +45,7 @@ const power_controller_t PowerController = {
     .cfg_store = (power_controller_cfg_t *)   DF_SEQUENCER_CONFIG_ADDR,
     .ctrl =      (power_controller_ctrl_t *)  &controller_ctrl_scratch,
     .map =       (power_rail_map_t *)         DF_POWER_RAIL_PINMAP_ADDR,
-    .faults =    (power_fault_output_t *)     DF_POWER_RAIL_FLTMAP_ADDR,
+//@@@    .faults =    (power_fault_output_t *)     DF_POWER_RAIL_FLTMAP_ADDR,  /* moved to cfg */
     .GPIO =      (power_sequencer_IO_t *)     &power_sequencer_IO
 };
 int app_func_reset   (void)
@@ -66,11 +67,16 @@ int app_func_reset   (void)
     pwr_seq_store_config((uint8_t *)&power_controller_basic,sizeof(power_controller_cfg_t));
     pwr_seq_store_map((uint8_t *)&power_rail_maps,sizeof(power_rail_maps)); //@@@ hard constant
     #endif
+
+    pwr_seq_restore_all();
+
+
+
     PowerController.ctrl->event = 0;
 
 
     CP = CPAN_open(&control_panel_initial);  /* open the control panel */
-    R_SCI_UART_Open(&g_comm_uart_ctrl, &g_comm_uart_cfg); //@@@ should be in comm_init();
+    comm_init();
     R_PORT1->PCNTR3 = 0x00000000;
     R_PORT1->PCNTR4 = 0x00000000; 
     return (CP == NULL) ? -1 : 0;
@@ -103,6 +109,17 @@ int app_func_run     (void)
     */
    power_rail_t *p_rail;// = PowerController.rails;
    power_rail_map_t  *p_map;// = PowerController.map;
+   if (app_event_flag_get(SYSFLG_PWR_READBACK,APP_FLAG_OR_CLEAR,0,NULL))
+   {
+      PowerController.ctrl->event |= PWR_FLAG_READBACK;
+   }
+   if (PowerController.ctrl->event & PWR_FLAG_READBACK)
+   {
+        if (0 == comm_service())
+        {
+            PowerController.ctrl->event &= (uint32_t) ~PWR_FLAG_READBACK;
+        }
+   }
    switch(PowerController.ctrl->state)
    {    
         case PWR_SEQ_RESET:
@@ -174,6 +191,7 @@ int app_func_run     (void)
     return 0;
 }
 
+/* once the ADCs are integrated, this will become the ADC callback */
 void T0_cb(timer_callback_args_t *p_args)
 {
     /* USER CODE: handle timer callback */

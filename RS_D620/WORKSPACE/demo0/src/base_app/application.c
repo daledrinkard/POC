@@ -6,6 +6,7 @@
 #include "application_common.h"
 #include "cpan.h"
 #include "hal_data.h"
+#include "sequencer/power_module.h"
 #include "simulator.h"
 #if   (APPCFG_RTOS == APPCFG_RTOS_NONE) /* Bare METAL */
 #elif (APPCFG_RTOS == APPCFG_RTOS_AZURE) /* Azure */
@@ -80,6 +81,11 @@ void app_entry(void) {
             /* MAIN LOOP PROCESSING*/
             case APP_STATE_RUNNING:  /* process things */
                 APP_INFO_PRINT("\nAPP RUNNING\n");
+                /*
+                     This do loop is cadenced on the 100uS timer.
+                     It runs on the completion of the ADC scan which is timed by T0.
+                     //@@@ for now, the ADC is not used yet...
+                */
                 do { /* hang in this state */
                     /* USER code */
                     app_func_run();
@@ -103,6 +109,7 @@ void app_entry(void) {
                     /*** WFI  ***/
                     while(0 != app_event_flag_get(SYSFLG_PWR_SERVICE,APP_FLAG_OR_CLEAR,0,&event_flag))
                     {
+
                     }
                 } while(App.state == APP_STATE_RUNNING);
                 break;

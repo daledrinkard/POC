@@ -22,9 +22,10 @@
 #define PWR_MAX_RAIL_GROUPS  (8)  /* ucd91320 6.1: up to 8 GPI-selected pin-selected rail states (ACPI-style) */
 #define PWR_FAULT_LOG_DEPTH  (8)  /* ucd91320 1/6.3.1: single-event fault log (100 entries) + Black Box Fault Log */
 #define PWR_MAX_CASCADE      (4)  /* ucd91320 1: cascade up to 4 devices to sequence up to 128 rails */
-#define PWR_MAX_MONITOR      (32)
+#define PWR_MAX_MONITOR      (24)
 #define PWR_MAX_DMON         (8)
 #define PWR_MAX_EN           (32)
+#define PWR_MAX_GPIO         (8)
 #define PWR_MAX_FAULT_GROUP  (4)
 
 #define PWR_MON_TYPE_NONE         (0x00)
@@ -45,6 +46,7 @@
 /* USER DEFINE */
 
 #define PWR_FLAG_ENABLE     (0x00000001)
+#define PWR_FLAG_READBACK   (0x00000002) /* this flag enables the main loop to poll the comm during a read operation */
 /* how a rail's output is measured (ucd91320 4: MONx = analog or digital monitor, or GPIO) */
 typedef enum power_monitor_type_e {
     PWR_MON_NONE,
@@ -82,6 +84,53 @@ typedef enum power_controller_state_e {
     PWR_SEQ_SEQUENCING_DOWN,
     PWR_SEQ_FAULT_SHUTDOWN
 } power_controller_state_t;
+typedef struct power_controller_GPI_s {
+    uint8_t id;
+    uint8_t conf;
+}power_controller_GPI_t;
+typedef struct power_controller_GPICFG_s {
+   power_controller_GPI_t GPI[32];  /* id=0 | (1 to 88) : conf [7:3][2]:polarity[1..0]:mode*/
+   uint32_t fault_en;
+   uint8_t LSCP;
+   uint8_t MRG_EN;
+   uint8_t MRG_LOW;
+   uint8_t rsv1;
+   uint8_t debug_pin;
+}power_controller_GPICFG_t;
+/* one of these for each rail */
+typedef struct power_controller_SEQCFG_s {  //@@@ alignment issues
+    uint16_t pad1;
+    uint8_t ID;
+    uint8_t ID_other;
+    uint32_t GPI_seq_mask_on;
+    uint32_t GPI_seq_mask_off;
+    uint8_t seq_timeout_cfg;
+    uint8_t seq_on_timeout;
+    uint8_t seq_off_timeout;
+    uint8_t pad2;
+    uint32_t page_seq_on_dep_msk;
+    uint32_t page_seq_off_dep_msk;
+    uint32_t fault_slave_mask;
+    uint16_t GPO_seq_on_dep_msk;
+    uint16_t GPO_seq_off_dep_msk;
+} power_controller_SEQCFG_t;
+typedef struct power_controller_GPOCFG_s {
+    power_controller_GPI_t GPO;
+    uint8_t conf;
+    uint8_t dly;
+    uint8_t and_path0;
+    uint8_t and_path1;
+    struct {
+        uint32_t status_mask;
+        uint32_t status_inv_mask;
+        uint32_t GPI_mask;
+        uint32_t GPI_inv_mask;
+        uint16_t GPO_mask;
+        uint16_t GPO_inv_mask;
+    } path[2];
+}power_controller_GPOCFG_t;
+
+
 /*
   _____       _ _       
  |  __ \     (_) |      
@@ -94,6 +143,7 @@ typedef enum power_controller_state_e {
 */
 /* static, per-rail configuration (ucd91320 7.2.2: rail setup / monitoring / sequence / fault response / margining) */
 typedef struct power_rail_cfg_s {
+    power_controller_SEQCFG_t SEQ_config;
     uint16_t nominal_mv;         /* expected rail voltage, in mV */
     uint16_t ov_threshold_mv;    /* over-voltage fault threshold */
     uint16_t uv_threshold_mv;    /* under-voltage fault threshold */
@@ -129,6 +179,7 @@ typedef struct power_rail_s {
     power_rail_cfg_t   *cfg;         /* SRAM working copy, populated from cfg_store */
     power_rail_cfg_t   *cfg_store;   /* persistent configuration location in dataflash */
     power_rail_ctrl_t  *ctrl;  /* control data is in SRAM */
+
 } power_rail_t;
 
 /*
@@ -145,6 +196,7 @@ typedef struct power_sequencer_IO_s {
     uint16_t MON[PWR_MAX_MONITOR];
     uint16_t DMON[PWR_MAX_DMON];
     uint16_t EN[PWR_MAX_EN];
+    uint16_t GPIO[PWR_MAX_GPIO];
 } power_sequencer_IO_t;
 extern const power_sequencer_IO_t power_sequencer_IO;
 
@@ -156,7 +208,7 @@ typedef struct power_rail_map_s {
 }power_rail_map_t;
 
 typedef struct power_sequencer_monitor_s {
-    uint8_t MON[PWR_MAX_MONITOR]; 
+    uint8_t MON[PWR_MAX_MONITOR + PWR_MAX_DMON];  //@@@ don't like this
 }power_sequencer_monitor_t;
 
 /* one fault log record (ucd91320 6.3.1: Black Box Fault Log captures the first fault + full rail status) */
@@ -177,6 +229,7 @@ typedef struct power_fault_output_s {
   uint16_t fault_pins[4];  //@@@
   uint32_t GPI_mask[4];    //@@@
   uint8_t other_mask;
+  uint8_t spare[3];
 } power_fault_output_t;
 /*
    _____            _             _ _           
@@ -187,37 +240,12 @@ typedef struct power_fault_output_s {
   \_____\___/|_| |_|\__|_|  \___/|_|_|\___|_|   
                                                 
 */
-typedef struct power_controller_GPI_s {
-    uint8_t id;
-    uint8_t conf;
-}power_controller_GPI_t;
-typedef struct power_controller_GPICFG_s {
-   power_controller_GPI_t GPI[32];
-   uint32_t fault_en;
-   uint8_t LSCP;
-   uint8_t MRG_EN;
-   uint8_t MRG_LOW;
-   uint8_t rsv1;
-   uint8_t debug_pin;
-}power_controller_GPICFG_t;
-typedef struct power_controller_SEQCFG_s {  //@@@ alignment issues
-    uint8_t ID;
-    uint8_t ID_other;
-    uint32_t GPI_seq_mask_on;
-    uint32_t GPI_seq_mask_off;
-    uint8_t seq_timeout_cfg;
-    uint8_t seq_on_timeout;
-    uint8_t seq_off_timeout;
-    uint32_t page_seq_on_dep_msk;
-    uint32_t page_seq_off_dep_msk;
-    uint32_t fault_slave_mask;
-    uint16_t GPO_seq_on_dep_msk;
-    uint16_t GPO_seq_off_dep_msk;
-} power_controller_SEQCFG_t;
 typedef struct power_controller_cfg_s {
     power_sequencer_monitor_t monitor;
+    power_fault_output_t      faults;
     power_controller_GPICFG_t GPI_config;
-    power_controller_SEQCFG_t SEQ_config;
+    power_controller_GPOCFG_t GPO_config[16]; //@@@arbitrary
+    uint32_t                  GPI;
     uint32_t                  resequence;
 
     uint8_t                  active_rail_group;  /* 0..PWR_MAX_RAIL_GROUPS-1, selected via GPI Controlled Rail Groups */
@@ -258,7 +286,6 @@ typedef struct power_controller_s {
     power_controller_cfg_t  *cfg_store;
     power_controller_ctrl_t *ctrl;
     power_rail_map_t        *map;//[PWR_MAX_RAILS];   /* mapping data is in SRAM */
-    power_fault_output_t    *faults;
     power_sequencer_IO_t    *GPIO;
 
 } power_controller_t;
@@ -271,12 +298,22 @@ void pwr_mod_poll(uint16_t *ADC_data);
 /* Checks the CRC-16 trailer of a DF_POWER_RAIL_RECORD_SIZE-byte data-flash record at `p`. */
 bool pwr_dataflash_check(const uint8_t *p);
 void pwr_rail_store_config(uint16_t rail_index,uint8_t *data,uint16_t len );
+
+void pwr_seq_update_cfg(uint8_t *dest,uint8_t *src,uint16_t len);
+
 void pwr_seq_store_config(uint8_t *data,uint16_t len );
-void pwr_seq_store_map(uint8_t *data,uint16_t len );
-void pwr_seq_update_fault(uint8_t *data,uint16_t len );
+uint16_t pwr_seq_read_config(uint8_t *data,uint16_t len );
+
+void pwr_seq_store_map(uint8_t *data,uint16_t len ); //@@@ this needs to die.
+
+void pwr_seq_store_fault_config(uint8_t *data,uint16_t len );
+uint16_t pwr_seq_read_fault_config(uint8_t *data);
+
 void pwr_seq_store_all(void);
 void pwr_seq_restore_all(void);
+
 void pwr_seq_update_monitor(uint8_t *data,uint16_t len);
-void pwr_seq_update_cfg(uint8_t *dest,uint8_t *src,uint16_t len);
+void pwr_seq_update_seqcfg(uint8_t rail_index,uint8_t *src,uint16_t data_len);
+
 
 #endif /* POWER_MODULE_H_ */

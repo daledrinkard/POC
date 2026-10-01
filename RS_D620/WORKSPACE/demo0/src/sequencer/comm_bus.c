@@ -3,20 +3,24 @@
 */
 #include "comm_bus.h"
 #include "POP/pop.h"
-#include "console/console.h" //IWYU pragma: keep (provides console_t for downstream includers)
+//#include "console/console.h" //IWYU pragma: keep (provides console_t for downstream includers)
 #include "PMbus_commands.h"
+#include "application_common.h"
 /* USER */
 
 
 PB_comm_t PB_Comm;
-
+uint8_t xbuffer[COMM_DATA_SIZE*2]; //@@@ for storing the ASCII hex that is echoed back to the host
 int comm_init(void)
 {
+    R_SCI_UART_Open(&g_comm_uart_ctrl, &g_comm_uart_cfg);
     return 0;
 }
 
+/* this function is "buzzed" in the .1mS main loop function when the comm mode is read */
 int comm_service(void)
 {
+    uint8_t t;
     switch (PB_Comm.state)
     {
         case COMM_STATE_IDLE:
@@ -25,20 +29,47 @@ int comm_service(void)
             break;
         case COMM_STATE_COMMAND:
             break;
+        case COMM_STATE_READ:
+            if (PB_Comm.flag & COMM_FLAG_TX_RDY)
+            {
+                /*  Kick off the transmit operation and we'll spin until the completion is detected */
+                for(int i=0;i<PB_Comm.data_len;i++)
+                {
+                    t = ((PB_Comm.data[i] & 0xF0) >> 4);
+                    xbuffer[i*2] = ( t > 9) ? (t-10)+'A' : t+'0';
+                    t = (PB_Comm.data[i] & 0x0F);
+                    xbuffer[i*2+1] = ( t > 9) ? (t-10)+'A' : t+'0';
+                }
+                R_SCI_UART_Write(&g_comm_uart_ctrl,xbuffer,PB_Comm.data_len*2);
+                PB_Comm.flag &= (uint8_t) ~COMM_FLAG_TX_RDY;
+            }
+            if (PB_Comm.flag & COMM_FLAG_TX_DONE)
+            {
+                PB_Comm.flag &= ~COMM_FLAG_TX_DONE;
+                return 0; /* 0 = we are finished */
+            }
+            break;
         case COMM_STATE_FAULT:
             break;
+            default: break;
     }
-    return 0;
+    return 1; /* 1 = we are busy */
 }
 //extern uint8_t *PMbus_write_execute(uint8_t command, uint8_t *data, uint16_t len);
-static uint32_t comm_parse_command(void);
-static uint32_t comm_parse_command(void)
+static comm_state_type_t comm_parse_command(void);
+static comm_state_type_t comm_parse_command(void)
 {
-    if (PB_Comm.read_write == 'W')
-    {
-      PMbus_write_execute(PB_Comm.command,PB_Comm.data,PB_Comm.data_len);
+    uint8_t len;
+    len = (uint8_t) PMbus_execute(PB_Comm.command,PB_Comm.data,PB_Comm.data_len,(PB_Comm.read_write == 'W') ? 1 : 0);
+    switch(PB_Comm.read_write) {
+        case 'W': return COMM_STATE_IDLE;
+        case 'R':
+            PB_Comm.data_len = len;
+            PB_Comm.state = COMM_STATE_READ;
+            PB_Comm.flag |= COMM_FLAG_TX_RDY;
+            app_event_flag_seti(SYSFLG_PWR_READBACK,0); /* this signals the main loop to service the read (transmitting data for us)*/
+            return COMM_STATE_READ;
     }
-    //@@@ what do you do to read?????
 }
 
 /**
@@ -71,6 +102,8 @@ void comm_cb(uart_callback_args_t *p_args)
         case UART_EVENT_RX_COMPLETE:   // = (1UL << 0), ///< Receive complete event
             break;
         case UART_EVENT_TX_COMPLETE:   // = (1UL << 1), ///< Transmit complete event
+            PB_Comm.flag |= COMM_FLAG_TX_DONE;
+            PB_Comm.state = COMM_STATE_IDLE;
             break;
         case UART_EVENT_RX_CHAR:       // = (1UL << 2), ///< Character received
             if ((data == ' ') || (data == '\n') || (data == '\r')) {
@@ -113,7 +146,9 @@ void comm_cb(uart_callback_args_t *p_args)
                     {
                         bx = 1;
                         cx = 0;
+#if 0 //@@@ support for an extended MFG command.                       
 //                        PB_Comm.state = (PB_Comm.command == 0xFE) ? COMM_STATE_MFG_CMD : COMM_STATE_DATA ; /* not supported in TI part
+#endif
                         PB_Comm.state = COMM_STATE_DATA ;
                     }
                     else
@@ -121,6 +156,7 @@ void comm_cb(uart_callback_args_t *p_args)
                         bx--;
                     }
                     break;
+#if 0 //@@@ need a #define for whether or not to support MFG CMD extended command function                    
 //                case COMM_STATE_MFG_CMD:
 //                    PB_Comm.mfg_cmd |= (data > '9') ? (data - 'A' + 10) : (data - '0');
 //                    PB_Comm.mfg_cmd = PB_Comm.command << (4*bx);
@@ -135,13 +171,13 @@ void comm_cb(uart_callback_args_t *p_args)
 //                        bx--;
 //                    }
 //                    break;
+#endif
                 case COMM_STATE_DATA:
                     switch(data) 
                     {
                         case COMM_EOP:
                             PB_Comm.data_len = cx;
-                            comm_parse_command();
-                            PB_Comm.state = COMM_STATE_IDLE;
+                            PB_Comm.state = comm_parse_command();
                             break;
                         default:
                         if (bx == 1)
@@ -158,6 +194,9 @@ void comm_cb(uart_callback_args_t *p_args)
                     }
                         break;
                     /* USER CODE: handle data */
+                    break;
+                case COMM_STATE_READ:
+                    while(1); //@@@TRAP   This should never happen as interrupts for "reads" involves TX interrupts
                     break;
                 case COMM_STATE_FAULT:
                     /* USER CODE: handle fault */

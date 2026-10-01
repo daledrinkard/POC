@@ -12,6 +12,22 @@
  These are used to initialize the dataflash
                                             */
 const power_rail_cfg_t power_analog_3300 = {
+    .SEQ_config = {
+        .pad1 = 0x55AA,
+        .ID = 1,
+        .ID_other = 0,
+        .GPI_seq_mask_on  = 0x00000001,
+        .GPI_seq_mask_off = 0x00000002,
+        .seq_timeout_cfg = 0x05,
+        .seq_on_timeout = 10,
+        .seq_off_timeout = 15,
+        .pad2 = 0x99,
+        .page_seq_on_dep_msk = 0x00000003,
+        .page_seq_off_dep_msk = 0x00000003,
+        .fault_slave_mask = 0xFFFFFFFF,
+        .GPO_seq_on_dep_msk = 0x0000000F,
+        .GPO_seq_off_dep_msk = 0x0000000F
+    },
     .nominal_mv = 3300,
     .ov_threshold_mv = 3400,
     .uv_threshold_mv = 3000,
@@ -31,6 +47,22 @@ const power_rail_cfg_t power_analog_3300 = {
     .enable_active_high = true
 };
 const power_rail_cfg_t power_analog_5000 = {
+    .SEQ_config = {
+        .pad1 = 0x55AA,
+        .ID = 2,
+        .ID_other = 0,
+        .GPI_seq_mask_on  = 0x00000001,
+        .GPI_seq_mask_off = 0x00000002,
+        .seq_timeout_cfg = 0x05,
+        .seq_on_timeout = 10,
+        .seq_off_timeout = 15,
+        .pad2 = 0x99,
+        .page_seq_on_dep_msk = 0x00000003,
+        .page_seq_off_dep_msk = 0x00000003,
+        .fault_slave_mask = 0xFFFFFFFF,
+        .GPO_seq_on_dep_msk = 0x0000000F,
+        .GPO_seq_off_dep_msk = 0x0000000F
+    },
     .nominal_mv = 5000,
     .ov_threshold_mv = 5100,
     .uv_threshold_mv = 4000,
@@ -50,6 +82,22 @@ const power_rail_cfg_t power_analog_5000 = {
     .enable_active_high = true
 };
 const power_rail_cfg_t power_analog_1200 = {
+    .SEQ_config = {
+        .pad1 = 0x55AA,
+        .ID = 3,
+        .ID_other = 0,
+        .GPI_seq_mask_on  = 0x00000001,
+        .GPI_seq_mask_off = 0x00000002,
+        .seq_timeout_cfg = 0x05,
+        .seq_on_timeout = 10,
+        .seq_off_timeout = 15,
+        .pad2 = 0x99,
+        .page_seq_on_dep_msk = 0x00000003,
+        .page_seq_off_dep_msk = 0x00000003,
+        .fault_slave_mask = 0xFFFFFFFF,
+        .GPO_seq_on_dep_msk = 0x0000000F,
+        .GPO_seq_off_dep_msk = 0x0000000F
+    },
     .nominal_mv = 12000,
     .ov_threshold_mv = 12010,
     .uv_threshold_mv = 11890,
@@ -69,6 +117,22 @@ const power_rail_cfg_t power_analog_1200 = {
     .enable_active_high = true
 };
 const power_rail_cfg_t power_digital_2400 = {
+    .SEQ_config = {
+        .pad1 = 0x55AA,
+        .ID = 4,
+        .ID_other = 0,
+        .GPI_seq_mask_on  = 0x00000001,
+        .GPI_seq_mask_off = 0x00000002,
+        .seq_timeout_cfg = 0x05,
+        .seq_on_timeout = 10,
+        .seq_off_timeout = 15,
+        .pad2 = 0x99,
+        .page_seq_on_dep_msk = 0x00000003,
+        .page_seq_off_dep_msk = 0x00000003,
+        .fault_slave_mask = 0xFFFFFFFF,
+        .GPO_seq_on_dep_msk = 0x0000000F,
+        .GPO_seq_off_dep_msk = 0x0000000F
+    },
     .nominal_mv = 2400,
     .ov_threshold_mv = 2405,
     .uv_threshold_mv = 2395,
@@ -85,6 +149,22 @@ const power_rail_cfg_t power_digital_2400 = {
     .enable_active_high = true
 };
 const power_rail_cfg_t power_digital_OFFLINE = {
+    .SEQ_config = {
+        .pad1 = 0x55AA,
+        .ID = 0,
+        .ID_other = 0,
+        .GPI_seq_mask_on  = 0x00000000,
+        .GPI_seq_mask_off = 0x00000000,
+        .seq_timeout_cfg = 0x05,
+        .seq_on_timeout = 20,
+        .seq_off_timeout = 6,
+        .pad2 = 0x99,
+        .page_seq_on_dep_msk = 0x0000000F,
+        .page_seq_off_dep_msk = 0x0000000C,
+        .fault_slave_mask = 0xFFFFCCFF,
+        .GPO_seq_on_dep_msk = 0x0000000C,
+        .GPO_seq_off_dep_msk = 0x00000003
+    },
     .nominal_mv = 2400,
     .ov_threshold_mv = 2405,
     .uv_threshold_mv = 2395,
@@ -139,14 +219,21 @@ const power_controller_cfg_t power_controller_basic = {
         0xff,/* MON[21]*/
         0xff,/* MON[22]*/
         0xff,/* MON[23]*/
-        0xff,/* MON[24]*/
-        0xff,/* MON[25]*/
-        0xff,/* MON[26]*/
-        0xff,/* MON[27]*/
-        0xff,/* MON[28]*/
-        0xff,/* MON[29]*/
-        0xff, /* MON[30]*/
-        0xff /* MON[31]*/
+//        0xff,/* MON[24]*/
+//        0xff,/* MON[25]*/
+//        0xff,/* MON[26]*/
+//        0xff,/* MON[27]*/
+//        0xff,/* MON[28]*/
+//        0xff,/* MON[29]*/
+//        0xff, /* MON[30]*/
+//        0xff /* MON[31]*/
+    },
+    .faults = {
+        .fault_mask = {0x00000000, 0x00000000, 0x00000000, 0x00000000},
+        .fault_pins = {0x0000,     0x0000,     0x0000,     0x0000},
+        .GPI_mask   = {0x00000000, 0x00000000, 0x00000000, 0x00000000},
+        .other_mask = 0,
+        .spare = {0xff}
     },
     .GPI_config = {
         .GPI = {
@@ -190,6 +277,34 @@ const power_controller_cfg_t power_controller_basic = {
         .rsv1 = 0xff,
         .debug_pin = 0x00
     },
+    .GPO_config = {
+        {
+         {.id = 1,.conf = 0},
+         .conf      = 0xAA,
+         .dly       = 0x11,
+         .and_path0 = 0x05,
+         .and_path1 = 0x03,
+         .path = 
+         {
+            {.status_mask     = 0x00000000,
+             .status_inv_mask = 0x00000000,
+             .GPI_mask        = 0x00000000,
+             .GPI_inv_mask    = 0x00000000,
+             .GPO_mask        = 0x0000,
+             .GPO_inv_mask    = 0x0000
+            },
+            {.status_mask     = 0x00000000,
+             .status_inv_mask = 0x00000000,
+             .GPI_mask        = 0x00000000,
+             .GPI_inv_mask    = 0x00000000,
+             .GPO_mask        = 0x0000,
+             .GPO_inv_mask    = 0x0000
+            }
+        }
+        }
+    },
+
+
     .watchdog_enabled = false,
     .watchdog_timeout_ms = 0,
     .active_rail_group = 0,
@@ -335,7 +450,7 @@ const power_rail_t power_rails[PWR_MAX_RAILS] = {
 */
 const power_sequencer_IO_t power_sequencer_IO = {
 .MON = {
-BSP_IO_PORT_00_PIN_00,
+BSP_IO_PORT_00_PIN_00,   /* PIN ID 1 */
 BSP_IO_PORT_00_PIN_01,
 BSP_IO_PORT_00_PIN_02,
 BSP_IO_PORT_00_PIN_03,
@@ -359,16 +474,9 @@ BSP_IO_PORT_05_PIN_07,
 BSP_IO_PORT_05_PIN_08,
 BSP_IO_PORT_08_PIN_00,
 BSP_IO_PORT_08_PIN_01,
-BSP_IO_PORT_08_PIN_02,
-BSP_IO_PORT_08_PIN_03,
-0xFFFF,
-0xFFFF,
-0xFFFF,
-0xFFFF,
-0xFFFF,
-0xFFFF },
+},
 .DMON = {
-BSP_IO_PORT_02_PIN_06, /* IRQ0 */ /* this has a 10k pull up on the board */
+BSP_IO_PORT_02_PIN_06, /* IRQ0 */ /* this has a 10k pull up on the board */ /* PIN ID 25 */
 BSP_IO_PORT_02_PIN_05, /* IRQ1 */ /* this has a 10k pullup */
 BSP_IO_PORT_02_PIN_03, /* IRQ2 */
 BSP_IO_PORT_02_PIN_02, /* IRQ3 */
