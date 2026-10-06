@@ -9,6 +9,10 @@
      These functions are called in an interrupt context.
 
 */
+#define PWRSEQ_UPDATE(_a_,_b_,_c_)                                                                      \
+            if (_a_) {pwr_seq_update_cfg((uint8_t *) _b_,data,data_len); return data_len;}             \
+            else    {pwr_seq_update_cfg(data, (uint8_t *) _b_,_c_);                                   \
+                     return _c_;}
 
 int PMbus_execute(pmbus_command_t command, uint8_t *data, uint16_t data_len, uint8_t RW) /* 0=read 1=write*/
 {
@@ -17,10 +21,7 @@ int PMbus_execute(pmbus_command_t command, uint8_t *data, uint16_t data_len, uin
     switch (command)
     {
         /* core PMBus commands (00h-CFh) */
-        case PMBUS_CMD_PAGE: /* R/W */
-            if (RW){ PowerController.ctrl->page = *data;}
-            else   { *data = PowerController.ctrl->page;}
-            return 1;
+        case PMBUS_CMD_PAGE: /* 0x00 */ PWRSEQ_UPDATE(RW,&PowerController.ctrl->page,1);
         case PMBUS_CMD_OPERATION: /* R/W */ 
             break;
         case PMBUS_CMD_ON_OFF_CONFIG:              /* USER CODE */ 
@@ -181,77 +182,93 @@ int PMbus_execute(pmbus_command_t command, uint8_t *data, uint16_t data_len, uin
 #endif
         /* UCD91320 manufacturer-specific commands (D0h-FDh) */
         /* must be set along with the GPI_CONFIG may change things... let's see */
-        case PMBUS_CMD_FAULT_PIN_CONFIG:           /* USER CODE */ 
+        case PMBUS_CMD_FAULT_PIN_CONFIG: /* 0xD0 */ //@@@ cannot use PWRSEQ_UPDATE macro because of alignment issues
             if (RW) {pwr_seq_store_fault_config(data,data_len ); return data_len;}
-            else { return pwr_seq_read_fault_config(data); }
+            else    { return pwr_seq_read_fault_config(data); }
             break;
-        case PMBUS_CMD_MONITOR_CONFIG:             /* USER CODE */ 
-            // 1 byte per monitor pin.  There are 32 monitor pins (24 analog and 8 digital only)
-            // 7:5 is encoded: 0=no monitor, 1=Analog, 2=temp, 3=current(NS), 4=voltage compare(NS), 5= input voltage(NS) 6=Digital monitor
-            if (RW)  {pwr_seq_update_monitor(data,data_len);}
-            else     {pwr_seq_read_monitor(data,data_len);}
-            break;
-        case PMBUS_CMD_SEQ_CONFIG:                 /* USER CODE */ 
-            pwr_seq_update_seqcfg(PowerController.ctrl->page,data,data_len);
-            break;
-        case PMBUS_CMD_RESEQUENCE: /*0xDE*/                /* USER CODE */ 
-            if (RW) pwr_seq_update_cfg((uint8_t*) &PowerController.cfg->resequence,data,data_len);
-            else    pwr_seq_update_cfg(data, (uint8_t*) &PowerController.cfg->resequence,data_len);
-            break;
-        case PMBUS_CMD_GPO_CONFIG_INDEX:           /* USER CODE */ 
-            PowerController.ctrl->gpo_index = *data;
-            break;
-        case PMBUS_CMD_GPO_CONFIG:                 /* USER CODE */ 
-        
-            break;
-        case PMBUS_CMD_GPI_CONFIG:                 /* USER CODE */ 
-            if (RW) pwr_seq_update_cfg((uint8_t *) &PowerController.cfg->GPI_config,data,data_len);
-            else    pwr_seq_update_cfg(data, (uint8_t *) &PowerController.cfg->GPI_config,data_len);
-            break;
+        case PMBUS_CMD_VOUT_CAL_MONITOR:       /* 0xD1 */ /* USER CODE */ break;
+        case PMBUS_CMD_SYSTEM_RESET_CONFIG:    /* 0xD2 */ PWRSEQ_UPDATE(RW,&PowerController.cfg->reset_config,15);
+        case PMBUS_CMD_SYSTEM_WATCHDOG_CONFIG: /* 0xD3 */ PWRSEQ_UPDATE(RW,&PowerController.cfg->watchdog_config,6);
+        case PMBUS_CMD_SYSTEM_WATCHDOG_RESET:  /* 0xD4 */ /* USER CODE */ 
+            //@@@ this commands needs to force a WDI condition...
+            return 0;
+        case PMBUS_CMD_MONITOR_CONFIG:        /* 0xD5 */ PWRSEQ_UPDATE(RW,&PowerController.cfg->monitor,sizeof(power_sequencer_monitor_t));
+        case PMBUS_CMD_NUM_PAGES:             /* 0xD6 */      /* USER CODE */ 
+            //@@@ this is a read only command and returns the number of active pages
+            return 0;
+        case PMBUS_CMD_RUN_TIME_CLOCK:        /* 0xD7 */ PWRSEQ_UPDATE(RW,&PowerController.cfg->RTC,8);
+        case PMBUS_CMD_RUN_TIME_CLOCK_TRIM:   /* 0xD8 */ PWRSEQ_UPDATE(RW,&PowerController.cfg->RTC_trim,4);
+//      case (pmbus_command_t) 0xD9: break;   /* 0xD9 */ does not exist
+        case PMBUS_CMD_USER_RAM_00:           /* 0xDA */ PWRSEQ_UPDATE(RW,&PowerController.ctrl->ram_00,1);
+        case PMBUS_CMD_SOFT_RESET:            /* 0xDB */
+            //@@@@ this command is write only and causes the firmware to reset
+            return 0;
+        case PMBUS_CMD_RESET_COUNT:           /* 0xDC */      /* USER CODE */ break; //@@@ related to brownout feature
+        case PMBUS_CMD_PIN_SELECTED_RAIL_STATES:   /* 0xDD */ 
+             if (RW) {pwr_seq_update_railstate(data,data_len); return data_len;}
+             else    {return pwr_seq_read_railstate(data);}
+        case PMBUS_CMD_RESEQUENCE:            /* 0xDE */ PWRSEQ_UPDATE(RW,&PowerController.cfg->resequence,sizeof(uint32_t));
+        case PMBUS_CMD_CONSTANTS:             /* 0xDF */
+             if (RW) {return 0;} /* Read Only */
+             else PWRSEQ_UPDATE(0,(uint8_t *) PowerController.CONSTANTS,8);
 
-#if 0 /* not implemented yet*/        
-        case PMBUS_CMD_VOUT_CAL_MONITOR:           /* USER CODE */ break;
-        case PMBUS_CMD_SYSTEM_RESET_CONFIG:        /* USER CODE */ break;
-        case PMBUS_CMD_SYSTEM_WATCHDOG_CONFIG:     /* USER CODE */ break;
-        case PMBUS_CMD_SYSTEM_WATCHDOG_RESET:      /* USER CODE */ break;
-        case PMBUS_CMD_NUM_PAGES:                  /* USER CODE */ break;
-        case PMBUS_CMD_RUN_TIME_CLOCK:             /* USER CODE */ break;
-        case PMBUS_CMD_RUN_TIME_CLOCK_TRIM:        /* USER CODE */ break;
-        case PMBUS_CMD_USER_RAM_00:                /* USER CODE */ break;
-        case PMBUS_CMD_SOFT_RESET:                 /* USER CODE */ break;
-        case PMBUS_CMD_RESET_COUNT:                /* USER CODE */ break;
-        case PMBUS_CMD_PIN_SELECTED_RAIL_STATES:   /* USER CODE */ break;
-        case PMBUS_CMD_CONSTANTS:                  /* USER CODE */ break;
-        case PMBUS_CMD_PWM_SELECT:                 /* USER CODE */ break;
-        case PMBUS_CMD_PWM_CONFIG:                 /* USER CODE */ break;
-        case PMBUS_CMD_PARM_INFO:                  /* USER CODE */ break;
-        case PMBUS_CMD_PARM_VALUE:                 /* USER CODE */ break;
-        case PMBUS_CMD_TEMPERATURE_CAL_GAIN:       /* USER CODE */ break;
-        case PMBUS_CMD_TEMPERATURE_CAL_OFFSET:     /* USER CODE */ break;
-        case PMBUS_CMD_SET_BREAKPOINTS:            /* USER CODE */ break;
-        case PMBUS_CMD_DEBUG_CONTINUE:              /* USER CODE */ break;
-        case PMBUS_CMD_FAULT_RESPONSES:            /* USER CODE */ break;
-        case PMBUS_CMD_LOGGED_FAULTS:              /* USER CODE */ break;
-        case PMBUS_CMD_LOGGED_FAULT_DETAIL_INDEX:  /* USER CODE */ break;
-        case PMBUS_CMD_LOGGED_FAULT_DETAIL:        /* USER CODE */ break;
-        case PMBUS_CMD_LOGGED_PAGE_PEAKS:          /* USER CODE */ break;
-        case PMBUS_CMD_LOGGED_COMMON_PEAKS:        /* USER CODE */ break;
-        case PMBUS_CMD_LOGGED_FAULT_DETAIL_ENABLES:/* USER CODE */ break;
-        case PMBUS_CMD_EXECUTE_FLASH:              /* USER CODE */ break;
-        case PMBUS_CMD_SECURITY:                   /* USER CODE */ break;
-        case PMBUS_CMD_SECURITY_BIT_MASK:          /* USER CODE */ break;
-        case PMBUS_CMD_MFR_STATUS:                 /* USER CODE */ break;
-        case PMBUS_CMD_GPI_FAULT_RESPONSES:        /* USER CODE */ break;
-        case PMBUS_CMD_MARGIN_CONFIG:              /* USER CODE */ break;
-        case PMBUS_CMD_GPIO_SELECT:                /* USER CODE */ break;
-        case PMBUS_CMD_GPIO_CONFIG:                /* USER CODE */ break;
-        case PMBUS_CMD_MISC_CONFIG:                /* USER CODE */ break;
-        case PMBUS_CMD_DEVICE_ID:                  /* USER CODE */ break;
+        case PMBUS_CMD_PWM_SELECT:            /* 0xE0 */      /* USER CODE */ break;
+        case PMBUS_CMD_PWM_CONFIG:            /* 0xE1 */      /* USER CODE */ break;
+        case PMBUS_CMD_PARM_INFO:             /* 0xE2 */      /* USER CODE */ break;
+        case PMBUS_CMD_PARM_VALUE:            /* 0xE3 */      /* USER CODE */ break;
+        case PMBUS_CMD_TEMPERATURE_CAL_GAIN:   /* 0xE4 */     /* USER CODE */ break;
+        case PMBUS_CMD_TEMPERATURE_CAL_OFFSET: /* 0xE5 */     /* USER CODE */ break;
+        case PMBUS_CMD_SET_BREAKPOINTS:        /* 0xE6 */     /* USER CODE */ break;
+        case PMBUS_CMD_DEBUG_CONTINUE:         /* 0xE7 */     /* USER CODE */ break;
+//        case 0xE8; break;
+        case PMBUS_CMD_FAULT_RESPONSES:        /* 0xE9 */      /* USER CODE */ break;
+        case PMBUS_CMD_LOGGED_FAULTS:          /* 0xEA */      /* USER CODE */ break;
+        case PMBUS_CMD_LOGGED_FAULT_DETAIL_INDEX: /* 0xEB */   /* USER CODE */ break;
+        case PMBUS_CMD_LOGGED_FAULT_DETAIL:    /* 0xEC */      /* USER CODE */ break;
+        case PMBUS_CMD_LOGGED_PAGE_PEAKS:      /* 0xED */      /* USER CODE */ break;
+        case PMBUS_CMD_LOGGED_COMMON_PEAKS:    /* 0xEE */      /* USER CODE */ break;
+        case PMBUS_CMD_LOGGED_FAULT_DETAIL_ENABLES: /* 0xEF */ /* USER CODE */ break;
 
-        /* PMBus 1.3 extended-command escape codes */
-        case PMBUS_CMD_MFR_SPECIFIC_EXTENDED_COMMAND: /* USER CODE */ break;
-        case PMBUS_CMD_PMBUS_EXTENDED_COMMAND:        /* USER CODE */ break;
-#endif
+
+
+        case PMBUS_CMD_EXECUTE_FLASH:            /* 0xF0 */  /* USER CODE */ break;
+        case PMBUS_CMD_SECURITY:                 /* 0xF1 */  /* USER CODE */ break;
+        case PMBUS_CMD_SECURITY_BIT_MASK:        /* 0xF2 */  /* USER CODE */ break;
+        case PMBUS_CMD_MFR_STATUS:               /* 0xF3 */  /* USER CODE */ break;
+        case PMBUS_CMD_GPI_FAULT_RESPONSES:      /* 0xF4 */  /* USER CODE */ break;
+        case PMBUS_CMD_MARGIN_CONFIG:            /* 0xF5 */  /* USER CODE */ break;
+
+        case PMBUS_CMD_SEQ_CONFIG:               /* 0xF6 */             /* PAGE */ 
+            if (RW) {pwr_seq_update_seqcfg(PowerController.ctrl->page,data,data_len); return data_len;}
+            else    {return pwr_seq_read_seqcfg(PowerController.ctrl->page,data);}
+        case PMBUS_CMD_GPO_CONFIG_INDEX:         /* 0xF7 */
+            if (RW) PowerController.ctrl->gpo_index = *data;
+            else    *data = PowerController.ctrl->gpo_index;
+            return 1;
+        case PMBUS_CMD_GPO_CONFIG:                /* 0xF8 */  
+            PWRSEQ_UPDATE(RW,&PowerController.cfg->GPO_config[PowerController.ctrl->gpo_index],sizeof(power_controller_GPOCFG_t));
+        case PMBUS_CMD_GPI_CONFIG:                 /* 0xF9 */              /* USER CODE */ 
+            PWRSEQ_UPDATE(RW,&PowerController.cfg->GPI_config,sizeof(power_controller_GPICFG_t));
+            break;
+        case PMBUS_CMD_GPIO_SELECT:              /* 0xFA */  /* USER CODE */ break;
+            PWRSEQ_UPDATE(RW,&PowerController.ctrl->GPIO_select,1);
+        case PMBUS_CMD_GPIO_CONFIG:              /* 0xFB */  /* USER CODE */ break;
+            if (RW) 
+            {
+                 pwr_seq_update_cfg((uint8_t *) &PowerController.ctrl->GPIO_config,data,data_len); 
+                 return 1;
+            }             
+            else    
+            {
+                pwr_seq_update_cfg(data, (uint8_t *) &PowerController.ctrl->GPIO_config,1);                                   \
+                return 1;
+            }
+
+        case PMBUS_CMD_MISC_CONFIG:              /* 0xFC */  PWRSEQ_UPDATE(RW,&PowerController.cfg->MSCCFG,8);
+        case PMBUS_CMD_DEVICE_ID:                /* 0xFD */  /* USER CODE */ break;
+        case PMBUS_CMD_MFR_SPECIFIC_EXTENDED_COMMAND: /* 0xFE */   /* USER CODE */ break;
+        case PMBUS_CMD_PMBUS_EXTENDED_COMMAND:        /* 0xFF */   /* USER CODE */ break;
+
         default:
             /* USER CODE: unrecognized command */
             break;

@@ -45,7 +45,44 @@ static uint16_t adc_raw_to_mv(uint16_t raw_counts, uint32_t scale_q16)
     }
     return (uint16_t) mv;
 }
+void pwr_seq_poll_GPI(void) //@@@ may end up static...
+{
+    PowerController.ctrl->GPI = 0;
+    for(int i=0;i<32;i++)
+    {
+        switch (PowerController.cfg->GPI_config.GPI[i].conf & 0x0F) { //@@@ could access 16 and mask upper
+            /*  ACTIVE LOW   */
+            case (1): /* input */
+                if ( 0 == (*((uint32_t *) power_sequencer_IO.pin[i]) & 0x02)) //@@@ PIDR bit is low in the PFS
+                {
+                    PowerController.ctrl->GPI |= (1 << i);
+                }
+                break;
+            /* ACTIVE HIGH */
+            case (5): /* input */
+                if ( 0 != (*((uint32_t *) power_sequencer_IO.pin[i]) & 0x02)) //@@@ PIDR bit is low in the PFS
+                {
+                    PowerController.ctrl->GPI |= (1 << i);
+                }
+                break;
+                default: break;
+        }
+    }
+}
+void pwr_seq_poll_Page(void)
+{
+            PowerController.ctrl->Page = 0x00000000;
+            for(int i=0;i<PWR_MAX_RAILS;i++)
+            {
+                switch (PowerController.rails[i].ctrl->state) {
+                    case PWR_RAIL_ON:
+                         PowerController.ctrl->Page |= (1 << i);
+                         break;
+                    default: break;
+                }
+            }
 
+}
 /*
     Poll the rails' analog monitors from one ADC scan.
     ADC_data must have at least PowerController.num_rails entries, indexed
@@ -256,8 +293,8 @@ void pwr_seq_store_fault_config(uint8_t *data,uint16_t len )
 */
 uint16_t pwr_seq_read_fault_config(uint8_t *data)
 {
-    memcpy(data, (uint8_t*) DF_POWER_RAIL_FLTMAP_ADDR, sizeof(power_fault_output_t));
-    return sizeof(power_fault_output_t);
+    memcpy(data, (uint8_t*) DF_POWER_RAIL_FLTMAP_ADDR, 41); //@@@ can't use sizeof()
+    return 41;
 }
 void pwr_seq_store_all(void)
 {
@@ -276,13 +313,87 @@ void pwr_seq_restore_all(void)
         memcpy((uint8_t*) PowerController.rails[i].cfg, (uint8_t*) PowerController.rails[i].cfg_store,sizeof(power_rail_cfg_t));
     }
 }
-void pwr_seq_update_monitor(uint8_t *data,uint16_t len)
+void pwr_seq_configure(void)
 {
-   memcpy((uint8_t*) &PowerController.cfg->monitor,data,len);
+   /* configure the monitor pins */
+   for(int i=0;i<PWR_MAX_MONITOR;i++) 
+   {
+      switch (i) { // PowerController.cfg->monitor.MON[i]) {
+        case 0: /* see table 26.8    No Monitor*/
+            PWR_PIN_CFG_INPUT(i);
+            break;
+        case 1: /* Analog */
+            PWR_PIN_CFG_ANALOG(i);
+            break;
+        case 2: /* Temperature */         break;
+        case 3: /* Current */             break;
+        case 4: /* Voltage Comparator */  break;
+        case 5: /* Input voltage */       break;
+        case 6: /* Digital voltage monitor */ //@@@ based off interrupts?  These are not DMON configurations are they?
+            PWR_PIN_CFG_INPUT(i);
+            break;
+        default: break;
+       }
+   }
+   /* configure the EN pins */
+   for(int i=0;i<PWR_MAX_RAILS;i++)
+   {
+       uint8_t ID = PowerController.rails[i].cfg->SEQ_config.ID;
+       uint8_t conf = (PowerController.rails[i].cfg->SEQ_config.ID_other & 0x07);
+       if (ID) switch (conf) {
+           /* Active Low */
+           case (0): /* unused */  break;
+           case (1): /* input*/    break;
+           case (2): /* ACTIVE driven */
+               PWR_PIN_CFG_OUTPUT1(ID-1); /* sets the pin as an output and initializes it high*/
+               break;
+           case (3): /* Open Drain */
+               PWR_PIN_CFG_OD1(ID-1);     /* sets the pin as an open drain output and initializes it pulled high */
+               break;
+           /* Active High */
+           case (4): /* unused */  break;
+           case (5): /* input*/    break;
+           case (6): /* ACTIVE driven*/
+               PWR_PIN_CFG_OUTPUT0(ID-1); /* sets the pin as an output and drives it LOW */
+               break;
+           case (7):
+               PWR_PIN_CFG_OD0(ID-1);     /* sets the pin as an open drain output and initializes it driven LOW */
+               break;
+      }
+   }
+   /* configure the GPI pins */
+    for(int i=0;i<32;i++) //@@@ hard coding 32 becaus that's the architecture.  
+    {
+        uint8_t ID = PowerController.cfg->GPI_config.GPI[i].id;
+        uint8_t conf = (PowerController.cfg->GPI_config.GPI[i].conf & 0x07);
+        if (ID) switch (conf) {
+            case (1): /* ACTIVE LOW input */
+            case (5): /* ACTIVE HIGH input */
+                PWR_PIN_CFG_INPUT(ID-1); /* sets the pin as an input with pull-up */
+                break;
+            default: break;
+        }
+    }
 }
+//void pwr_seq_update_monitor(uint8_t *data,uint16_t len)
+//{
+//   memcpy((uint8_t*) &PowerController.cfg->monitor,data,len);
+//}
 void pwr_seq_update_cfg(uint8_t *p, uint8_t *q, uint16_t len)
 {
    memcpy(p,q,len);
+}
+void pwr_seq_update_GPIO_cfg(uint8_t *p)
+{
+    /* see section 26.41  allows you to manipulate a GPIO */
+    PowerController.ctrl->GPIO_config = *p;
+    /*   7    6    5    4    3    2    1    0  */
+    /*   .    .    .    .   STS OVAL  OEN  EN  */
+}
+uint16_t pwr_seq_read_GPIO_cfg(uint8_t *p)
+{
+    *p = PowerController.ctrl->GPIO_config;
+    return 1;
 }
 volatile power_controller_SEQCFG_t *px;
 void pwr_seq_update_seqcfg(uint8_t rail_index,uint8_t *src,uint16_t data_len)
@@ -297,4 +408,34 @@ void pwr_seq_update_seqcfg(uint8_t rail_index,uint8_t *src,uint16_t data_len)
    src += 13;
    memcpy((uint8_t*) p,src,16);
    
+}
+uint16_t pwr_seq_read_seqcfg(uint8_t rail_index,uint8_t *src)
+{
+//@@@   power_controller_SEQCFG_t *p = &PowerController.rails[rail_index].cfg->SEQ_config;
+//@@@  parameter check of data_len
+   px = &PowerController.rails[rail_index].cfg->SEQ_config;
+   uint8_t *p = (uint8_t*) px;
+   p = p + 2; //@@@ skip the pad at the beginning of the data structure.
+   memcpy(src, (uint8_t*) p,13);
+   p += 14;
+   src += 13;
+   memcpy(src, (uint8_t*) p,16);
+   return 29;
+}
+void pwr_seq_update_railstate(uint8_t *src,uint16_t data_len)
+{
+//@@@   power_controller_SEQCFG_t *p = &PowerController.rails[rail_index].cfg->SEQ_config;
+//@@@  parameter check of data_len
+   uint8_t *p = (uint8_t*) &PowerController.cfg->railstate;
+   p = p + 2; //@@@ skip the pad at the beginning of the data structure.
+   memcpy((uint8_t*) p,src,34);
+}
+uint16_t pwr_seq_read_railstate(uint8_t *src)
+{
+//@@@   power_controller_SEQCFG_t *p = &PowerController.rails[rail_index].cfg->SEQ_config;
+//@@@  parameter check of data_len
+   uint8_t *p = (uint8_t*) &PowerController.cfg->railstate;
+   p = p + 2; //@@@ skip the pad at the beginning of the data structure.
+   memcpy(src, (uint8_t*) p,34);
+   return 34;
 }

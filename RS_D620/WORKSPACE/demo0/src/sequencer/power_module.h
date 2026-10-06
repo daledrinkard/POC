@@ -26,6 +26,9 @@
 #define PWR_MAX_DMON         (8)
 #define PWR_MAX_EN           (32)
 #define PWR_MAX_GPIO         (8)
+#define PWR_MAX_MAR          (16)
+#define PWR_IO_DATA_WORDS (PWR_MAX_MONITOR + PWR_MAX_DMON + PWR_MAX_EN + PWR_MAX_MAR + PWR_MAX_GPIO)
+
 #define PWR_MAX_FAULT_GROUP  (4)
 
 #define PWR_MON_TYPE_NONE         (0x00)
@@ -47,6 +50,33 @@
 
 #define PWR_FLAG_ENABLE     (0x00000001)
 #define PWR_FLAG_READBACK   (0x00000002) /* this flag enables the main loop to poll the comm during a read operation */
+/* These are RA specific coding */
+#define PWR_PIN_p_PFS(_a_) (uint32_t*) PowerController.GPIO->pin[_a_]
+#if 0
+#define PWR_PIN_ASSERT_LOW(_a_) *((uint32_t*) PowerController.GPIO->pin[_a_]) |= (uint32_t)  0x00000004;  /* Set PDR bit */ \
+                                *((uint32_t*) PowerController.GPIO->pin[_a_]) &= (uint32_t) ~0x00000001;  /* clear PODR bit */
+#define PWR_PIN_ASSERT_HI(_a_)  *((uint32_t*) PowerController.GPIO->pin[_a_]) |= (uint32_t)  0x00000004;  /* Set PDR bit */ \
+                                *((uint32_t*) PowerController.GPIO->pin[_a_]) |= (uint32_t)  0x00000001;  /* Set PODR bit */
+#define PWR_PIN_ASSERT_OPEN(_a_)  *((uint32_t*) PowerController.GPIO->pin[_a_]) &= (uint32_t)  ~0x00000004;  /* clear PDR bit */ \
+                                  *((uint32_t*) PowerController.GPIO->pin[_a_]) |= (uint32_t)  ~0x00000001;  /* clear PODR bit */
+#endif
+
+#define PWR_PIN_ASSERT_LOW(_a_)   *(PWR_PIN_p_PFS(_a_)) |= (uint32_t)  0x00000004;  /* Set PDR bit */ \
+                                  *(PWR_PIN_p_PFS(_a_)) &= (uint32_t) ~0x00000001;  /* clear PODR bit */
+#define PWR_PIN_ASSERT_HI(_a_)    *(PWR_PIN_p_PFS(_a_)) |= (uint32_t)  0x00000004;  /* Set PDR bit */ \
+                                  *(PWR_PIN_p_PFS(_a_)) |= (uint32_t)  0x00000001;  /* Set PODR bit */
+#define PWR_PIN_ASSERT_OPEN(_a_)  *(PWR_PIN_p_PFS(_a_)) &= (uint32_t)  ~0x00000004;  /* clear PDR bit */ \
+                                  *(PWR_PIN_p_PFS(_a_)) |= (uint32_t)  ~0x00000001;  /* clear PODR bit */
+#define PWR_PIN_CFG_ANALOG(_a_)   *(PWR_PIN_p_PFS(_a_))  = (uint32_t)  0x00018000;  /* Set PMR and ASEL */ 
+#define PWR_PIN_CFG_INPUT(_a_)    *(PWR_PIN_p_PFS(_a_))  = (uint32_t)  0x00000000;  /* input no pull up */ 
+#define PWR_PIN_CFG_OUTPUT0(_a_)  *(PWR_PIN_p_PFS(_a_))  = (uint32_t)  0x00000004;  /* output drive low */ 
+#define PWR_PIN_CFG_OUTPUT1(_a_)  *(PWR_PIN_p_PFS(_a_))  = (uint32_t)  0x00000005;  /* output drive hi */ 
+#define PWR_PIN_CFG_PULL(_a_)     *(PWR_PIN_p_PFS(_a_))  = (uint32_t)  0x00000010;  /* input pull up */ 
+#define PWR_PIN_CFG_OD1(_a_)      *(PWR_PIN_p_PFS(_a_))  = (uint32_t)  0x00000040;  /* OD initially pulled hi input */ 
+#define PWR_PIN_CFG_OD0(_a_)      *(PWR_PIN_p_PFS(_a_))  = (uint32_t)  0x00000044;  /* OD initially driven low */ 
+
+#define PWR_PIN_CFG_DVM(_a_)      *(PWR_PIN_p_PFS(_a_))  = (uint32_t)  0x00004000;  /* Set ISEL  */ 
+
 /* how a rail's output is measured (ucd91320 4: MONx = analog or digital monitor, or GPIO) */
 typedef enum power_monitor_type_e {
     PWR_MON_NONE,
@@ -84,9 +114,16 @@ typedef enum power_controller_state_e {
     PWR_SEQ_SEQUENCING_DOWN,
     PWR_SEQ_FAULT_SHUTDOWN
 } power_controller_state_t;
+
+typedef struct power_controller_RTC_s {
+    uint16_t seconds; /* 15:10=seconds  9:0=milliseconds */
+    uint16_t DHM;     /* 15:11= Day 10:6 = Hours 5:0 = Minutes */
+    uint16_t YM;      /* 15:4 = Year 3:0 = Month */
+    uint16_t rsv;
+} power_controller_RTC_t;
 typedef struct power_controller_GPI_s {
     uint8_t id;
-    uint8_t conf;
+    uint8_t conf; //@@@ make this an enum
 }power_controller_GPI_t;
 typedef struct power_controller_GPICFG_s {
    power_controller_GPI_t GPI[32];  /* id=0 | (1 to 88) : conf [7:3][2]:polarity[1..0]:mode*/
@@ -116,8 +153,8 @@ typedef struct power_controller_SEQCFG_s {  //@@@ alignment issues
 } power_controller_SEQCFG_t;
 typedef struct power_controller_GPOCFG_s {
     power_controller_GPI_t GPO;
-    uint8_t conf;
-    uint8_t dly;
+    uint8_t conf;     /* see table 26-41 */
+    uint8_t dly;      /* see table 26-41 */
     uint8_t and_path0;
     uint8_t and_path1;
     struct {
@@ -130,6 +167,12 @@ typedef struct power_controller_GPOCFG_s {
     } path[2];
 }power_controller_GPOCFG_t;
 
+typedef struct power_sequencer_MSCCFG_s {
+    uint8_t misc_cfg;
+    uint8_t time_2_reseq;
+    uint16_t external_reference;
+    uint32_t reseq_rail_mask;
+} power_sequencer_MSCCFG_t;
 
 /*
   _____       _ _       
@@ -144,6 +187,9 @@ typedef struct power_controller_GPOCFG_s {
 /* static, per-rail configuration (ucd91320 7.2.2: rail setup / monitoring / sequence / fault response / margining) */
 typedef struct power_rail_cfg_s {
     power_controller_SEQCFG_t SEQ_config;
+
+
+
     uint16_t nominal_mv;         /* expected rail voltage, in mV */
     uint16_t ov_threshold_mv;    /* over-voltage fault threshold */
     uint16_t uv_threshold_mv;    /* under-voltage fault threshold */
@@ -165,6 +211,8 @@ typedef struct power_rail_cfg_s {
 } power_rail_cfg_t;
 typedef struct power_rail_ctrl_s {
     power_rail_state_t state;
+    uint8_t             en_out;     
+    uint8_t             dis_out;
     power_fault_type_t last_fault;
     uint16_t            monitor_mv;  /* last-read MONx value, in mV (0 if monitor_type == PWR_MON_NONE) */
     uint16_t            monitor_c;   /* last-read current value, in mA (0 if monitor_type == PWR_MON_NONE) */
@@ -192,12 +240,26 @@ typedef struct power_rail_s {
                  | |                               
                  |_|                               
 */
-typedef struct power_sequencer_IO_s {
-    uint16_t MON[PWR_MAX_MONITOR];
-    uint16_t DMON[PWR_MAX_DMON];
-    uint16_t EN[PWR_MAX_EN];
-    uint16_t GPIO[PWR_MAX_GPIO];
+typedef union power_sequencer_IO_u {
+    struct {
+        void* MON[PWR_MAX_MONITOR];
+        void* DMON[PWR_MAX_DMON];
+        void* EN[PWR_MAX_EN];
+        void* MAR[PWR_MAX_MAR];
+        void* GPIO[PWR_MAX_GPIO];
+    } usage;
+    void* pin[PWR_IO_DATA_WORDS];
 } power_sequencer_IO_t;
+typedef struct power_sequencer_CONST_s {
+    uint8_t max_digital_comp;
+    uint8_t max_GPOs;
+    uint8_t max_GPIs;
+    uint8_t max_pages;
+    uint8_t max_fans;
+    uint8_t max_monitors;
+    uint8_t max_fault_entries;
+    uint8_t max_PWMs;
+} power_sequencer_CONST_t;
 extern const power_sequencer_IO_t power_sequencer_IO;
 
 typedef struct power_rail_map_s {
@@ -210,6 +272,30 @@ typedef struct power_rail_map_s {
 typedef struct power_sequencer_monitor_s {
     uint8_t MON[PWR_MAX_MONITOR + PWR_MAX_DMON];  //@@@ don't like this
 }power_sequencer_monitor_t;
+
+typedef struct power_sequencer_reset_config_s {
+    uint32_t page_flag;
+    uint32_t GPI_flag;
+    uint8_t delay_timne;
+    uint8_t pulse_time;
+    uint8_t GPI_number;
+    uint8_t GPI_tracking;
+    uint8_t GPI_tracking_release_dly;
+    uint8_t reset_pin_configurations;
+    uint8_t reset_pin_config_2;
+    uint8_t spare_1;
+} power_sequencer_reset_config_t;
+
+typedef struct power_sequencer_watchdog_config_s {
+    uint8_t control;  /* 7=enable, 6=watcch reset bin, 5 = rsv, 4 = disable until system reset, 3:0 = start time */
+    uint8_t WDI_ID;
+    uint8_t WDI_conf;
+    uint8_t reset_period;
+    uint8_t WDO_ID;
+    uint8_t WDO_conf;
+    uint8_t spare[2];
+} power_sequencer_watchdog_config_t;
+
 
 /* one fault log record (ucd91320 6.3.1: Black Box Fault Log captures the first fault + full rail status) */
 typedef struct power_fault_log_entry_s {
@@ -231,6 +317,12 @@ typedef struct power_fault_output_s {
   uint8_t other_mask;
   uint8_t spare[3];
 } power_fault_output_t;
+typedef struct power_controller_railstate_s {
+    uint8_t spare[2]; /* for alignment */
+    uint8_t state_enables;
+    uint8_t soft_off_enables;
+    uint32_t system_state[8];
+}power_controller_railstate_t;
 /*
    _____            _             _ _           
   / ____|          | |           | | |          
@@ -245,8 +337,14 @@ typedef struct power_controller_cfg_s {
     power_fault_output_t      faults;
     power_controller_GPICFG_t GPI_config;
     power_controller_GPOCFG_t GPO_config[16]; //@@@arbitrary
+    power_controller_railstate_t railstate;
     uint32_t                  GPI;
     uint32_t                  resequence;
+    power_sequencer_reset_config_t    reset_config;
+    power_sequencer_watchdog_config_t watchdog_config;
+    power_controller_RTC_t   RTC;
+    uint32_t                 RTC_trim; /* see section 26.10 and 11 */
+    power_sequencer_MSCCFG_t MSCCFG;   /* see section 26.42 */
 
     uint8_t                  active_rail_group;  /* 0..PWR_MAX_RAIL_GROUPS-1, selected via GPI Controlled Rail Groups */
     uint8_t                  pmbus_address;      /* ucd91320 6.3.2: 7-bit PMBus address (PMBUS_ADDRx pins) */
@@ -262,12 +360,16 @@ typedef struct power_controller_cfg_s {
 
 } power_controller_cfg_t;
 typedef struct power_controller_ctrl_s {
-    power_controller_state_t  state;
+    uint32_t                 GPI;     /* this is the "live" GPIs */
+    uint32_t                 Page;    /* these are the pages that are ON */
+    power_controller_state_t state;
     power_fault_log_t        fault_log;
     uint8_t                  gpo_index;
     uint8_t                  page;
-    uint8_t                  spare1;
-    uint8_t                  spare2;
+    uint8_t                  ram_00;
+    uint8_t                  GPIO_select;
+    uint8_t                  GPIO_config;
+    uint8_t                  spare[3];
 
     uint32_t                 rails_ready;
     uint32_t                 rails_enabled;
@@ -281,12 +383,13 @@ typedef struct power_controller_ctrl_s {
  * sequence up to 128 rails") via cascade_id/cascade_count below.
  */
 typedef struct power_controller_s {
-    power_rail_t            *rails;//[PWR_MAX_RAILS];
+    power_rail_t            *rails;
     power_controller_cfg_t  *cfg;
     power_controller_cfg_t  *cfg_store;
     power_controller_ctrl_t *ctrl;
-    power_rail_map_t        *map;//[PWR_MAX_RAILS];   /* mapping data is in SRAM */
+    power_rail_map_t        *map;   /* mapping data is in SRAM */
     power_sequencer_IO_t    *GPIO;
+    power_sequencer_CONST_t *CONSTANTS;
 
 } power_controller_t;
 
@@ -295,8 +398,11 @@ extern const power_controller_t PowerController;
 /* Scan ADC_data[i] (raw ADC counts, one per rail, same indexing as PowerController.rails[])
  * into each PWR_MON_ANALOG rail's monitor_mv. Call this once per ADC scan cycle. */
 void pwr_mod_poll(uint16_t *ADC_data);
+void pwr_seq_poll_GPI(void);
+void pwr_seq_poll_Page(void);
 /* Checks the CRC-16 trailer of a DF_POWER_RAIL_RECORD_SIZE-byte data-flash record at `p`. */
 bool pwr_dataflash_check(const uint8_t *p);
+
 void pwr_rail_store_config(uint16_t rail_index,uint8_t *data,uint16_t len );
 
 void pwr_seq_update_cfg(uint8_t *dest,uint8_t *src,uint16_t len);
@@ -312,8 +418,15 @@ uint16_t pwr_seq_read_fault_config(uint8_t *data);
 void pwr_seq_store_all(void);
 void pwr_seq_restore_all(void);
 
-void pwr_seq_update_monitor(uint8_t *data,uint16_t len);
+// void pwr_seq_update_monitor(uint8_t *data,uint16_t len);
 void pwr_seq_update_seqcfg(uint8_t rail_index,uint8_t *src,uint16_t data_len);
+uint16_t pwr_seq_read_seqcfg(uint8_t rail_index,uint8_t *src);
+void pwr_seq_update_railstate(uint8_t *src,uint16_t data_len);
+uint16_t pwr_seq_read_railstate(uint8_t *src);
+
+void pwr_seq_update_GPIO_cfg(uint8_t *p);
+uint16_t pwr_seq_read_GPIO_cfg(uint8_t *p);
+void pwr_seq_configure(void);
 
 
 #endif /* POWER_MODULE_H_ */

@@ -33,14 +33,18 @@ int comm_service(void)
             if (PB_Comm.flag & COMM_FLAG_TX_RDY)
             {
                 /*  Kick off the transmit operation and we'll spin until the completion is detected */
+                t = ((PB_Comm.data_len & 0xF0) >> 4);
+                xbuffer[0] = ( t > 9) ? (t-10)+'A' : t+'0';
+                t = (PB_Comm.data_len & 0x0F);
+                xbuffer[1] = ( t > 9) ? (t-10)+'A' : t+'0';
                 for(int i=0;i<PB_Comm.data_len;i++)
                 {
                     t = ((PB_Comm.data[i] & 0xF0) >> 4);
-                    xbuffer[i*2] = ( t > 9) ? (t-10)+'A' : t+'0';
+                    xbuffer[i*2+2] = ( t > 9) ? (t-10)+'A' : t+'0';
                     t = (PB_Comm.data[i] & 0x0F);
-                    xbuffer[i*2+1] = ( t > 9) ? (t-10)+'A' : t+'0';
+                    xbuffer[i*2+3] = ( t > 9) ? (t-10)+'A' : t+'0';
                 }
-                R_SCI_UART_Write(&g_comm_uart_ctrl,xbuffer,PB_Comm.data_len*2);
+                R_SCI_UART_Write(&g_comm_uart_ctrl,xbuffer,(PB_Comm.data_len*2)+2);
                 PB_Comm.flag &= (uint8_t) ~COMM_FLAG_TX_RDY;
             }
             if (PB_Comm.flag & COMM_FLAG_TX_DONE)

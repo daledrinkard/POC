@@ -303,18 +303,28 @@ const power_controller_cfg_t power_controller_basic = {
         }
         }
     },
-
-
-    .watchdog_enabled = false,
-    .watchdog_timeout_ms = 0,
+    .GPI        = 0x00000000,
+    .resequence = 0x00000000,
+    .reset_config = {0},
+    .watchdog_config = {0},
+    .RTC = {
+        .seconds = (30 << 10)  | 500,
+        .DHM     = (1 << 11)   | (8 << 6) | 45,
+        .YM      = (2026 << 4) | 9,
+        .rsv = 0
+    },
     .active_rail_group = 0,
-    .gpi_mask = 0,
-    .gpo_mask = 0,
-    .pmbus_address = 0,
+    .pmbus_address = 0xC0,
     .cascade_id = 0,
     .cascade_count = 1,
+    .watchdog_timeout_ms = 0,
+    .gpi_mask = 0,
+    .gpo_mask = 0,
+    .watchdog_enabled = false,
+    .active_rail_group = 0,
     .sync_clock_enabled = false,
-    .fault_pin_asserted = false
+    .fault_pin_asserted = false,
+    .spare1 = 0xAA
 };
 
 /* 
@@ -448,80 +458,121 @@ const power_rail_t power_rails[PWR_MAX_RAILS] = {
     that cannot be used due to other stuff...
 
 */
+const R_PFS_PORT_Type *G = 0;
+R_PFS_Type *p;
+
+#define IO_PFS(_a_) (void*) (R_PFS_BASE + ((_a_ & 0xFF00)>>2) + (0x04 * (_a_ & 0x000F)))
+
 const power_sequencer_IO_t power_sequencer_IO = {
+.usage = {
 .MON = {
-BSP_IO_PORT_00_PIN_00,   /* PIN ID 1 */
-BSP_IO_PORT_00_PIN_01,
-BSP_IO_PORT_00_PIN_02,
-BSP_IO_PORT_00_PIN_03,
-BSP_IO_PORT_00_PIN_04,
-BSP_IO_PORT_00_PIN_05,
-BSP_IO_PORT_00_PIN_06,
-BSP_IO_PORT_00_PIN_07,
-BSP_IO_PORT_00_PIN_08,
-BSP_IO_PORT_00_PIN_09,
-BSP_IO_PORT_00_PIN_10,
-BSP_IO_PORT_00_PIN_14,
-BSP_IO_PORT_00_PIN_15,
-BSP_IO_PORT_05_PIN_00,  /* used in USB on EK */
-BSP_IO_PORT_05_PIN_01,  /* used in USB on EK */
-BSP_IO_PORT_05_PIN_02,
-BSP_IO_PORT_05_PIN_03,
-BSP_IO_PORT_05_PIN_04,
-BSP_IO_PORT_05_PIN_05,  /* this pin is pulled high with a 1k5 */
-BSP_IO_PORT_05_PIN_06,  /* this pin is pulled high with a 1k5 */
-BSP_IO_PORT_05_PIN_07,
-BSP_IO_PORT_05_PIN_08,
-BSP_IO_PORT_08_PIN_00,
-BSP_IO_PORT_08_PIN_01,
+IO_PFS(BSP_IO_PORT_00_PIN_00),   /* PIN ID 1 */
+IO_PFS(BSP_IO_PORT_00_PIN_01),
+IO_PFS(BSP_IO_PORT_00_PIN_02),
+IO_PFS(BSP_IO_PORT_00_PIN_03),
+IO_PFS(BSP_IO_PORT_00_PIN_04),
+IO_PFS(BSP_IO_PORT_00_PIN_05),
+IO_PFS(BSP_IO_PORT_00_PIN_06),
+IO_PFS(BSP_IO_PORT_00_PIN_07),
+IO_PFS(BSP_IO_PORT_00_PIN_08),
+IO_PFS(BSP_IO_PORT_00_PIN_09),
+IO_PFS(BSP_IO_PORT_00_PIN_10),
+IO_PFS(BSP_IO_PORT_00_PIN_14),
+IO_PFS(BSP_IO_PORT_00_PIN_15),
+IO_PFS(BSP_IO_PORT_05_PIN_00),  /* used in USB on EK */
+IO_PFS(BSP_IO_PORT_05_PIN_01),  /* used in USB on EK */
+IO_PFS(BSP_IO_PORT_05_PIN_02),
+IO_PFS(BSP_IO_PORT_05_PIN_03),
+IO_PFS(BSP_IO_PORT_05_PIN_04),
+IO_PFS(BSP_IO_PORT_05_PIN_05),  /* this pin is pulled high with a 1k5 */
+IO_PFS(BSP_IO_PORT_05_PIN_06),  /* this pin is pulled high with a 1k5 */
+IO_PFS(BSP_IO_PORT_05_PIN_07),
+IO_PFS(BSP_IO_PORT_05_PIN_08),
+IO_PFS(BSP_IO_PORT_08_PIN_00),
+IO_PFS(BSP_IO_PORT_08_PIN_01),
 },
 .DMON = {
-BSP_IO_PORT_02_PIN_06, /* IRQ0 */ /* this has a 10k pull up on the board */ /* PIN ID 25 */
-BSP_IO_PORT_02_PIN_05, /* IRQ1 */ /* this has a 10k pullup */
-BSP_IO_PORT_02_PIN_03, /* IRQ2 */
-BSP_IO_PORT_02_PIN_02, /* IRQ3 */
-0xFFFF,
-0xFFFF,
-0xFFFF,
-0xFFFF },
+IO_PFS(BSP_IO_PORT_02_PIN_06), /* IRQ0 */ /* this has a 10k pull up on the board */ /* PIN ID 25 */
+IO_PFS(BSP_IO_PORT_02_PIN_05), /* IRQ1 */ /* this has a 10k pullup */
+IO_PFS(BSP_IO_PORT_02_PIN_03), /* IRQ2 */
+IO_PFS(BSP_IO_PORT_02_PIN_02), /* IRQ3 */
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF) },
 .EN = {  /* Ones with pullups route to OSPI */
-BSP_IO_PORT_01_PIN_00,  /* IRQ2*/  /* this has a 10k pull up on the board */
-BSP_IO_PORT_01_PIN_01,  /* IRQ1*/  /* this has a 10k pull up on the board */
-BSP_IO_PORT_01_PIN_02,  /*     */  /* this has a 10k pull up on the board */
-BSP_IO_PORT_01_PIN_03,  /*     */  /* this has a 10k pull up on the board */
-BSP_IO_PORT_01_PIN_04,  /* IRQ1*/  /* this has a 10k pull up on the board */
-BSP_IO_PORT_01_PIN_05,  /* IRQ0*/  /* this has a 10k pull up on the board */
-BSP_IO_PORT_01_PIN_06,  /*     */  /* this has a 10k pull up on the board */
-BSP_IO_PORT_01_PIN_07,  /*     */  /* this has a 10k pull up on the board */
-0xFFFF, /* BSP_IO_PORT_01_PIN_08*/ /*     */  /* DEBUG SWDIO */
-0xFFFF, /* BSP_IO_PORT_01_PIN_09*/ /*     */ /* DEBUG TDO */
-0xFFFF, /* BSP_IO_PORT_01_PIN_10*//* IRQ3*/  /* DEBUG TDI */
-BSP_IO_PORT_01_PIN_11, /* IRQ4*/ 
-BSP_IO_PORT_01_PIN_12, /*     */ 
-BSP_IO_PORT_01_PIN_13, /*     */ 
-BSP_IO_PORT_01_PIN_14, /*     */ 
-BSP_IO_PORT_01_PIN_15, /*     */ 
-0xFFFF,
-0xFFFF,
-0xFFFF,
-0xFFFF,
-0xFFFF,
-0xFFFF,
-0xFFFF,
-0xFFFF,
-0xFFFF,
-0xFFFF,
-0xFFFF,
-0xFFFF,
-0xFFFF,
-0xFFFF,
-0xFFFF,
-0xFFFF,
-} 
-
-
-
-
+IO_PFS(BSP_IO_PORT_01_PIN_00),  /* IRQ2*/  /* this has a 10k pull up on the board */
+IO_PFS(BSP_IO_PORT_01_PIN_01),  /* IRQ1*/  /* this has a 10k pull up on the board */
+IO_PFS(BSP_IO_PORT_01_PIN_02),  /*     */  /* this has a 10k pull up on the board */
+IO_PFS(BSP_IO_PORT_01_PIN_03),  /*     */  /* this has a 10k pull up on the board */
+IO_PFS(BSP_IO_PORT_01_PIN_04),  /* IRQ1*/  /* this has a 10k pull up on the board */
+IO_PFS(BSP_IO_PORT_01_PIN_05),  /* IRQ0*/  /* this has a 10k pull up on the board */
+IO_PFS(BSP_IO_PORT_01_PIN_06),  /*     */  /* this has a 10k pull up on the board */
+IO_PFS(BSP_IO_PORT_01_PIN_07),  /*     */  /* this has a 10k pull up on the board */
+IO_PFS(0xFFFF), /* BSP_IO_PORT_01_PIN_08*/ /*     */  /* DEBUG SWDIO */
+IO_PFS(0xFFFF), /* BSP_IO_PORT_01_PIN_09*/ /*     */ /* DEBUG TDO */
+IO_PFS(0xFFFF), /* BSP_IO_PORT_01_PIN_10*//* IRQ3*/  /* DEBUG TDI */
+IO_PFS(BSP_IO_PORT_01_PIN_11), /* IRQ4*/ 
+IO_PFS(BSP_IO_PORT_01_PIN_12), /*     */ 
+IO_PFS(BSP_IO_PORT_01_PIN_13), /*     */ 
+IO_PFS(BSP_IO_PORT_01_PIN_14), /*     */ 
+IO_PFS(BSP_IO_PORT_01_PIN_15), /*     */ 
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+} ,
+.MAR = {
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF)
+},
+.GPIO = {
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF),
+IO_PFS(0xFFFF)
+}
+}
 
 };
 
+const power_sequencer_CONST_t power_sequencer_CONST = {
+    .max_digital_comp = 8,
+    .max_GPOs = 16,
+    .max_GPIs = 32,
+    .max_pages = 32,
+    .max_fans = 0,
+    .max_monitors = 0,
+    .max_fault_entries = 8,
+    .max_PWMs = 0
+};

@@ -39,6 +39,8 @@ power_rail_ctrl_t        rail_ctrl_scratch[PWR_MAX_RAILS];
 power_controller_ctrl_t  controller_ctrl_scratch;
 extern const power_rail_t power_rails[PWR_MAX_RAILS];
 power_controller_cfg_t controller_cfg_scratch;
+extern const power_sequencer_CONST_t power_sequencer_CONST;
+
 const power_controller_t PowerController = {    
     .rails =     (power_rail_t*)              &power_rails[0], 
     .cfg =       (power_controller_cfg_t *)   &controller_cfg_scratch,
@@ -46,15 +48,21 @@ const power_controller_t PowerController = {
     .ctrl =      (power_controller_ctrl_t *)  &controller_ctrl_scratch,
     .map =       (power_rail_map_t *)         DF_POWER_RAIL_PINMAP_ADDR,
 //@@@    .faults =    (power_fault_output_t *)     DF_POWER_RAIL_FLTMAP_ADDR,  /* moved to cfg */
-    .GPIO =      (power_sequencer_IO_t *)     &power_sequencer_IO
+   /*
+        The following are const in Flash
+   */
+    .GPIO =      (power_sequencer_IO_t *)     &power_sequencer_IO,
+    .CONSTANTS = (power_sequencer_CONST_t *)  &power_sequencer_CONST
 };
 int app_func_reset   (void)
 {
+   power_rail_t *p_rail;// = PowerController.rails;
     APP_INFO_PRINT("\nSEQUENCER RESET\n");
     POP0();
 
 
     #if 1 // only do this once, on first run, if the addresses of the dataflash segments change.
+    APP_INFO_PRINT("\n ******* \n      UPDATING DATAFLASH  \n    ***** \n");
      pwr_rail_store_config(0,(uint8_t*) &power_analog_3300,sizeof(power_rail_cfg_t));
      pwr_rail_store_config(1,(uint8_t*) &power_analog_5000,sizeof(power_rail_cfg_t));
      pwr_rail_store_config(2,(uint8_t*) &power_analog_1200,sizeof(power_rail_cfg_t));
@@ -68,12 +76,19 @@ int app_func_reset   (void)
     pwr_seq_store_map((uint8_t *)&power_rail_maps,sizeof(power_rail_maps)); //@@@ hard constant
     #endif
 
-    pwr_seq_restore_all();
-
-
-
+    pwr_seq_restore_all(); /* cfg_store --> cfg */
+    pwr_seq_configure();
     PowerController.ctrl->event = 0;
-
+    PowerController.ctrl->rails_ready = 0;
+    PowerController.ctrl->rails_enabled = 0;
+    p_rail = PowerController.rails;
+    for(int i=0;i<PWR_MAX_RAILS;i++) //@@@DWR code only handles one port at the moment
+    {
+        memset(p_rail->ctrl,0,sizeof(power_rail_ctrl_t));
+        p_rail++;
+    }
+    PowerController.ctrl->state = PWR_SEQ_IDLE;
+    POPB(); //@@@ turn on the blue led
 
     CP = CPAN_open(&control_panel_initial);  /* open the control panel */
     comm_init();
@@ -102,13 +117,19 @@ int app_func_restart (void)
       //                       sizeof(power_rail_cfg_t));
     return 0;
 }
+/*
+
+    The GPIO->pin[] are pointers to the pin's PFS register.  These set in the initial condition 
+
+*/
+
 int app_func_run     (void)
 {
     /*
         The ADC has been scanned and values are stored in ???????
     */
-   power_rail_t *p_rail;// = PowerController.rails;
-   power_rail_map_t  *p_map;// = PowerController.map;
+   //power_rail_t *p_rail;// = PowerController.rails;
+   //power_rail_map_t  *p_map;// = PowerController.map;
    if (app_event_flag_get(SYSFLG_PWR_READBACK,APP_FLAG_OR_CLEAR,0,NULL))
    {
       PowerController.ctrl->event |= PWR_FLAG_READBACK;
@@ -123,70 +144,107 @@ int app_func_run     (void)
    switch(PowerController.ctrl->state)
    {    
         case PWR_SEQ_RESET:
-            PowerController.ctrl->event = 0;
-            PowerController.ctrl->rails_ready = 0;
-            PowerController.ctrl->rails_enabled = 0;
-            p_rail = PowerController.rails;
-            p_map = PowerController.map;
-            for(int i=0;i<PWR_MAX_RAILS;i++) //@@@DWR code only handles one port at the moment
-            {
-                PowerController.ctrl->rails_enabled |= p_rail->cfg->enabled ? (1 << i) : 0;
-                CP->port_enable[0] |= p_rail->cfg->enabled ? (1 << p_map->en_pin_bit) : 0; 
-                p_rail->ctrl->state = PWR_RAIL_OFF;
-                p_map++;    
-            }
-            PowerController.ctrl->state = PWR_SEQ_IDLE;
-            POPB(); //@@@ turn on the blue led
             // Fall through to IDLE case
         case PWR_SEQ_IDLE:
             if (PowerController.ctrl->event & PWR_FLAG_ENABLE)
             {
-                PowerController.ctrl->state = PWR_SEQ_SEQUENCING_UP;
+                PowerController.ctrl->state = PWR_SEQ_RUN;
                 PowerController.ctrl->rails_enabled = 0;
                 DROPB();
             }
             break;
-        case PWR_SEQ_SEQUENCING_UP:
-            if (PowerController.ctrl->rails_enabled == PowerController.ctrl->rails_ready)
-            {
-                PowerController.ctrl->state = PWR_SEQ_RUN;
-            }
-            break;
         case PWR_SEQ_RUN:
-            CP->port_shadow[0] = 0;
-            CP->port_enable[0] = 0;
-            for(int i=0;i<PWR_MAX_RAILS;i++) //DWR code only handles one port at the moment //@@@ hard coded 8
+            for(int i=0;i<PWR_MAX_RAILS;i++)
             {
-                /* USER code for running each rail */
-//                CP->port_enable[0] |= p_rail->cfg->enabled ? (1 << p_map->en_pin_bit) : 0; //@@@note that the configured rails 
-                                                                                           //@@@ should really only need set in the startup.
-                switch(p_rail->ctrl->state)
-                {
-                    case PWR_RAIL_ON:
-                    case PWR_RAIL_MARGIN_HIGH:
-                    case PWR_RAIL_MARGIN_LOW:
-                    case PWR_RAIL_SEQ_OFF:
-                         CP->port_shadow[0] |= (1 << p_map->en_pin_bit);
+                uint32_t GPI      = PowerController.ctrl->GPI;
+                uint32_t Page     = PowerController.ctrl->Page;
+                uint32_t GPI_on   = PowerController.rails[i].cfg->SEQ_config.GPI_seq_mask_on;
+                uint32_t GPI_off  = PowerController.rails[i].cfg->SEQ_config.GPI_seq_mask_off;
+                uint32_t Page_on  = PowerController.rails[i].cfg->SEQ_config.page_seq_on_dep_msk;
+                uint32_t Page_off = PowerController.rails[i].cfg->SEQ_config.page_seq_off_dep_msk;
+                uint8_t ID        = PowerController.rails[i].cfg->SEQ_config.ID;
+                uint8_t conf      = PowerController.rails[i].cfg->SEQ_config.ID_other;
+                power_rail_t *rail = &PowerController.rails[i];
+                switch (PowerController.rails[i].ctrl->state) {
+                    case PWR_RAIL_OFF:
+                         if ( ((GPI & GPI_on) == GPI_on  ) && ((Page & Page_on) == Page_on) )
+                         {
+                             PowerController.rails[i].ctrl->state = PWR_RAIL_ON;
+                             rail->ctrl->state = PWR_RAIL_ON;
+                             PowerController.rails[i].ctrl->en_out = 1; //@@@ TIMER BABY
+                         }
                          break;
-                    default:
-                    break;
+                    case PWR_RAIL_ON:
+                         if ( ((GPI & GPI_off) == GPI_off  ) && ((Page & Page_off) == Page_off) )
+                         {
+                             PowerController.ctrl->Page &= (uint32_t) ~(1 << i);  
+                             PowerController.rails[i].ctrl->state = PWR_RAIL_OFF; //@@@ not taking into account delays yet
+                             PowerController.rails[i].ctrl->dis_out = 1; //@@@ TIMER BABY
+                         }
+                         break;
+                    default: break;
                 }
-                p_rail++;
-                p_map++;    
+                if (PowerController.rails[i].ctrl->en_out)
+                {
+                    PowerController.ctrl->Page |= (1 << i);  /* lets everybody know you're enabled */
+                    PowerController.rails[i].ctrl->en_out = 0;
+                    if (ID > 0)
+                    {
+                        switch(conf) {
+                            /* Active low */
+                            case (2): /* Active */
+                            case (3): /* open drain */
+                               PWR_PIN_ASSERT_LOW(ID-1);
+//                               *((uint32_t*) PowerController.GPIO->pin[ID-1]) |= (uint32_t)  0x00000004;  /* Set PDR bit */
+//                               *((uint32_t*) PowerController.GPIO->pin[ID-1]) &= (uint32_t) ~0x00000001;  /* clear PODR bit */
+                               break;
+                            /* Active High */
+                            case (6):
+                                PWR_PIN_ASSERT_HI(ID-1);
+//                               *((uint32_t*) PowerController.GPIO->pin[ID-1]) |= (uint32_t)  0x00000004;  /* Set PDR bit */
+//                               *((uint32_t*) PowerController.GPIO->pin[ID-1]) |= (uint32_t) ~0x00000001;  /* clear PODR bit */
+                               break;
+                            case (7):
+                                PWR_PIN_ASSERT_OPEN(ID-1);
+//                               *((uint32_t*) PowerController.GPIO->pin[ID-1]) |= (uint32_t)  ~0x00000004;  /* Clr PDR bit (make it an input)*/
+                               //@@@ what to do about the pullup resistor???
+                               break;
+                        }
+                    }
+                }
+                if (PowerController.rails[i].ctrl->dis_out)
+                {
+                    PowerController.ctrl->Page &= (uint32_t) ~(1 << i);  /* lets everybody know you're enabled */
+                    PowerController.rails[i].ctrl->dis_out = 0;
+                    if (ID > 0)
+                    {
+                        switch(conf) {
+                            /* Active low */
+                            case (2): /* Active */
+                               PWR_PIN_ASSERT_HI(ID-1);
+                               break;
+                            case (3): /* open drain */
+                               PWR_PIN_ASSERT_OPEN(ID-1);
+                               break;
+                            /* Active High */
+                            case (6):
+                                PWR_PIN_ASSERT_HI(ID-1);
+                               break;
+                            case (7):
+                                PWR_PIN_ASSERT_LOW(ID-1);
+                               //@@@ what to do about the pullup resistor???
+                               break;
+                        }
+                    }
+                }
             }
-            TOG2();
-            //@@@ this is where the outputs are updated as a port write.
-            if (CP->port_last  != CP->port_shadow)
-            {
-                CP->port_base[0]->PCNTR1 = (CP->port_shadow[0] << 16) | (CP->port_enable[0]);
-                CP->port_last[0] = CP->port_shadow[0];
-            //pwr_mod_poll(NULL); /* poll the ADC and update monitor_mv for each rail */
-            }
+
             break;
         case PWR_SEQ_SEQUENCING_DOWN:
             break;
         case PWR_SEQ_FAULT_SHUTDOWN:
             break;
+            default: break;
     }
     return 0;
 }
@@ -197,6 +255,8 @@ void T0_cb(timer_callback_args_t *p_args)
     /* USER CODE: handle timer callback */
     POP5();
     pwr_mod_poll((uint16_t*) &ControlPanel.adc_value[0]); /* poll the ADC and update monitor_mv for each rail */
+    pwr_seq_poll_GPI();
+    pwr_seq_poll_Page();
     DROP5();
     app_event_flag_seti(SYSFLG_PWR_SERVICE,0);
 }

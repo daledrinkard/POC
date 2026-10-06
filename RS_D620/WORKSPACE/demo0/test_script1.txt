@@ -1,14 +1,67 @@
-SWC0 00 AAP
+  Select a rail
+ (ID | conf) -------------------------------------------------
+   +----------->   0: Nothing, indicates there is no pin   bits
+                   1:  AMON[0]  AMON1 in um term           [7:3] not used
+				   ...                                     [2]   0=active low, 1=active high 
+				   24: AMON[23] AMON24                     [1:0] 0 = unused
+				   25: DMON[0]  DMON1                            1 = input
+				   ...                                           2 = Active-Drain output
+				   32: DMON[7]  DMON8                            3 = Open-Drain output
+				   33: EN[0]    EN1
+				   ...
+				   64: EN[31]   EN32
+				   65: MAR[0]   MAR1
+				   ...
+				   80: MAR[7]   MAR8
+				   81: GPIO[0]  GPIO1
+				   ...
+				   88: GPIO[7]  GPIO8
 
-one fault rail one fault output on POP5 
-         flt0                                pin                 mask
-SWC0 D0 01000000 00000000 00000000 00000000 0207 0000 0000 0000 FFFFFFFF 00000000 00000000 00000000 DBP
+--- Fault_pin_config
+  data is little endian, LSB first to arrive
+         page mask for fault pin 0
+		 ...
+         page mask for fault pin 3
+		 (pin ID, pin config other) for fault 0
+		 ...
+		 (pin ID, pin config other) for fault 3
+		 GPI_mask for fault pin 0
+		 ...
+		 GPI_mask for fault pin 3
+		 other mask.
+		
+		|   page masks for fault pins      |   pin ID + conf   |     GPI mask for fault pins       | other mask (resequence | watchdog) see 26.2.4
+SWC0 D0 01020304 00000000 78563412 00000000  0207 0000 0000 0000 FFFFFFFF 00000000 00000000 00000000 DBP
+SRC0 D0P
 
-SWC0 D0 0F000000 00C00000 FFFFFFF0 55AA55AA 0113 0114 0115 0116 11223344 55667788 AD443322 F1234567 DBP
-SWC0 D0 0F000000 00C00000 FFFFFFF0 55AA55AA 0113 0114 0115 0116 11223344 55667788 AD443322 F1234567 DBP
+--- Monitor pin config
+  Encoded:
+  0 = No monitor
+  1 = ADC
+  2 = Temp
+  3 = Current
+  4 = Voltage Compartor
+  5 = Input Voltage
+  6 = Digital
+        |<--- Analog or digital --------------------------------------------->|   Digital only
+SWC0 D5 01 01 01 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 06 06 06 06 06 06P
+SRC0 D5P
 
-SEQ_Config (0xF6)
+
+--- Sequencer config 29 bytes ----- PAGE
+    (ID | conf) pair
+	GPI_on_mask  4 byte
+	GPI_off_mask 4 byte
+	timeout stuff 3 byte
+	page_on mask 4 byte
+	page_off_mask 4 byte
+	fault_slaves 4 byte
+	GPO_on       2 byte
+	GPO_off      2 byte
+  first set the page 
+SWC0 00 00P
         ID CFG GPI on   GPI off timeout   page on  page off   FLT slvs GPO on  GPO off 
 SWC0 F6 00 50 01000000 78563412 F7 1C 37 12345678 22334455 66778899 A55A AAAAP
+SRC0 F6P
 
  
