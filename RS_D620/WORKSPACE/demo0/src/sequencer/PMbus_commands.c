@@ -21,9 +21,12 @@ int PMbus_execute(pmbus_command_t command, uint8_t *data, uint16_t data_len, uin
     switch (command)
     {
         /* core PMBus commands (00h-CFh) */
-        case PMBUS_CMD_PAGE: /* 0x00 */ PWRSEQ_UPDATE(RW,&PowerController.ctrl->page,1);
+        case PMBUS_CMD_PAGE: /* 0x00 */ 
+            PWRSEQ_UPDATE(RW,&PowerController.ctrl->page,1);
         case PMBUS_CMD_OPERATION: /* R/W */ 
-            break;
+            if (RW) {pwr_seq_process_operation(PowerController.ctrl->page, data[0]); }
+            else    {data[0] = PowerController.rails[PowerController.ctrl->page].cfg->operation;}
+            return 1;
         case PMBUS_CMD_ON_OFF_CONFIG:              /* USER CODE */ 
             break;
         case PMBUS_CMD_CLEAR_FAULTS:               /* USER CODE */ 

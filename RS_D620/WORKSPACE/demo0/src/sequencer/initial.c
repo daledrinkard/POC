@@ -28,6 +28,9 @@ const power_rail_cfg_t power_analog_3300 = {
         .GPO_seq_on_dep_msk = 0x0000000F,
         .GPO_seq_off_dep_msk = 0x0000000F
     },
+    .operation = 0x80,
+    .spare = {0,0,0}
+    /*,
     .nominal_mv = 3300,
     .ov_threshold_mv = 3400,
     .uv_threshold_mv = 3000,
@@ -44,7 +47,7 @@ const power_rail_cfg_t power_analog_3300 = {
     .margin_capable = false,
     .margin_high_pct = 0,
     .margin_low_pct = 0,
-    .enable_active_high = true
+    .enable_active_high = true */
 };
 const power_rail_cfg_t power_analog_5000 = {
     .SEQ_config = {
@@ -63,6 +66,9 @@ const power_rail_cfg_t power_analog_5000 = {
         .GPO_seq_on_dep_msk = 0x0000000F,
         .GPO_seq_off_dep_msk = 0x0000000F
     },
+    .operation = 0x80,
+    .spare = {0,0,0}
+    /*
     .nominal_mv = 5000,
     .ov_threshold_mv = 5100,
     .uv_threshold_mv = 4000,
@@ -79,7 +85,7 @@ const power_rail_cfg_t power_analog_5000 = {
     .margin_capable = false,
     .margin_high_pct = 0,
     .margin_low_pct = 0,
-    .enable_active_high = true
+    .enable_active_high = true */
 };
 const power_rail_cfg_t power_analog_1200 = {
     .SEQ_config = {
@@ -98,6 +104,9 @@ const power_rail_cfg_t power_analog_1200 = {
         .GPO_seq_on_dep_msk = 0x0000000F,
         .GPO_seq_off_dep_msk = 0x0000000F
     },
+    .operation = 0x80,
+    .spare = {0,0,0}
+    /*
     .nominal_mv = 12000,
     .ov_threshold_mv = 12010,
     .uv_threshold_mv = 11890,
@@ -114,7 +123,7 @@ const power_rail_cfg_t power_analog_1200 = {
     .margin_capable = false,
     .margin_high_pct = 0,
     .margin_low_pct = 0,
-    .enable_active_high = true
+    .enable_active_high = true */
 };
 const power_rail_cfg_t power_digital_2400 = {
     .SEQ_config = {
@@ -133,6 +142,9 @@ const power_rail_cfg_t power_digital_2400 = {
         .GPO_seq_on_dep_msk = 0x0000000F,
         .GPO_seq_off_dep_msk = 0x0000000F
     },
+    .operation = 0x80,
+    .spare = {0,0,0}
+    /*
     .nominal_mv = 2400,
     .ov_threshold_mv = 2405,
     .uv_threshold_mv = 2395,
@@ -146,7 +158,7 @@ const power_rail_cfg_t power_digital_2400 = {
     .margin_capable = false,
     .margin_high_pct = 0,
     .margin_low_pct = 0,
-    .enable_active_high = true
+    .enable_active_high = true */
 };
 const power_rail_cfg_t power_digital_OFFLINE = {
     .SEQ_config = {
@@ -165,6 +177,10 @@ const power_rail_cfg_t power_digital_OFFLINE = {
         .GPO_seq_on_dep_msk = 0x0000000C,
         .GPO_seq_off_dep_msk = 0x00000003
     },
+    .operation = 0x80,
+    .spare = {0,0,0}
+
+    /*
     .nominal_mv = 2400,
     .ov_threshold_mv = 2405,
     .uv_threshold_mv = 2395,
@@ -181,7 +197,7 @@ const power_rail_cfg_t power_digital_OFFLINE = {
     .margin_capable = false,
     .margin_high_pct = 0,
     .margin_low_pct = 0,
-    .enable_active_high = true
+    .enable_active_high = true */
 };
 /*
    _____                                              _____             __ _                       _   _             
@@ -237,38 +253,38 @@ const power_controller_cfg_t power_controller_basic = {
     },
     .GPI_config = {
         .GPI = {
-            { .id = 0,  .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[0]*/
-            { .id = 1,  .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[1]*/
-            { .id = 2,  .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[2]*/
-            { .id = 3,  .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[3]*/
-            { .id = 4,  .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[4]*/
-            { .id = 5,  .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[5]*/
-            { .id = 6,  .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[6]*/
-            { .id = 7,  .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[7]*/
-            { .id = 8,  .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[8]*/
-            { .id = 9,  .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[9]*/
-            { .id = 10, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[10]*/
-            { .id = 11, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[11]*/
-            { .id = 12, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[12]*/
-            { .id = 13, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[13]*/
-            { .id = 14, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[14]*/
-            { .id = 15, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[15]*/
-            { .id = 16, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[16]*/
-            { .id = 17, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[17]*/
-            { .id = 18, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[18]*/
-            { .id = 19, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[19]*/
-            { .id = 20, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[20]*/
-            { .id = 21, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[21]*/
-            { .id = 22, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[22]*/
-            { .id = 23, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[23]*/
-            { .id = 24, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[24]*/
-            { .id = 25, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[25]*/
-            { .id = 26, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[26]*/
-            { .id = 27, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[27]*/
-            { .id = 28, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[28]*/
-            { .id = 29, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[29]*/
-            { .id = 30, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[30]*/
-            { .id = 31, .conf = PWR_MON_GPI_MODE_UNUSED  } /* GPI[31]*/
+            { .id = 6,  .conf = PWR_MON_GPI_MODE_INPUT   }, /* P005, this is SW1 */
+            { .id = 5,  .conf = PWR_MON_GPI_MODE_UNUSED  }, /* P004*/
+            { .id = 0,  .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[2]*/
+            { .id = 0,  .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[3]*/
+            { .id = 0,  .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[4]*/
+            { .id = 0,  .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[5]*/
+            { .id = 0,  .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[6]*/
+            { .id = 0,  .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[7]*/
+            { .id = 0,  .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[8]*/
+            { .id = 0,  .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[9]*/
+            { .id = 0, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[10]*/
+            { .id = 0, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[11]*/
+            { .id = 0, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[12]*/
+            { .id = 0, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[13]*/
+            { .id = 0, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[14]*/
+            { .id = 0, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[15]*/
+            { .id = 0, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[16]*/
+            { .id = 0, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[17]*/
+            { .id = 0, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[18]*/
+            { .id = 0, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[19]*/
+            { .id = 0, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[20]*/
+            { .id = 0, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[21]*/
+            { .id = 0, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[22]*/
+            { .id = 0, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[23]*/
+            { .id = 0, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[24]*/
+            { .id = 0, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[25]*/
+            { .id = 0, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[26]*/
+            { .id = 0, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[27]*/
+            { .id = 0, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[28]*/
+            { .id = 0, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[29]*/
+            { .id = 0, .conf = PWR_MON_GPI_MODE_UNUSED  }, /* GPI[30]*/
+            { .id = 0, .conf = PWR_MON_GPI_MODE_UNUSED  } /* GPI[31]*/
         },
         .fault_en = 0x00000000,
         .LSCP = 0x00,
@@ -301,7 +317,22 @@ const power_controller_cfg_t power_controller_basic = {
              .GPO_inv_mask    = 0x0000
             }
         }
-        }
+        },
+        {0},
+        {0},
+        {0},
+        {0},
+        {0},
+        {0},
+        {0},
+        {0},
+        {0},
+        {0},
+        {0},
+        {0},
+        {0},
+        {0},
+        {0}
     },
     .GPI        = 0x00000000,
     .resequence = 0x00000000,
@@ -312,6 +343,29 @@ const power_controller_cfg_t power_controller_basic = {
         .DHM     = (1 << 11)   | (8 << 6) | 45,
         .YM      = (2026 << 4) | 9,
         .rsv = 0
+    },
+    .RTC_trim = 0,
+    .railstate = { //@@@ does this belong here????
+        .spare = {0},
+        .state_enables = 0x00,
+        .soft_off_enables = 0x00,
+        .system_state = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
+    },
+    .MSCCFG = {
+        .misc_cfg = 0x00, /* 7: no limit to how many times the device can be resequenced,*/
+                          /* 6: Resequence abort if TOFF_MAX_WARN occurs */
+                          /* 5:4  maximum times to resequence 00=1 01=2 ... */
+                          /* 3:  Slave see table 26-46 */
+                          /* 2:  Enable FIFO Log */
+                          /* 1:  External ADC reference enable */
+                          /* 0:  SUB oscillator in use */
+        .time_2_reseq = 0x00, /* 7:6 00  1mS   (0..63)mS 
+                                     01  8mS   (8..504)mS
+                                     10 64mS   (64..4032)mS
+                                     11 512mS   (512..322565)mS */
+        .external_reference = 0x0000, /* LINEAR16 format*/
+        .reseq_rail_mask = 0x00000000
+        
     },
     .active_rail_group = 0,
     .pmbus_address = 0xC0,
@@ -472,9 +526,9 @@ IO_PFS(BSP_IO_PORT_00_PIN_02),
 IO_PFS(BSP_IO_PORT_00_PIN_03),
 IO_PFS(BSP_IO_PORT_00_PIN_04),
 IO_PFS(BSP_IO_PORT_00_PIN_05),
-IO_PFS(BSP_IO_PORT_00_PIN_06),
-IO_PFS(BSP_IO_PORT_00_PIN_07),
-IO_PFS(BSP_IO_PORT_00_PIN_08),
+IO_PFS(BSP_IO_PORT_00_PIN_06), /* BLUE LED */
+IO_PFS(BSP_IO_PORT_00_PIN_07), /* GREEN LED */
+IO_PFS(BSP_IO_PORT_00_PIN_08), /* RED LED */
 IO_PFS(BSP_IO_PORT_00_PIN_09),
 IO_PFS(BSP_IO_PORT_00_PIN_10),
 IO_PFS(BSP_IO_PORT_00_PIN_14),

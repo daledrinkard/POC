@@ -130,6 +130,7 @@ int app_func_run     (void)
     */
    //power_rail_t *p_rail;// = PowerController.rails;
    //power_rail_map_t  *p_map;// = PowerController.map;
+   bool loop_again = false;
    if (app_event_flag_get(SYSFLG_PWR_READBACK,APP_FLAG_OR_CLEAR,0,NULL))
    {
       PowerController.ctrl->event |= PWR_FLAG_READBACK;
@@ -154,6 +155,8 @@ int app_func_run     (void)
             }
             break;
         case PWR_SEQ_RUN:
+            loop_again = false;
+            do {
             for(int i=0;i<PWR_MAX_RAILS;i++)
             {
                 uint32_t GPI      = PowerController.ctrl->GPI;
@@ -177,7 +180,6 @@ int app_func_run     (void)
                     case PWR_RAIL_ON:
                          if ( ((GPI & GPI_off) == GPI_off  ) && ((Page & Page_off) == Page_off) )
                          {
-                             PowerController.ctrl->Page &= (uint32_t) ~(1 << i);  
                              PowerController.rails[i].ctrl->state = PWR_RAIL_OFF; //@@@ not taking into account delays yet
                              PowerController.rails[i].ctrl->dis_out = 1; //@@@ TIMER BABY
                          }
@@ -214,7 +216,7 @@ int app_func_run     (void)
                 }
                 if (PowerController.rails[i].ctrl->dis_out)
                 {
-                    PowerController.ctrl->Page &= (uint32_t) ~(1 << i);  /* lets everybody know you're enabled */
+                    PowerController.ctrl->Page &= (uint32_t) ~(1 << i);  /* lets everybody know you're not enabled */
                     PowerController.rails[i].ctrl->dis_out = 0;
                     if (ID > 0)
                     {
@@ -237,7 +239,14 @@ int app_func_run     (void)
                         }
                     }
                 }
+                if (PowerController.rails[i].ctrl->en_out || PowerController.rails[i].ctrl->dis_out)
+                {
+                    PowerController.rails[i].ctrl->en_out = 0;
+                    PowerController.rails[i].ctrl->dis_out = 0;
+                    loop_again = true;
+                }
             }
+        }        while(loop_again);
 
             break;
         case PWR_SEQ_SEQUENCING_DOWN:

@@ -39,13 +39,13 @@
 #define PWR_MON_TYPE_VOLT_INPUT   (0x05 << 5)
 #define PWR_MON_TYPE_DIGITAL      (0x06 << 5)
 
-#define PWR_MON_GPI_POLARITY_BIT  (0x0001 << 10)
+#define PWR_MON_GPI_POLARITY_BIT  (0x0001 << 2)
 #define PWR_MON_GPI_ACTIVE_LOW    (0)
-#define PWR_MON_GPI_ACTIVE_HIGH   (0x0001 << 10)
-#define PWR_MON_GPI_MODE_UNUSED   (0x0000 << 9)
-#define PWR_MON_GPI_MODE_INPUT    (0x0001 << 9)
-#define PWR_MON_GPI_MODE_ACTIVE   (0x0002 << 9)
-#define PWR_MON_GPI_MODE_OD       (0x0003 << 9)
+#define PWR_MON_GPI_ACTIVE_HIGH   (0x0001 << 2)
+#define PWR_MON_GPI_MODE_UNUSED   (0x0000 )
+#define PWR_MON_GPI_MODE_INPUT    (0x0001 )
+#define PWR_MON_GPI_MODE_ACTIVE   (0x0002 )
+#define PWR_MON_GPI_MODE_OD       (0x0003 )
 /* USER DEFINE */
 
 #define PWR_FLAG_ENABLE     (0x00000001)
@@ -187,9 +187,10 @@ typedef struct power_sequencer_MSCCFG_s {
 /* static, per-rail configuration (ucd91320 7.2.2: rail setup / monitoring / sequence / fault response / margining) */
 typedef struct power_rail_cfg_s {
     power_controller_SEQCFG_t SEQ_config;
+    uint8_t                  operation;
+    uint8_t                  spare[3];
 
-
-
+#if 0
     uint16_t nominal_mv;         /* expected rail voltage, in mV */
     uint16_t ov_threshold_mv;    /* over-voltage fault threshold */
     uint16_t uv_threshold_mv;    /* under-voltage fault threshold */
@@ -207,6 +208,7 @@ typedef struct power_rail_cfg_s {
     int8_t   margin_high_pct;    /* closed-loop margin/trim high limit, signed % of nominal_mv */
     int8_t   margin_low_pct;     /* closed-loop margin/trim low limit, signed % of nominal_mv */
     bool     enable_active_high; /* ENx polarity */
+#endif    
     /* USER SECTION */
 } power_rail_cfg_t;
 typedef struct power_rail_ctrl_s {
@@ -428,5 +430,6 @@ void pwr_seq_update_GPIO_cfg(uint8_t *p);
 uint16_t pwr_seq_read_GPIO_cfg(uint8_t *p);
 void pwr_seq_configure(void);
 
+void pwr_seq_process_operation(uint8_t rail_index,uint8_t op);
 
 #endif /* POWER_MODULE_H_ */

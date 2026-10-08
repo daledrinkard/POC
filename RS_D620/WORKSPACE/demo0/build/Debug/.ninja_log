@@ -63,3 +63,15 @@
 420	758	8129994714987347	demo0.elf	6fad46651ae3924c
 758	14035	8129994841716043	demo0.sbd	7525074b1b5a668e
 758	14035	8129994841716043	C:/Repo/POC/RS_D620/WORKSPACE/demo0/build/Debug/demo0.sbd	7525074b1b5a668e
+655	1098	8130788900452659	CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj	aab2ecb2630694d2
+235	1106	8130788896256752	CMakeFiles/demo0.elf.dir/src/sequencer/PMbus_commands.c.obj	b4249bdf3162a8d0
+455	1124	8130788898454977	CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj	9a53a4d65337e192
+10	1126	8130788893996691	CMakeFiles/demo0.elf.dir/src/base_app/application.c.obj	8f76056724faa238
+857	1297	8130788902463483	CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj	e792b6866272b8ab
+1297	1716	8130788906869612	demo0.elf	6fad46651ae3924c
+1716	16970	8130789053852116	demo0.sbd	7525074b1b5a668e
+1716	16970	8130789053852116	C:/Repo/POC/RS_D620/WORKSPACE/demo0/build/Debug/demo0.sbd	7525074b1b5a668e
+19	213	8131753053655156	CMakeFiles/demo0.elf.dir/src/sequencer/PMbus_commands.c.obj	b4249bdf3162a8d0
+30	221	8131753053755148	CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj	aab2ecb2630694d2
+25	238	8131753053705137	CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj	9a53a4d65337e192
+9	242	8131753053555287	CMakeFiles/demo0.elf.dir/src/base_app/application.c.obj	8f76056724faa238
