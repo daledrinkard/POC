@@ -154,7 +154,7 @@
 20000420 20000420       1c     4         CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_clocks.c.obj:(.ram_noinit)
 20000420 20000420       1c     1                 g_clock_freq
 2000043c 2000043c        0     1         __ram_noinit$$Limit = . 
-20000440 20000440     15b8     8 __ram_zero$$
+20000440 20000440     17d4     8 __ram_zero$$
 20000440 20000440        0     1         __ram_zero$$Base = . 
 20000440 20000440        4     4         CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/cmsis/Device/RENESAS/Source/system.c.obj:(.bss.SystemCoreClock)
 20000440 20000440        4     1                 SystemCoreClock
@@ -196,48 +196,48 @@
 20000604 20000604      100     1                 command_buffer
 20000704 20000704       4c     4         CMakeFiles/demo0.elf.dir/src/sequencer/CPAN/cpan.c.obj:(.bss.ControlPanel)
 20000704 20000704       4c     1                 ControlPanel
-20000750 20000750      404     4         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.bss.controller_cfg_scratch)
-20000750 20000750      404     1                 controller_cfg_scratch
-20000b54 20000b54       68     4         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.bss.controller_ctrl_scratch)
-20000b54 20000b54       68     1                 controller_ctrl_scratch
-20000bbc 20000bbc      800     4         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.bss.rail_cfg_scratch)
-20000bbc 20000bbc      800     1                 rail_cfg_scratch
-200013bc 200013bc      280     4         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.bss.rail_ctrl_scratch)
-200013bc 200013bc      280     1                 rail_ctrl_scratch
-2000163c 2000163c      106     1         CMakeFiles/demo0.elf.dir/src/sequencer/comm_bus.c.obj:(.bss.PB_Comm)
-2000163c 2000163c      106     1                 PB_Comm
-20001742 20001742      200     1         CMakeFiles/demo0.elf.dir/src/sequencer/comm_bus.c.obj:(.bss.xbuffer)
-20001742 20001742      200     1                 xbuffer
-20001942 20001942        1     1         CMakeFiles/demo0.elf.dir/src/sequencer/comm_bus.c.obj:(.bss.comm_cb.bx)
-20001942 20001942        1     1                 comm_cb.bx
-20001943 20001943        1     1         CMakeFiles/demo0.elf.dir/src/sequencer/comm_bus.c.obj:(.bss.comm_cb.cx)
-20001943 20001943        1     1                 comm_cb.cx
-20001944 20001944        4     4         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.bss.px)
-20001944 20001944        4     1                 px
-20001948 20001948       80     4         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.bss.record)
-20001948 20001948       80     1                 record
-200019c8 200019c8        1     1         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.bss.pwr_dataflash_update.dataflash_open)
-200019c8 200019c8        1     1                 pwr_dataflash_update.dataflash_open
-200019cc 200019cc       28     4         CMakeFiles/demo0.elf.dir/src/simulator.c.obj:(.bss.Simulator)
-200019cc 200019cc       28     1                 Simulator
-200019f4 200019f4        4     4         C:\Renesas\RA\e2studio_v2025-12_fsp_v6.3.0\toolchains\llvm_arm\ATfE-21.1.1-Windows-x86_64\bin\..\lib\clang-runtimes/arm-none-eabi/armv8m.main_hard_fp_exn_rtti_unaligned_size\lib\libc.a(libc_picolib_machine_arm_tls.c.o):(.bss.__tls)
-200019f4 200019f4        4     1                 __tls
-200019f8 200019f8        0     1         __ram_zero$$Limit = . 
-200019f8 200019f8        0     1 __ram_tdata$$
-200019f8 200019f8        0     1         __ram_tdata$$Base = . 
-200019f8 200019f8        0     1         __ram_tdata$$Load = LOADADDR(__ram_tdata$$) 
-200019f8 200019f8        0     1         __ram_tdata$$Limit = . 
-200019f8 200019f8        0     1 __ram_tbss$$
-200019f8 200019f8        0     1         __ram_tbss$$Base = . 
-200019f8 200019f8        0     1         __ram_tbss$$Limit = . 
-200019f8 200019f8        0     1 __ram_thread_stack$$
-200019f8 200019f8        0     1         __ram_thread_stack$$Base = . 
-200019f8 200019f8        0     1         __ram_thread_stack$$Limit = . 
-20001c00 20001c00        0     1 .ram.endof
-20001c00 20001c00        0     1         __ddsc_RAM_END = . 
-20001c00 20001c00        0     1 .ram.flat_nsc
-20001c00 20001c00        0     1         __ddsc_RAM_NSC = . 
-      94       94     400a     4 __flash_readonly$$
+20000750 20000750      3e0     4         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.bss.controller_cfg_scratch)
+20000750 20000750      3e0     1                 controller_cfg_scratch
+20000b30 20000b30       68     4         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.bss.controller_ctrl_scratch)
+20000b30 20000b30       68     1                 controller_ctrl_scratch
+20000b98 20000b98      480     4         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.bss.rail_cfg_scratch)
+20000b98 20000b98      480     1                 rail_cfg_scratch
+20001018 20001018      880     4         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.bss.rail_ctrl_scratch)
+20001018 20001018      880     1                 rail_ctrl_scratch
+20001898 20001898      106     1         CMakeFiles/demo0.elf.dir/src/sequencer/comm_bus.c.obj:(.bss.PB_Comm)
+20001898 20001898      106     1                 PB_Comm
+2000199e 2000199e      200     1         CMakeFiles/demo0.elf.dir/src/sequencer/comm_bus.c.obj:(.bss.xbuffer)
+2000199e 2000199e      200     1                 xbuffer
+20001b9e 20001b9e        1     1         CMakeFiles/demo0.elf.dir/src/sequencer/comm_bus.c.obj:(.bss.comm_cb.bx)
+20001b9e 20001b9e        1     1                 comm_cb.bx
+20001b9f 20001b9f        1     1         CMakeFiles/demo0.elf.dir/src/sequencer/comm_bus.c.obj:(.bss.comm_cb.cx)
+20001b9f 20001b9f        1     1                 comm_cb.cx
+20001ba0 20001ba0        4     4         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.bss.px)
+20001ba0 20001ba0        4     1                 px
+20001ba4 20001ba4       40     4         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.bss.record)
+20001ba4 20001ba4       40     1                 record
+20001be4 20001be4        1     1         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.bss.pwr_dataflash_update.dataflash_open)
+20001be4 20001be4        1     1                 pwr_dataflash_update.dataflash_open
+20001be8 20001be8       28     4         CMakeFiles/demo0.elf.dir/src/simulator.c.obj:(.bss.Simulator)
+20001be8 20001be8       28     1                 Simulator
+20001c10 20001c10        4     4         C:\Renesas\RA\e2studio_v2025-12_fsp_v6.3.0\toolchains\llvm_arm\ATfE-21.1.1-Windows-x86_64\bin\..\lib\clang-runtimes/arm-none-eabi/armv8m.main_hard_fp_exn_rtti_unaligned_size\lib\libc.a(libc_picolib_machine_arm_tls.c.o):(.bss.__tls)
+20001c10 20001c10        4     1                 __tls
+20001c14 20001c14        0     1         __ram_zero$$Limit = . 
+20001c14 20001c14        0     1 __ram_tdata$$
+20001c14 20001c14        0     1         __ram_tdata$$Base = . 
+20001c14 20001c14        0     1         __ram_tdata$$Load = LOADADDR(__ram_tdata$$) 
+20001c14 20001c14        0     1         __ram_tdata$$Limit = . 
+20001c14 20001c14        0     1 __ram_tbss$$
+20001c14 20001c14        0     1         __ram_tbss$$Base = . 
+20001c14 20001c14        0     1         __ram_tbss$$Limit = . 
+20001c18 20001c18        0     1 __ram_thread_stack$$
+20001c18 20001c18        0     1         __ram_thread_stack$$Base = . 
+20001c18 20001c18        0     1         __ram_thread_stack$$Limit = . 
+20002000 20002000        0     1 .ram.endof
+20002000 20002000        0     1         __ddsc_RAM_END = . 
+20002000 20002000        0     1 .ram.flat_nsc
+20002000 20002000        0     1         __ddsc_RAM_NSC = . 
+      94       94     3e5a     4 __flash_readonly$$
       94       94        0     1         __flash_readonly$$Base = . 
       94       94        2     2         CMakeFiles/demo0.elf.dir/ra/board/ra6m5_ek/board_init.c.obj:(.text.bsp_init)
       94       94        0     1                 $t
@@ -509,245 +509,236 @@
     2304     2304       3e     4         CMakeFiles/demo0.elf.dir/src/sequencer/CPAN/cpan.c.obj:(.text.CPAN_open)
     2304     2304        0     1                 $t
     2305     2305       3e     1                 CPAN_open
-    2344     2344      21c     4         CMakeFiles/demo0.elf.dir/src/sequencer/PMbus_commands.c.obj:(.text.PMbus_execute)
+    2344     2344      25a     4         CMakeFiles/demo0.elf.dir/src/sequencer/PMbus_commands.c.obj:(.text.PMbus_execute)
     2344     2344        0     1                 $t
-    2345     2345      21c     1                 PMbus_execute
-    2360     2360        0     1                 $d
-    2380     2380        0     1                 $t
-    239c     239c        0     1                 $d
-    23a4     23a4        0     1                 $t
-    2560     2560      10e     4         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.text.app_func_reset)
-    2560     2560        0     1                 $t
-    2561     2561      10e     1                 app_func_reset
-    266e     266e       54     2         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.text.app_func_startup)
-    266e     266e        0     1                 $t
-    266f     266f       54     1                 app_func_startup
-    26c2     26c2        4     2         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.text.app_func_restart)
-    26c2     26c2        0     1                 $t
-    26c3     26c3        4     1                 app_func_restart
-    26c8     26c8      1a0     4         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.text.app_func_run)
-    26c8     26c8        0     1                 $t
-    26c9     26c9      1a0     1                 app_func_run
-    281a     281a        0     1                 $d
-    2820     2820        0     1                 $t
-    2868     2868       2c     2         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.text.T0_cb)
-    2868     2868        0     1                 $t
-    2869     2869       2c     1                 T0_cb
-    2894     2894       12     2         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.text.SW1_cb)
-    2894     2894        0     1                 $t
-    2895     2895       12     1                 SW1_cb
-    28a6     28a6       1a     2         CMakeFiles/demo0.elf.dir/src/sequencer/comm_bus.c.obj:(.text.comm_init)
-    28a6     28a6        0     1                 $t
-    28a7     28a7       1a     1                 comm_init
-    28c0     28c0       b2     4         CMakeFiles/demo0.elf.dir/src/sequencer/comm_bus.c.obj:(.text.comm_service)
-    28c0     28c0        0     1                 $t
-    28c1     28c1       b2     1                 comm_service
-    2974     2974      166     4         CMakeFiles/demo0.elf.dir/src/sequencer/comm_bus.c.obj:(.text.comm_cb)
-    2974     2974        0     1                 $t
-    2975     2975      166     1                 comm_cb
-    29cc     29cc        0     1                 $d
-    29d4     29d4        0     1                 $t
-    2ada     2ada       42     2         CMakeFiles/demo0.elf.dir/src/sequencer/comm_bus.c.obj:(.text.comm_parse_command)
-    2ada     2ada        0     1                 $t
-    2adb     2adb       42     1                 comm_parse_command
-    2b1c     2b1c       5c     4         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.text.pwr_seq_poll_GPI)
-    2b1c     2b1c        0     1                 $t
-    2b1d     2b1d       5c     1                 pwr_seq_poll_GPI
-    2b78     2b78       3e     4         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.text.pwr_seq_poll_Page)
-    2b78     2b78        0     1                 $t
-    2b79     2b79       3e     1                 pwr_seq_poll_Page
-    2bb8     2bb8       f0     4         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.text.pwr_mod_poll)
-    2bb8     2bb8        0     1                 $t
-    2bb9     2bb9       f0     1                 pwr_mod_poll
-    2ca8     2ca8       10     2         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.text.pwr_rail_store_config)
+    2345     2345      25a     1                 PMbus_execute
+    2374     2374        0     1                 $d
+    2394     2394        0     1                 $t
+    23e8     23e8        0     1                 $d
+    23f0     23f0        0     1                 $t
+    25a0     25a0      102     4         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.text.app_func_reset)
+    25a0     25a0        0     1                 $t
+    25a1     25a1      102     1                 app_func_reset
+    26a2     26a2       54     2         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.text.app_func_startup)
+    26a2     26a2        0     1                 $t
+    26a3     26a3       54     1                 app_func_startup
+    26f6     26f6        4     2         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.text.app_func_restart)
+    26f6     26f6        0     1                 $t
+    26f7     26f7        4     1                 app_func_restart
+    26fc     26fc      1a0     4         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.text.app_func_run)
+    26fc     26fc        0     1                 $t
+    26fd     26fd      1a0     1                 app_func_run
+    284e     284e        0     1                 $d
+    2854     2854        0     1                 $t
+    289c     289c       2c     2         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.text.T0_cb)
+    289c     289c        0     1                 $t
+    289d     289d       2c     1                 T0_cb
+    28c8     28c8       12     2         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.text.SW1_cb)
+    28c8     28c8        0     1                 $t
+    28c9     28c9       12     1                 SW1_cb
+    28da     28da       1a     2         CMakeFiles/demo0.elf.dir/src/sequencer/comm_bus.c.obj:(.text.comm_init)
+    28da     28da        0     1                 $t
+    28db     28db       1a     1                 comm_init
+    28f4     28f4       b2     4         CMakeFiles/demo0.elf.dir/src/sequencer/comm_bus.c.obj:(.text.comm_service)
+    28f4     28f4        0     1                 $t
+    28f5     28f5       b2     1                 comm_service
+    29a8     29a8      166     4         CMakeFiles/demo0.elf.dir/src/sequencer/comm_bus.c.obj:(.text.comm_cb)
+    29a8     29a8        0     1                 $t
+    29a9     29a9      166     1                 comm_cb
+    2a00     2a00        0     1                 $d
+    2a08     2a08        0     1                 $t
+    2b0e     2b0e       42     2         CMakeFiles/demo0.elf.dir/src/sequencer/comm_bus.c.obj:(.text.comm_parse_command)
+    2b0e     2b0e        0     1                 $t
+    2b0f     2b0f       42     1                 comm_parse_command
+    2b50     2b50       62     4         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.text.pwr_seq_poll_GPI)
+    2b50     2b50        0     1                 $t
+    2b51     2b51       62     1                 pwr_seq_poll_GPI
+    2bb2     2bb2        2     2         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.text.pwr_seq_poll_Page)
+    2bb2     2bb2        0     1                 $t
+    2bb3     2bb3        2     1                 pwr_seq_poll_Page
+    2bb4     2bb4        2     2         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.text.pwr_mod_poll)
+    2bb4     2bb4        0     1                 $t
+    2bb5     2bb5        2     1                 pwr_mod_poll
+    2bb6     2bb6        e     2         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.text.pwr_rail_store_config)
+    2bb6     2bb6        0     1                 $t
+    2bb7     2bb7        e     1                 pwr_rail_store_config
+    2bc4     2bc4       d8     4         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.text.pwr_dataflash_update)
+    2bc4     2bc4        0     1                 $t
+    2bc5     2bc5       d8     1                 pwr_dataflash_update
+    2c9c     2c9c        c     2         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.text.pwr_seq_store_config)
+    2c9c     2c9c        0     1                 $t
+    2c9d     2c9d        c     1                 pwr_seq_store_config
+    2ca8     2ca8       3c     4         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.text.pwr_seq_store_all)
     2ca8     2ca8        0     1                 $t
-    2ca9     2ca9       10     1                 pwr_rail_store_config
-    2cb8     2cb8       d8     4         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.text.pwr_dataflash_update)
-    2cb8     2cb8        0     1                 $t
-    2cb9     2cb9       d8     1                 pwr_dataflash_update
-    2d90     2d90        c     2         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.text.pwr_seq_store_config)
-    2d90     2d90        0     1                 $t
-    2d91     2d91        c     1                 pwr_seq_store_config
-    2d9c     2d9c        e     2         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.text.pwr_seq_store_map)
-    2d9c     2d9c        0     1                 $t
-    2d9d     2d9d        e     1                 pwr_seq_store_map
-    2daa     2daa        e     2         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.text.pwr_seq_store_fault_config)
-    2daa     2daa        0     1                 $t
-    2dab     2dab        e     1                 pwr_seq_store_fault_config
-    2db8     2db8       12     2         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.text.pwr_seq_read_fault_config)
-    2db8     2db8        0     1                 $t
-    2db9     2db9       12     1                 pwr_seq_read_fault_config
-    2dcc     2dcc       3c     4         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.text.pwr_seq_store_all)
-    2dcc     2dcc        0     1                 $t
-    2dcd     2dcd       3c     1                 pwr_seq_store_all
-    2e08     2e08       32     4         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.text.pwr_seq_restore_all)
-    2e08     2e08        0     1                 $t
-    2e09     2e09       32     1                 pwr_seq_restore_all
-    2e3c     2e3c       b8     4         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.text.pwr_seq_configure)
-    2e3c     2e3c        0     1                 $t
-    2e3d     2e3d       b8     1                 pwr_seq_configure
-    2ef4     2ef4        4     2         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.text.pwr_seq_update_cfg)
-    2ef4     2ef4        0     1                 $t
-    2ef5     2ef5        4     1                 pwr_seq_update_cfg
-    2ef8     2ef8       3c     2         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.text.pwr_seq_update_seqcfg)
-    2ef8     2ef8        0     1                 $t
-    2ef9     2ef9       3c     1                 pwr_seq_update_seqcfg
-    2f34     2f34       3c     2         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.text.pwr_seq_read_seqcfg)
-    2f34     2f34        0     1                 $t
-    2f35     2f35       3c     1                 pwr_seq_read_seqcfg
-    2f70     2f70       16     2         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.text.pwr_seq_update_railstate)
-    2f70     2f70        0     1                 $t
-    2f71     2f71       16     1                 pwr_seq_update_railstate
-    2f86     2f86       1a     2         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.text.pwr_seq_read_railstate)
-    2f86     2f86        0     1                 $t
-    2f87     2f87       1a     1                 pwr_seq_read_railstate
-    2fa0     2fa0       26     2         CMakeFiles/demo0.elf.dir/src/simulator.c.obj:(.text.simulator_init)
-    2fa0     2fa0        0     1                 $t
-    2fa1     2fa1       26     1                 simulator_init
-    2fc6     2fc6       16     2         CMakeFiles/demo0.elf.dir/src/simulator.c.obj:(.text.simulator_start)
-    2fc6     2fc6        0     1                 $t
-    2fc7     2fc7       16     1                 simulator_start
-    2fdc     2fdc       e4     4         CMakeFiles/demo0.elf.dir/src/simulator.c.obj:(.text.simulator_run)
-    2fdc     2fdc        0     1                 $t
-    2fdd     2fdd       e4     1                 simulator_run
-    303e     303e        0     1                 $d
-    3042     3042        0     1                 $t
-    30c0     30c0        a     2         C:\Renesas\RA\e2studio_v2025-12_fsp_v6.3.0\toolchains\llvm_arm\ATfE-21.1.1-Windows-x86_64\bin\..\lib\clang-runtimes/arm-none-eabi/armv8m.main_hard_fp_exn_rtti_unaligned_size\lib\libc.a(aeabi_memset.c.o):(.text.__aeabi_memset)
-    30c0     30c0        0     1                 $t
-    30c1     30c1        a     1                 __aeabi_memset
-    30c1     30c1        a     1                 __aeabi_memset4
-    30c1     30c1        a     1                 __aeabi_memset8
-    30ca     30ca        8     2         C:\Renesas\RA\e2studio_v2025-12_fsp_v6.3.0\toolchains\llvm_arm\ATfE-21.1.1-Windows-x86_64\bin\..\lib\clang-runtimes/arm-none-eabi/armv8m.main_hard_fp_exn_rtti_unaligned_size\lib\libc.a(bzero.c.o):(.text.bzero)
-    30ca     30ca        0     1                 $t
-    30cb     30cb        8     1                 bzero
-    30cb     30cb        8     1                 __aeabi_memclr4
-    30cb     30cb        8     1                 __aeabi_memclr8
-    30cb     30cb        8     1                 __aeabi_memclr
-    30d2     30d2       12     2         C:\Renesas\RA\e2studio_v2025-12_fsp_v6.3.0\toolchains\llvm_arm\ATfE-21.1.1-Windows-x86_64\bin\..\lib\clang-runtimes/arm-none-eabi/armv8m.main_hard_fp_exn_rtti_unaligned_size\lib\libc.a(memcpy.c.o):(.text.memcpy)
-    30d2     30d2        0     1                 $t
-    30d3     30d3       12     1                 memcpy
-    30d3     30d3       12     1                 __aeabi_memcpy4
-    30d3     30d3       12     1                 __aeabi_memcpy8
-    30d3     30d3       12     1                 __aeabi_memcpy
-    30e4     30e4        e     2         C:\Renesas\RA\e2studio_v2025-12_fsp_v6.3.0\toolchains\llvm_arm\ATfE-21.1.1-Windows-x86_64\bin\..\lib\clang-runtimes/arm-none-eabi/armv8m.main_hard_fp_exn_rtti_unaligned_size\lib\libc.a(memset.c.o):(.text.memset)
-    30e4     30e4        0     1                 $t
-    30e5     30e5        e     1                 memset
-    30f4     30f4       10     4         C:\Renesas\RA\e2studio_v2025-12_fsp_v6.3.0\toolchains\llvm_arm\ATfE-21.1.1-Windows-x86_64\bin\..\lib\clang-runtimes/arm-none-eabi/armv8m.main_hard_fp_exn_rtti_unaligned_size\lib\libc.a(strlen.S.o):(.text)
-    30f4     30f4        0     1                 $t
-    30f5     30f5       10     1                 strlen
-    3104     3104       2e     2         C:\Renesas\RA\e2studio_v2025-12_fsp_v6.3.0\toolchains\llvm_arm\ATfE-21.1.1-Windows-x86_64\bin\..\lib\clang-runtimes/arm-none-eabi/armv8m.main_hard_fp_exn_rtti_unaligned_size\lib\libc.a(libc_string_strncpy.c.o):(.text.strncpy)
-    3104     3104        0     1                 $t
-    3105     3105       2e     1                 strncpy
-    3134     3134       28     4         C:\Renesas\RA\e2studio_v2025-12_fsp_v6.3.0\toolchains\llvm_arm\ATfE-21.1.1-Windows-x86_64\bin\..\lib\clang-runtimes/arm-none-eabi/armv8m.main_hard_fp_exn_rtti_unaligned_size\lib\libc.a(libc_picolib_inittls.c.o):(.text._init_tls)
-    3134     3134        0     1                 $t
-    3135     3135       28     1                 _init_tls
-    314c     314c        0     1                 $d
-    315c     315c       14     4         C:\Renesas\RA\e2studio_v2025-12_fsp_v6.3.0\toolchains\llvm_arm\ATfE-21.1.1-Windows-x86_64\bin\..\lib\clang-runtimes/arm-none-eabi/armv8m.main_hard_fp_exn_rtti_unaligned_size\lib\libc.a(libc_picolib_machine_arm_set_tls.c.o):(.text._set_tls)
-    315c     315c        0     1                 $t
-    315d     315d       14     1                 _set_tls
-    3168     3168        0     1                 $d
-    3170     3170        6     2         CMakeFiles/demo0.elf.dir/ra/board/ra6m5_ek/board_leds.c.obj:(.rodata.g_bsp_prv_leds)
-    3170     3170        6     1                 g_bsp_prv_leds
-    3178     3178        8     4         CMakeFiles/demo0.elf.dir/ra/board/ra6m5_ek/board_leds.c.obj:(.rodata.g_bsp_leds)
-    3178     3178        8     1                 g_bsp_leds
-    3180     3180        a     2         CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_register_protection.c.obj:(.rodata.g_prcr_masks)
-    3180     3180        a     1                 g_prcr_masks
-    318c     318c       10     4         CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/ra6m5/bsp_linker.c.obj:(.rodata.nocache_list)
-    318c     318c       10     1                 nocache_list
-    319c     319c       18     4         CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/ra6m5/bsp_linker.c.obj:(.rodata.g_init_info)
-    319c     319c       18     1                 g_init_info
-    31b4     31b4       3c     4         CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/ra6m5/bsp_linker.c.obj:(.rodata.zero_list)
-    31b4     31b4       3c     1                 zero_list
-    31f0     31f0       90     4         CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/ra6m5/bsp_linker.c.obj:(.rodata.copy_list)
-    31f0     31f0       90     1                 copy_list
-    3280     3280       14     4         CMakeFiles/demo0.elf.dir/ra/fsp/src/r_icu/r_icu.c.obj:(.rodata.g_external_irq_on_icu)
-    3280     3280       14     1                 g_external_irq_on_icu
-    3294     3294        6     2         CMakeFiles/demo0.elf.dir/ra/fsp/src/r_ioport/r_ioport.c.obj:(.rodata.g_vbatt_pins_input)
-    3294     3294        6     1                 g_vbatt_pins_input
-    329c     329c       2c     4         CMakeFiles/demo0.elf.dir/ra/fsp/src/r_sci_uart/r_sci_uart.c.obj:(.rodata.g_uart_on_sci)
-    329c     329c       2c     1                 g_uart_on_sci
-    32c8     32c8        1     1         CMakeFiles/demo0.elf.dir/ra_gen/common_data.c.obj:(.rodata.g_SW1_ext_cfg)
-    32c8     32c8        1     1                 g_SW1_ext_cfg
-    32cc     32cc       14     4         CMakeFiles/demo0.elf.dir/ra_gen/common_data.c.obj:(.rodata.g_SW1_cfg)
-    32cc     32cc       14     1                 g_SW1_cfg
-    32e0     32e0        c     4         CMakeFiles/demo0.elf.dir/ra_gen/common_data.c.obj:(.rodata.g_SW1)
-    32e0     32e0        c     1                 g_SW1
-    32ec     32ec       14     4         CMakeFiles/demo0.elf.dir/ra_gen/hal_data.c.obj:(.rodata.g_comm_uart_cfg_extend)
-    32ec     32ec       14     1                 g_comm_uart_cfg_extend
-    3300     3300       20     4         CMakeFiles/demo0.elf.dir/ra_gen/hal_data.c.obj:(.rodata.g_comm_uart_cfg)
-    3300     3300       20     1                 g_comm_uart_cfg
-    3320     3320       14     4         CMakeFiles/demo0.elf.dir/ra_gen/hal_data.c.obj:(.rodata.g_console_uart_cfg_extend)
-    3320     3320       14     1                 g_console_uart_cfg_extend
-    3334     3334       20     4         CMakeFiles/demo0.elf.dir/ra_gen/hal_data.c.obj:(.rodata.g_console_uart_cfg)
-    3334     3334       20     1                 g_console_uart_cfg
-    3354     3354        c     4         CMakeFiles/demo0.elf.dir/ra_gen/hal_data.c.obj:(.rodata.g_console_uart)
-    3354     3354        c     1                 g_console_uart
-    3360     3360       58     4         CMakeFiles/demo0.elf.dir/ra_gen/hal_data.c.obj:(.rodata.g_T0_extend)
-    3360     3360       58     1                 g_T0_extend
-    33b8     33b8       20     4         CMakeFiles/demo0.elf.dir/ra_gen/hal_data.c.obj:(.rodata.g_T0_cfg)
-    33b8     33b8       20     1                 g_T0_cfg
-    33d8     33d8       14     4         CMakeFiles/demo0.elf.dir/ra_gen/hal_data.c.obj:(.rodata.g_dataflash_cfg)
-    33d8     33d8       14     1                 g_dataflash_cfg
-    33ec     33ec      1e0     4         CMakeFiles/demo0.elf.dir/ra_gen/pin_data.c.obj:(.rodata.g_bsp_pin_cfg_data)
-    33ec     33ec      1e0     1                 g_bsp_pin_cfg_data
-    35cc     35cc        c     4         CMakeFiles/demo0.elf.dir/ra_gen/pin_data.c.obj:(.rodata.g_bsp_pin_cfg)
-    35cc     35cc        c     1                 g_bsp_pin_cfg
-    35d8     35d8       1a     2         CMakeFiles/demo0.elf.dir/ra_gen/vector_data.c.obj:(.rodata.g_interrupt_event_link_select)
-    35d8     35d8       1a     1                 g_interrupt_event_link_select
-    35f2     35f2       bf     1         <internal>:(.rodata.str1.1)
-    36b4     36b4       4c     4         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.rodata.control_panel_initial)
-    36b4     36b4       4c     1                 control_panel_initial
-    3700     3700       1c     4         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.rodata.PowerController)
-    3700     3700       1c     1                 PowerController
-    371c     371c       40     4         CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj:(.rodata.power_analog_3300)
-    371c     371c       40     1                 power_analog_3300
-    375c     375c       40     4         CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj:(.rodata.power_analog_5000)
-    375c     375c       40     1                 power_analog_5000
-    379c     379c       40     4         CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj:(.rodata.power_analog_1200)
-    379c     379c       40     1                 power_analog_1200
-    37dc     37dc       40     4         CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj:(.rodata.power_digital_2400)
-    37dc     37dc       40     1                 power_digital_2400
-    381c     381c       40     4         CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj:(.rodata.power_digital_OFFLINE)
-    381c     381c       40     1                 power_digital_OFFLINE
-    385c     385c      404     4         CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj:(.rodata.power_controller_basic)
-    385c     385c      404     1                 power_controller_basic
-    3c60     3c60       80     1         CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj:(.rodata.power_rail_maps)
-    3c60     3c60       80     1                 power_rail_maps
-    3ce0     3ce0      180     4         CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj:(.rodata.power_rails)
-    3ce0     3ce0      180     1                 power_rails
-    3e60     3e60      160     4         CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj:(.rodata.power_sequencer_IO)
-    3e60     3e60      160     1                 power_sequencer_IO
-    3fc0     3fc0        8     1         CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj:(.rodata.power_sequencer_CONST)
-    3fc0     3fc0        8     1                 power_sequencer_CONST
-    3fc8     3fc8       18     4         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.rodata..Lswitch.table.pwr_seq_configure)
-    3fc8     3fc8       18     1                 .Lswitch.table.pwr_seq_configure
-    3fe0     3fe0       28     4         CMakeFiles/demo0.elf.dir/src/simulator_script.c.obj:(.rodata.srt_table_0)
-    3fe0     3fe0       28     1                 srt_table_0
-    4008     4008       20     4         CMakeFiles/demo0.elf.dir/src/simulator_script.c.obj:(.rodata.srt_table_1)
-    4008     4008       20     1                 srt_table_1
-    4028     4028       28     4         CMakeFiles/demo0.elf.dir/src/simulator_script.c.obj:(.rodata.simulator_initial)
-    4028     4028       28     1                 simulator_initial
-    4050     4050       4e     4         CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_common.c.obj:(.version)
-    4050     4050        4     1                 g_fsp_version
-    4054     4054        6     1                 g_fsp_version_string
-    405a     405a       44     1                 g_fsp_version_build_string
-    409e     409e        0     1         __flash_readonly$$Limit = . 
-    409e     409e        0     1 __flash_preinit_array$$
-    409e     409e        0     1         __preinit_array_start = . 
-    409e     409e        0     1         __preinit_array_end = . 
-    409e     409e        0     1 __flash_init_array$$
-    409e     409e        0     1         __init_array_start = . 
-    409e     409e        0     1         __init_array_end = . 
-    409e     409e        0     1 __flash_fini_array$$
-    409e     409e        0     1         __fini_array_start = . 
-    409e     409e        0     1         __fini_array_end = . 
-    409e     409e        0     1 __flash_arm.exidx$$
-    409e     409e        0     1         __exidx_start = . 
-    409e     409e        0     1         __exidx_end = . 
-    4400     4400        0     1 .flash.endof
-    4400     4400        0     1         __ddsc_FLASH_END = . 
-    4400     4400        0     1 .flash.flat_nsc
-    4400     4400        0     1         __ddsc_FLASH_NSC = . 
+    2ca9     2ca9       3c     1                 pwr_seq_store_all
+    2ce4     2ce4       32     4         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.text.pwr_seq_restore_all)
+    2ce4     2ce4        0     1                 $t
+    2ce5     2ce5       32     1                 pwr_seq_restore_all
+    2d18     2d18      126     4         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.text.pwr_seq_configure)
+    2d18     2d18        0     1                 $t
+    2d19     2d19      126     1                 pwr_seq_configure
+    2e3e     2e3e        4     2         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.text.pwr_seq_update_cfg)
+    2e3e     2e3e        0     1                 $t
+    2e3f     2e3f        4     1                 pwr_seq_update_cfg
+    2e42     2e42       3c     2         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.text.pwr_seq_update_seqcfg)
+    2e42     2e42        0     1                 $t
+    2e43     2e43       3c     1                 pwr_seq_update_seqcfg
+    2e7e     2e7e       3c     2         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.text.pwr_seq_read_seqcfg)
+    2e7e     2e7e        0     1                 $t
+    2e7f     2e7f       3c     1                 pwr_seq_read_seqcfg
+    2eba     2eba       24     2         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.text.pwr_seq_update_railstate)
+    2eba     2eba        0     1                 $t
+    2ebb     2ebb       24     1                 pwr_seq_update_railstate
+    2ede     2ede       28     2         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.text.pwr_seq_read_railstate)
+    2ede     2ede        0     1                 $t
+    2edf     2edf       28     1                 pwr_seq_read_railstate
+    2f06     2f06       18     2         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.text.pwr_seq_process_operation)
+    2f06     2f06        0     1                 $t
+    2f07     2f07       18     1                 pwr_seq_process_operation
+    2f1e     2f1e       26     2         CMakeFiles/demo0.elf.dir/src/simulator.c.obj:(.text.simulator_init)
+    2f1e     2f1e        0     1                 $t
+    2f1f     2f1f       26     1                 simulator_init
+    2f44     2f44       e4     4         CMakeFiles/demo0.elf.dir/src/simulator.c.obj:(.text.simulator_run)
+    2f44     2f44        0     1                 $t
+    2f45     2f45       e4     1                 simulator_run
+    2fa6     2fa6        0     1                 $d
+    2faa     2faa        0     1                 $t
+    3028     3028        a     2         C:\Renesas\RA\e2studio_v2025-12_fsp_v6.3.0\toolchains\llvm_arm\ATfE-21.1.1-Windows-x86_64\bin\..\lib\clang-runtimes/arm-none-eabi/armv8m.main_hard_fp_exn_rtti_unaligned_size\lib\libc.a(aeabi_memset.c.o):(.text.__aeabi_memset)
+    3028     3028        0     1                 $t
+    3029     3029        a     1                 __aeabi_memset
+    3029     3029        a     1                 __aeabi_memset4
+    3029     3029        a     1                 __aeabi_memset8
+    3032     3032        8     2         C:\Renesas\RA\e2studio_v2025-12_fsp_v6.3.0\toolchains\llvm_arm\ATfE-21.1.1-Windows-x86_64\bin\..\lib\clang-runtimes/arm-none-eabi/armv8m.main_hard_fp_exn_rtti_unaligned_size\lib\libc.a(bzero.c.o):(.text.bzero)
+    3032     3032        0     1                 $t
+    3033     3033        8     1                 bzero
+    3033     3033        8     1                 __aeabi_memclr4
+    3033     3033        8     1                 __aeabi_memclr8
+    3033     3033        8     1                 __aeabi_memclr
+    303a     303a       12     2         C:\Renesas\RA\e2studio_v2025-12_fsp_v6.3.0\toolchains\llvm_arm\ATfE-21.1.1-Windows-x86_64\bin\..\lib\clang-runtimes/arm-none-eabi/armv8m.main_hard_fp_exn_rtti_unaligned_size\lib\libc.a(memcpy.c.o):(.text.memcpy)
+    303a     303a        0     1                 $t
+    303b     303b       12     1                 memcpy
+    303b     303b       12     1                 __aeabi_memcpy4
+    303b     303b       12     1                 __aeabi_memcpy8
+    303b     303b       12     1                 __aeabi_memcpy
+    304c     304c        e     2         C:\Renesas\RA\e2studio_v2025-12_fsp_v6.3.0\toolchains\llvm_arm\ATfE-21.1.1-Windows-x86_64\bin\..\lib\clang-runtimes/arm-none-eabi/armv8m.main_hard_fp_exn_rtti_unaligned_size\lib\libc.a(memset.c.o):(.text.memset)
+    304c     304c        0     1                 $t
+    304d     304d        e     1                 memset
+    305c     305c       10     4         C:\Renesas\RA\e2studio_v2025-12_fsp_v6.3.0\toolchains\llvm_arm\ATfE-21.1.1-Windows-x86_64\bin\..\lib\clang-runtimes/arm-none-eabi/armv8m.main_hard_fp_exn_rtti_unaligned_size\lib\libc.a(strlen.S.o):(.text)
+    305c     305c        0     1                 $t
+    305d     305d       10     1                 strlen
+    306c     306c       2e     2         C:\Renesas\RA\e2studio_v2025-12_fsp_v6.3.0\toolchains\llvm_arm\ATfE-21.1.1-Windows-x86_64\bin\..\lib\clang-runtimes/arm-none-eabi/armv8m.main_hard_fp_exn_rtti_unaligned_size\lib\libc.a(libc_string_strncpy.c.o):(.text.strncpy)
+    306c     306c        0     1                 $t
+    306d     306d       2e     1                 strncpy
+    309c     309c       28     4         C:\Renesas\RA\e2studio_v2025-12_fsp_v6.3.0\toolchains\llvm_arm\ATfE-21.1.1-Windows-x86_64\bin\..\lib\clang-runtimes/arm-none-eabi/armv8m.main_hard_fp_exn_rtti_unaligned_size\lib\libc.a(libc_picolib_inittls.c.o):(.text._init_tls)
+    309c     309c        0     1                 $t
+    309d     309d       28     1                 _init_tls
+    30b4     30b4        0     1                 $d
+    30c4     30c4       14     4         C:\Renesas\RA\e2studio_v2025-12_fsp_v6.3.0\toolchains\llvm_arm\ATfE-21.1.1-Windows-x86_64\bin\..\lib\clang-runtimes/arm-none-eabi/armv8m.main_hard_fp_exn_rtti_unaligned_size\lib\libc.a(libc_picolib_machine_arm_set_tls.c.o):(.text._set_tls)
+    30c4     30c4        0     1                 $t
+    30c5     30c5       14     1                 _set_tls
+    30d0     30d0        0     1                 $d
+    30d8     30d8        6     2         CMakeFiles/demo0.elf.dir/ra/board/ra6m5_ek/board_leds.c.obj:(.rodata.g_bsp_prv_leds)
+    30d8     30d8        6     1                 g_bsp_prv_leds
+    30e0     30e0        8     4         CMakeFiles/demo0.elf.dir/ra/board/ra6m5_ek/board_leds.c.obj:(.rodata.g_bsp_leds)
+    30e0     30e0        8     1                 g_bsp_leds
+    30e8     30e8        a     2         CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_register_protection.c.obj:(.rodata.g_prcr_masks)
+    30e8     30e8        a     1                 g_prcr_masks
+    30f4     30f4       10     4         CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/ra6m5/bsp_linker.c.obj:(.rodata.nocache_list)
+    30f4     30f4       10     1                 nocache_list
+    3104     3104       18     4         CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/ra6m5/bsp_linker.c.obj:(.rodata.g_init_info)
+    3104     3104       18     1                 g_init_info
+    311c     311c       3c     4         CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/ra6m5/bsp_linker.c.obj:(.rodata.zero_list)
+    311c     311c       3c     1                 zero_list
+    3158     3158       90     4         CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/ra6m5/bsp_linker.c.obj:(.rodata.copy_list)
+    3158     3158       90     1                 copy_list
+    31e8     31e8       14     4         CMakeFiles/demo0.elf.dir/ra/fsp/src/r_icu/r_icu.c.obj:(.rodata.g_external_irq_on_icu)
+    31e8     31e8       14     1                 g_external_irq_on_icu
+    31fc     31fc        6     2         CMakeFiles/demo0.elf.dir/ra/fsp/src/r_ioport/r_ioport.c.obj:(.rodata.g_vbatt_pins_input)
+    31fc     31fc        6     1                 g_vbatt_pins_input
+    3204     3204       2c     4         CMakeFiles/demo0.elf.dir/ra/fsp/src/r_sci_uart/r_sci_uart.c.obj:(.rodata.g_uart_on_sci)
+    3204     3204       2c     1                 g_uart_on_sci
+    3230     3230        1     1         CMakeFiles/demo0.elf.dir/ra_gen/common_data.c.obj:(.rodata.g_SW1_ext_cfg)
+    3230     3230        1     1                 g_SW1_ext_cfg
+    3234     3234       14     4         CMakeFiles/demo0.elf.dir/ra_gen/common_data.c.obj:(.rodata.g_SW1_cfg)
+    3234     3234       14     1                 g_SW1_cfg
+    3248     3248        c     4         CMakeFiles/demo0.elf.dir/ra_gen/common_data.c.obj:(.rodata.g_SW1)
+    3248     3248        c     1                 g_SW1
+    3254     3254       14     4         CMakeFiles/demo0.elf.dir/ra_gen/hal_data.c.obj:(.rodata.g_comm_uart_cfg_extend)
+    3254     3254       14     1                 g_comm_uart_cfg_extend
+    3268     3268       20     4         CMakeFiles/demo0.elf.dir/ra_gen/hal_data.c.obj:(.rodata.g_comm_uart_cfg)
+    3268     3268       20     1                 g_comm_uart_cfg
+    3288     3288       14     4         CMakeFiles/demo0.elf.dir/ra_gen/hal_data.c.obj:(.rodata.g_console_uart_cfg_extend)
+    3288     3288       14     1                 g_console_uart_cfg_extend
+    329c     329c       20     4         CMakeFiles/demo0.elf.dir/ra_gen/hal_data.c.obj:(.rodata.g_console_uart_cfg)
+    329c     329c       20     1                 g_console_uart_cfg
+    32bc     32bc        c     4         CMakeFiles/demo0.elf.dir/ra_gen/hal_data.c.obj:(.rodata.g_console_uart)
+    32bc     32bc        c     1                 g_console_uart
+    32c8     32c8       58     4         CMakeFiles/demo0.elf.dir/ra_gen/hal_data.c.obj:(.rodata.g_T0_extend)
+    32c8     32c8       58     1                 g_T0_extend
+    3320     3320       20     4         CMakeFiles/demo0.elf.dir/ra_gen/hal_data.c.obj:(.rodata.g_T0_cfg)
+    3320     3320       20     1                 g_T0_cfg
+    3340     3340       14     4         CMakeFiles/demo0.elf.dir/ra_gen/hal_data.c.obj:(.rodata.g_dataflash_cfg)
+    3340     3340       14     1                 g_dataflash_cfg
+    3354     3354      1e0     4         CMakeFiles/demo0.elf.dir/ra_gen/pin_data.c.obj:(.rodata.g_bsp_pin_cfg_data)
+    3354     3354      1e0     1                 g_bsp_pin_cfg_data
+    3534     3534        c     4         CMakeFiles/demo0.elf.dir/ra_gen/pin_data.c.obj:(.rodata.g_bsp_pin_cfg)
+    3534     3534        c     1                 g_bsp_pin_cfg
+    3540     3540       1a     2         CMakeFiles/demo0.elf.dir/ra_gen/vector_data.c.obj:(.rodata.g_interrupt_event_link_select)
+    3540     3540       1a     1                 g_interrupt_event_link_select
+    355a     355a       bf     1         <internal>:(.rodata.str1.1)
+    361c     361c       4c     4         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.rodata.control_panel_initial)
+    361c     361c       4c     1                 control_panel_initial
+    3668     3668       18     4         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.rodata.PowerController)
+    3668     3668       18     1                 PowerController
+    3680     3680       24     4         CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj:(.rodata.power_analog_3300)
+    3680     3680       24     1                 power_analog_3300
+    36a4     36a4       24     4         CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj:(.rodata.power_analog_5000)
+    36a4     36a4       24     1                 power_analog_5000
+    36c8     36c8       24     4         CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj:(.rodata.power_analog_1200)
+    36c8     36c8       24     1                 power_analog_1200
+    36ec     36ec       24     4         CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj:(.rodata.power_digital_2400)
+    36ec     36ec       24     1                 power_digital_2400
+    3710     3710       24     4         CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj:(.rodata.power_digital_OFFLINE)
+    3710     3710       24     1                 power_digital_OFFLINE
+    3734     3734      3e0     4         CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj:(.rodata.power_controller_basic)
+    3734     3734      3e0     1                 power_controller_basic
+    3b14     3b14      180     4         CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj:(.rodata.power_rails)
+    3b14     3b14      180     1                 power_rails
+    3c94     3c94      160     4         CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj:(.rodata.power_sequencer_IO)
+    3c94     3c94      160     1                 power_sequencer_IO
+    3df4     3df4        8     1         CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj:(.rodata.power_sequencer_CONST)
+    3df4     3df4        8     1                 power_sequencer_CONST
+    3dfc     3dfc       18     4         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.rodata..Lswitch.table.pwr_seq_configure)
+    3dfc     3dfc       18     1                 .Lswitch.table.pwr_seq_configure
+    3e14     3e14       1c     4         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.rodata..Lswitch.table.pwr_seq_configure.1)
+    3e14     3e14       1c     1                 .Lswitch.table.pwr_seq_configure.1
+    3e30     3e30       28     4         CMakeFiles/demo0.elf.dir/src/simulator_script.c.obj:(.rodata.srt_table_0)
+    3e30     3e30       28     1                 srt_table_0
+    3e58     3e58       20     4         CMakeFiles/demo0.elf.dir/src/simulator_script.c.obj:(.rodata.srt_table_1)
+    3e58     3e58       20     1                 srt_table_1
+    3e78     3e78       28     4         CMakeFiles/demo0.elf.dir/src/simulator_script.c.obj:(.rodata.simulator_initial)
+    3e78     3e78       28     1                 simulator_initial
+    3ea0     3ea0       4e     4         CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_common.c.obj:(.version)
+    3ea0     3ea0        4     1                 g_fsp_version
+    3ea4     3ea4        6     1                 g_fsp_version_string
+    3eaa     3eaa       44     1                 g_fsp_version_build_string
+    3eee     3eee        0     1         __flash_readonly$$Limit = . 
+    3eee     3eee        0     1 __flash_preinit_array$$
+    3eee     3eee        0     1         __preinit_array_start = . 
+    3eee     3eee        0     1         __preinit_array_end = . 
+    3eee     3eee        0     1 __flash_init_array$$
+    3eee     3eee        0     1         __init_array_start = . 
+    3eee     3eee        0     1         __init_array_end = . 
+    3eee     3eee        0     1 __flash_fini_array$$
+    3eee     3eee        0     1         __fini_array_start = . 
+    3eee     3eee        0     1         __fini_array_end = . 
+    3eee     3eee        0     1 __flash_arm.exidx$$
+    3eee     3eee        0     1         __exidx_start = . 
+    3eee     3eee        0     1         __exidx_end = . 
+    4000     4000        0     1 .flash.endof
+    4000     4000        0     1         __ddsc_FLASH_END = . 
+    4000     4000        0     1 .flash.flat_nsc
+    4000     4000        0     1         __ddsc_FLASH_NSC = . 
  100a100  100a100        0     1 .option_setting_ofs0.startof
  100a100  100a100        0     1         __ddsc_OPTION_SETTING_OFS0_START = . 
  100a100  100a100        4     4 __option_setting_ofs0_reg$$
@@ -853,7 +844,7 @@
  100a2c0  100a2c0        0     1 PROVIDE( __arm32_tls_tcb_offset = 8 )
        0        0       3e     1 .ARM.attributes
        0        0       3e     1         C:\Renesas\RA\e2studio_v2025-12_fsp_v6.3.0\toolchains\llvm_arm\ATfE-21.1.1-Windows-x86_64\bin\..\lib\clang-runtimes/arm-none-eabi/armv8m.main_hard_fp_exn_rtti_unaligned_size\lib\crt0.o:(.ARM.attributes)
-       0        0     3faf     1 .debug_abbrev
+       0        0     3f68     1 .debug_abbrev
        0        0       43     1         CMakeFiles/demo0.elf.dir/ra/board/ra6m5_ek/board_init.c.obj:(.debug_abbrev)
       43       43       91     1         CMakeFiles/demo0.elf.dir/ra/board/ra6m5_ek/board_leds.c.obj:(.debug_abbrev)
       d4       d4       a7     1         CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/cmsis/Device/RENESAS/Source/startup.c.obj:(.debug_abbrev)
@@ -885,13 +876,13 @@
     31b4     31b4      106     1         CMakeFiles/demo0.elf.dir/src/hal_warmstart.c.obj:(.debug_abbrev)
     32ba     32ba      1f6     1         CMakeFiles/demo0.elf.dir/src/sequencer/CPAN/cpan.c.obj:(.debug_abbrev)
     34b0     34b0       7a     1         CMakeFiles/demo0.elf.dir/src/sequencer/PMbus_commands.c.obj:(.debug_abbrev)
-    352a     352a      2a7     1         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.debug_abbrev)
-    37d1     37d1      1be     1         CMakeFiles/demo0.elf.dir/src/sequencer/comm_bus.c.obj:(.debug_abbrev)
-    398f     398f      16d     1         CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj:(.debug_abbrev)
-    3afc     3afc      33d     1         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.debug_abbrev)
-    3e39     3e39       f4     1         CMakeFiles/demo0.elf.dir/src/simulator.c.obj:(.debug_abbrev)
-    3f2d     3f2d       82     1         CMakeFiles/demo0.elf.dir/src/simulator_script.c.obj:(.debug_abbrev)
-       0        0    393c6     1 .debug_info
+    352a     352a      298     1         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.debug_abbrev)
+    37c2     37c2      1be     1         CMakeFiles/demo0.elf.dir/src/sequencer/comm_bus.c.obj:(.debug_abbrev)
+    3980     3980      153     1         CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj:(.debug_abbrev)
+    3ad3     3ad3      31f     1         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.debug_abbrev)
+    3df2     3df2       f4     1         CMakeFiles/demo0.elf.dir/src/simulator.c.obj:(.debug_abbrev)
+    3ee6     3ee6       82     1         CMakeFiles/demo0.elf.dir/src/simulator_script.c.obj:(.debug_abbrev)
+       0        0    390d7     1 .debug_info
        0        0       3b     1         CMakeFiles/demo0.elf.dir/ra/board/ra6m5_ek/board_init.c.obj:(.debug_info)
       3b       3b       88     1         CMakeFiles/demo0.elf.dir/ra/board/ra6m5_ek/board_leds.c.obj:(.debug_info)
       c3       c3       b1     1         CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/cmsis/Device/RENESAS/Source/startup.c.obj:(.debug_info)
@@ -923,13 +914,13 @@
    33043    33043      9fb     1         CMakeFiles/demo0.elf.dir/src/hal_warmstart.c.obj:(.debug_info)
    33a3e    33a3e     1132     1         CMakeFiles/demo0.elf.dir/src/sequencer/CPAN/cpan.c.obj:(.debug_info)
    34b70    34b70      345     1         CMakeFiles/demo0.elf.dir/src/sequencer/PMbus_commands.c.obj:(.debug_info)
-   34eb5    34eb5     1dc0     1         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.debug_info)
-   36c75    36c75      b5b     1         CMakeFiles/demo0.elf.dir/src/sequencer/comm_bus.c.obj:(.debug_info)
-   377d0    377d0      b69     1         CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj:(.debug_info)
-   38339    38339      dee     1         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.debug_info)
-   39127    39127      16d     1         CMakeFiles/demo0.elf.dir/src/simulator.c.obj:(.debug_info)
-   39294    39294      132     1         CMakeFiles/demo0.elf.dir/src/simulator_script.c.obj:(.debug_info)
-       0        0    13b20     1 .debug_str_offsets
+   34eb5    34eb5     1cc4     1         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.debug_info)
+   36b79    36b79      b5b     1         CMakeFiles/demo0.elf.dir/src/sequencer/comm_bus.c.obj:(.debug_info)
+   376d4    376d4      a76     1         CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj:(.debug_info)
+   3814a    3814a      cee     1         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.debug_info)
+   38e38    38e38      16d     1         CMakeFiles/demo0.elf.dir/src/simulator.c.obj:(.debug_info)
+   38fa5    38fa5      132     1         CMakeFiles/demo0.elf.dir/src/simulator_script.c.obj:(.debug_info)
+       0        0    139c8     1 .debug_str_offsets
        0        0       1c     1         CMakeFiles/demo0.elf.dir/ra/board/ra6m5_ek/board_init.c.obj:(.debug_str_offsets)
       1c       1c       3c     1         CMakeFiles/demo0.elf.dir/ra/board/ra6m5_ek/board_leds.c.obj:(.debug_str_offsets)
       58       58       3c     1         CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/cmsis/Device/RENESAS/Source/startup.c.obj:(.debug_str_offsets)
@@ -961,15 +952,15 @@
    106d0    106d0      820     1         CMakeFiles/demo0.elf.dir/src/hal_warmstart.c.obj:(.debug_str_offsets)
    10ef0    10ef0      7d0     1         CMakeFiles/demo0.elf.dir/src/sequencer/CPAN/cpan.c.obj:(.debug_str_offsets)
    116c0    116c0      350     1         CMakeFiles/demo0.elf.dir/src/sequencer/PMbus_commands.c.obj:(.debug_str_offsets)
-   11a10    11a10      c5c     1         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.debug_str_offsets)
-   1266c    1266c      8e8     1         CMakeFiles/demo0.elf.dir/src/sequencer/comm_bus.c.obj:(.debug_str_offsets)
-   12f54    12f54      3f0     1         CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj:(.debug_str_offsets)
-   13344    13344      6c4     1         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.debug_str_offsets)
-   13a08    13a08       94     1         CMakeFiles/demo0.elf.dir/src/simulator.c.obj:(.debug_str_offsets)
-   13a9c    13a9c       84     1         CMakeFiles/demo0.elf.dir/src/simulator_script.c.obj:(.debug_str_offsets)
-       0        0    131ad     1 .debug_str
-       0        0    131ad     1         <internal>:(.debug_str)
-       0        0      b2c     1 .debug_addr
+   11a10    11a10      bec     1         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.debug_str_offsets)
+   125fc    125fc      8e8     1         CMakeFiles/demo0.elf.dir/src/sequencer/comm_bus.c.obj:(.debug_str_offsets)
+   12ee4    12ee4      37c     1         CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj:(.debug_str_offsets)
+   13260    13260      650     1         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.debug_str_offsets)
+   138b0    138b0       94     1         CMakeFiles/demo0.elf.dir/src/simulator.c.obj:(.debug_str_offsets)
+   13944    13944       84     1         CMakeFiles/demo0.elf.dir/src/simulator_script.c.obj:(.debug_str_offsets)
+       0        0    12fee     1 .debug_str
+       0        0    12fee     1         <internal>:(.debug_str)
+       0        0      b1c     1 .debug_addr
        0        0        c     1         CMakeFiles/demo0.elf.dir/ra/board/ra6m5_ek/board_init.c.obj:(.debug_addr)
        c        c       10     1         CMakeFiles/demo0.elf.dir/ra/board/ra6m5_ek/board_leds.c.obj:(.debug_addr)
       1c       1c       1c     1         CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/cmsis/Device/RENESAS/Source/startup.c.obj:(.debug_addr)
@@ -1003,13 +994,13 @@
      994      994        c     1         CMakeFiles/demo0.elf.dir/src/sequencer/PMbus_commands.c.obj:(.debug_addr)
      9a0      9a0       54     1         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.debug_addr)
      9f4      9f4       30     1         CMakeFiles/demo0.elf.dir/src/sequencer/comm_bus.c.obj:(.debug_addr)
-     a24      a24       38     1         CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj:(.debug_addr)
-     a5c      a5c       a0     1         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.debug_addr)
-     afc      afc       1c     1         CMakeFiles/demo0.elf.dir/src/simulator.c.obj:(.debug_addr)
-     b18      b18       14     1         CMakeFiles/demo0.elf.dir/src/simulator_script.c.obj:(.debug_addr)
+     a24      a24       34     1         CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj:(.debug_addr)
+     a58      a58       94     1         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.debug_addr)
+     aec      aec       1c     1         CMakeFiles/demo0.elf.dir/src/simulator.c.obj:(.debug_addr)
+     b08      b08       14     1         CMakeFiles/demo0.elf.dir/src/simulator_script.c.obj:(.debug_addr)
        0        0       29     1 .comment
        0        0       29     1         <internal>:(.comment)
-       0        0     156c     4 .debug_frame
+       0        0     152c     4 .debug_frame
        0        0       24     4         CMakeFiles/demo0.elf.dir/ra/board/ra6m5_ek/board_init.c.obj:(.debug_frame)
       24       24       34     4         CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/cmsis/Device/RENESAS/Source/startup.c.obj:(.debug_frame)
       58       58       60     4         CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/cmsis/Device/RENESAS/Source/system.c.obj:(.debug_frame)
@@ -1038,11 +1029,11 @@
     1164     1164       30     4         CMakeFiles/demo0.elf.dir/src/sequencer/PMbus_commands.c.obj:(.debug_frame)
     1194     1194       a8     4         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.debug_frame)
     123c     123c       90     4         CMakeFiles/demo0.elf.dir/src/sequencer/comm_bus.c.obj:(.debug_frame)
-    12cc     12cc      1f4     4         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.debug_frame)
-    14c0     14c0       64     4         CMakeFiles/demo0.elf.dir/src/simulator.c.obj:(.debug_frame)
-    1524     1524       24     4         C:\Renesas\RA\e2studio_v2025-12_fsp_v6.3.0\toolchains\llvm_arm\ATfE-21.1.1-Windows-x86_64\bin\..\lib\clang-runtimes/arm-none-eabi/armv8m.main_hard_fp_exn_rtti_unaligned_size\lib\libc.a(strlen.S.o):(.debug_frame)
-    1548     1548       24     4         C:\Renesas\RA\e2studio_v2025-12_fsp_v6.3.0\toolchains\llvm_arm\ATfE-21.1.1-Windows-x86_64\bin\..\lib\clang-runtimes/arm-none-eabi/armv8m.main_hard_fp_exn_rtti_unaligned_size\lib\libc.a(libc_picolib_machine_arm_read_tp.S.o):(.debug_frame)
-       0        0     6725     1 .debug_line
+    12cc     12cc      1b4     4         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.debug_frame)
+    1480     1480       64     4         CMakeFiles/demo0.elf.dir/src/simulator.c.obj:(.debug_frame)
+    14e4     14e4       24     4         C:\Renesas\RA\e2studio_v2025-12_fsp_v6.3.0\toolchains\llvm_arm\ATfE-21.1.1-Windows-x86_64\bin\..\lib\clang-runtimes/arm-none-eabi/armv8m.main_hard_fp_exn_rtti_unaligned_size\lib\libc.a(strlen.S.o):(.debug_frame)
+    1508     1508       24     4         C:\Renesas\RA\e2studio_v2025-12_fsp_v6.3.0\toolchains\llvm_arm\ATfE-21.1.1-Windows-x86_64\bin\..\lib\clang-runtimes/arm-none-eabi/armv8m.main_hard_fp_exn_rtti_unaligned_size\lib\libc.a(libc_picolib_machine_arm_read_tp.S.o):(.debug_frame)
+       0        0     6636     1 .debug_line
        0        0       6e     1         CMakeFiles/demo0.elf.dir/ra/board/ra6m5_ek/board_init.c.obj:(.debug_line)
       6e       6e       a7     1         CMakeFiles/demo0.elf.dir/ra/board/ra6m5_ek/board_leds.c.obj:(.debug_line)
      115      115       bf     1         CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/cmsis/Device/RENESAS/Source/startup.c.obj:(.debug_line)
@@ -1073,16 +1064,16 @@
     505b     505b      101     1         CMakeFiles/demo0.elf.dir/src/hal_entry.c.obj:(.debug_line)
     515c     515c      121     1         CMakeFiles/demo0.elf.dir/src/hal_warmstart.c.obj:(.debug_line)
     527d     527d      1b0     1         CMakeFiles/demo0.elf.dir/src/sequencer/CPAN/cpan.c.obj:(.debug_line)
-    542d     542d      1c7     1         CMakeFiles/demo0.elf.dir/src/sequencer/PMbus_commands.c.obj:(.debug_line)
-    55f4     55f4      3ac     1         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.debug_line)
-    59a0     59a0      3d6     1         CMakeFiles/demo0.elf.dir/src/sequencer/comm_bus.c.obj:(.debug_line)
-    5d76     5d76       bc     1         CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj:(.debug_line)
-    5e32     5e32      6a3     1         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.debug_line)
-    64d5     64d5      1ad     1         CMakeFiles/demo0.elf.dir/src/simulator.c.obj:(.debug_line)
-    6682     6682       a3     1         CMakeFiles/demo0.elf.dir/src/simulator_script.c.obj:(.debug_line)
+    542d     542d      1f5     1         CMakeFiles/demo0.elf.dir/src/sequencer/PMbus_commands.c.obj:(.debug_line)
+    5622     5622      3ab     1         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.debug_line)
+    59cd     59cd      3d6     1         CMakeFiles/demo0.elf.dir/src/sequencer/comm_bus.c.obj:(.debug_line)
+    5da3     5da3       bc     1         CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj:(.debug_line)
+    5e5f     5e5f      587     1         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.debug_line)
+    63e6     63e6      1ad     1         CMakeFiles/demo0.elf.dir/src/simulator.c.obj:(.debug_line)
+    6593     6593       a3     1         CMakeFiles/demo0.elf.dir/src/simulator_script.c.obj:(.debug_line)
        0        0     15a5     1 .debug_line_str
        0        0     15a5     1         <internal>:(.debug_line_str)
-       0        0      7c9     1 .debug_rnglists
+       0        0      79b     1 .debug_rnglists
        0        0       17     1         CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/cmsis/Device/RENESAS/Source/startup.c.obj:(.debug_rnglists)
       17       17       1b     1         CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/cmsis/Device/RENESAS/Source/system.c.obj:(.debug_rnglists)
       32       32       5c     1         CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_clocks.c.obj:(.debug_rnglists)
@@ -1102,9 +1093,9 @@
      6b2      6b2       1d     1         CMakeFiles/demo0.elf.dir/src/sequencer/CPAN/cpan.c.obj:(.debug_rnglists)
      6cf      6cf       36     1         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.debug_rnglists)
      705      705       22     1         CMakeFiles/demo0.elf.dir/src/sequencer/comm_bus.c.obj:(.debug_rnglists)
-     727      727       87     1         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.debug_rnglists)
-     7ae      7ae       1b     1         CMakeFiles/demo0.elf.dir/src/simulator.c.obj:(.debug_rnglists)
-       0        0     2f10     1 .debug_loclists
+     727      727       59     1         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.debug_rnglists)
+     780      780       1b     1         CMakeFiles/demo0.elf.dir/src/simulator.c.obj:(.debug_rnglists)
+       0        0     2f33     1 .debug_loclists
        0        0       60     1         CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/cmsis/Device/RENESAS/Source/system.c.obj:(.debug_loclists)
       60       60      21c     1         CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_clocks.c.obj:(.debug_loclists)
      27c      27c       1d     1         CMakeFiles/demo0.elf.dir/ra/fsp/src/bsp/mcu/all/bsp_common.c.obj:(.debug_loclists)
@@ -1124,17 +1115,17 @@
     25d7     25d7       e1     1         CMakeFiles/demo0.elf.dir/src/console/console_port.c.obj:(.debug_loclists)
     26b8     26b8       1e     1         CMakeFiles/demo0.elf.dir/src/hal_warmstart.c.obj:(.debug_loclists)
     26d6     26d6       1d     1         CMakeFiles/demo0.elf.dir/src/sequencer/CPAN/cpan.c.obj:(.debug_loclists)
-    26f3     26f3      24a     1         CMakeFiles/demo0.elf.dir/src/sequencer/PMbus_commands.c.obj:(.debug_loclists)
-    293d     293d       d6     1         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.debug_loclists)
-    2a13     2a13      14d     1         CMakeFiles/demo0.elf.dir/src/sequencer/comm_bus.c.obj:(.debug_loclists)
-    2b60     2b60      360     1         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.debug_loclists)
-    2ec0     2ec0       50     1         CMakeFiles/demo0.elf.dir/src/simulator.c.obj:(.debug_loclists)
-       0        0     2730     4 .symtab
-       0        0     2730     4         <internal>:(.symtab)
+    26f3     26f3      25e     1         CMakeFiles/demo0.elf.dir/src/sequencer/PMbus_commands.c.obj:(.debug_loclists)
+    2951     2951       d6     1         CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj:(.debug_loclists)
+    2a27     2a27      14d     1         CMakeFiles/demo0.elf.dir/src/sequencer/comm_bus.c.obj:(.debug_loclists)
+    2b74     2b74      36f     1         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj:(.debug_loclists)
+    2ee3     2ee3       50     1         CMakeFiles/demo0.elf.dir/src/simulator.c.obj:(.debug_loclists)
+       0        0     26d0     4 .symtab
+       0        0     26d0     4         <internal>:(.symtab)
        0        0      925     1 .shstrtab
        0        0      925     1         <internal>:(.shstrtab)
-       0        0     2745     1 .strtab
-       0        0     2745     1         <internal>:(.strtab)
+       0        0     2712     1 .strtab
+       0        0     2712     1         <internal>:(.strtab)
 
 Cross Reference Table
 
@@ -1495,24 +1486,22 @@ CPAN_open                                         CMakeFiles/demo0.elf.dir/src/s
                                                   CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj
 PMbus_execute                                     CMakeFiles/demo0.elf.dir/src/sequencer/PMbus_commands.c.obj
                                                   CMakeFiles/demo0.elf.dir/src/sequencer/comm_bus.c.obj
-pwr_seq_store_fault_config                        CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj
+pwr_seq_store_all                                 CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj
                                                   CMakeFiles/demo0.elf.dir/src/sequencer/PMbus_commands.c.obj
 PowerController                                   CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj
                                                   CMakeFiles/demo0.elf.dir/src/sequencer/PMbus_commands.c.obj
                                                   CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj
-pwr_seq_update_seqcfg                             CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj
-                                                  CMakeFiles/demo0.elf.dir/src/sequencer/PMbus_commands.c.obj
-pwr_seq_store_all                                 CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj
-                                                  CMakeFiles/demo0.elf.dir/src/sequencer/PMbus_commands.c.obj
-pwr_seq_update_railstate                          CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj
+pwr_seq_process_operation                         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj
                                                   CMakeFiles/demo0.elf.dir/src/sequencer/PMbus_commands.c.obj
 pwr_seq_update_cfg                                CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj
                                                   CMakeFiles/demo0.elf.dir/src/sequencer/PMbus_commands.c.obj
-pwr_seq_read_seqcfg                               CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj
+pwr_seq_update_seqcfg                             CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj
                                                   CMakeFiles/demo0.elf.dir/src/sequencer/PMbus_commands.c.obj
-pwr_seq_read_fault_config                         CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj
+pwr_seq_update_railstate                          CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj
                                                   CMakeFiles/demo0.elf.dir/src/sequencer/PMbus_commands.c.obj
 pwr_seq_read_railstate                            CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj
+                                                  CMakeFiles/demo0.elf.dir/src/sequencer/PMbus_commands.c.obj
+pwr_seq_read_seqcfg                               CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj
                                                   CMakeFiles/demo0.elf.dir/src/sequencer/PMbus_commands.c.obj
 power_analog_3300                                 CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj
                                                   CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj
@@ -1529,10 +1518,6 @@ power_digital_OFFLINE                             CMakeFiles/demo0.elf.dir/src/s
 power_controller_basic                            CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj
                                                   CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj
 pwr_seq_store_config                              CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj
-                                                  CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj
-power_rail_maps                                   CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj
-                                                  CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj
-pwr_seq_store_map                                 CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj
                                                   CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj
 pwr_seq_restore_all                               CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj
                                                   CMakeFiles/demo0.elf.dir/src/sequencer/app_sequencer.c.obj
@@ -1564,8 +1549,6 @@ rail_ctrl_scratch                                 CMakeFiles/demo0.elf.dir/src/s
                                                   CMakeFiles/demo0.elf.dir/src/sequencer/initial.c.obj
 PB_Comm                                           CMakeFiles/demo0.elf.dir/src/sequencer/comm_bus.c.obj
 xbuffer                                           CMakeFiles/demo0.elf.dir/src/sequencer/comm_bus.c.obj
-simulator_start                                   CMakeFiles/demo0.elf.dir/src/simulator.c.obj
-                                                  CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj
 record                                            CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj
 __aeabi_memset4                                   C:\Renesas\RA\e2studio_v2025-12_fsp_v6.3.0\toolchains\llvm_arm\ATfE-21.1.1-Windows-x86_64\bin\..\lib\clang-runtimes/arm-none-eabi/armv8m.main_hard_fp_exn_rtti_unaligned_size\lib\libc.a(aeabi_memset.c.o)
                                                   CMakeFiles/demo0.elf.dir/src/sequencer/power_module.c.obj

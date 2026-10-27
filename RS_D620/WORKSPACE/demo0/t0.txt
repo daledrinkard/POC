@@ -1,0 +1,66 @@
+--- Monitor pin config ( 0xD5)
+  Here we configure the monitor pins.  The position relates to the physical pin with position 0 being MON1 ...
+  Encoded: CONF = bits [7:5]   PAGE = bits [4:0] is the Page that this monitor is assigned.
+  <OR this with 0x00 (page 1) to 0x1F (page 32)>
+  0x00 = No monitor
+  0x20 = ADC
+  0x40 = Temp
+  0x60 = Current
+  0x80 = Voltage Compartor
+  0xA0 = Input Voltage
+  0xC0 = Digital
+        |<--- Analog or digital --------------------------------------------->|   Digital only
+		+----> Page 1 voltage is connected to monitor pin 0 which is configures as an ADC channel
+		|  +-> Page 1 current is connected to ... Current channel
+SWC0 D5 20 60 22 23 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00P
+        |  +-- this is the MON2 pin
+		+----- this is the MON1 pin  (and so on)
+SRC0 D5P  read back the configuration data
+
+--- GPI pin config (0xF9)
+  Here we define only a single GPI on pin 44 (hex 2C) (EN12) that is active high.
+  A GPI can be any pin, so the position in the stream does not relate to a particular pin like the monitor config, but to the GPI[index]
+  Below we configure the EN12 pin to be a GPI
+  Byte pairs:  ID  conf
+    ID = 1 to 88 (or 0 if not configured)  see the table at the end of this script.
+  conf = [7:3] reserved.. [2] = polarity  [1:0] = mode                                                                                                 (misc pin assignments)----------+
+        +-+----> 2C = 44 which is EN12 configured as P111 and connected to POP3().  0x05 configures this as in input active high                       (latch statuses clear pin)+    /  \
+		| |    2    3    ...                                                                                                                                        32   fault   |   /     \ 
+SWC0 F9 2C05 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 01000000 00 00 00 00 00P 
+                                                           With this bit set, a fault is generated when the GPI[0] goes from active to inactive -------------------------+
+SRC0 F9P 
+
+--- Configure a page (rail) ---
+--- Page command (0x00)
+  Here we select page0 which corespondes to rail 1 of (1 to 32) rails.
+SWC0 00 00P
+SRC0 00P
+  Next set the operation (0x01)
+      bit 7:  ON/OFF state            0 = output is off,  1 = output is on
+          6:  Turn off behavior       0 = turn off immediately  1 = use TOFF delay setting                                                  (IGNORED if bit 7 == 1)
+        5,4:  Voltage Command Source  00 = VOUT_COMMAND data,  01 = VOUT_MARGIN_LOW data, 10 = VOUT_MARGIN_HIGH data  11 = AVS_VOUT_COMMAND (IGNORED if bit 7 == 0)
+		3,2:  Margin Fault response   01 = Do not shutdown due to fault   10 = Shutdown as normal
+		  1:  Transistion control     (see 12.1.5 of the PMbus specification)
+		  0: RESERVED
+
+  Select a rail
+ (ID | conf) -------------------------------------------------
+   +----------->   0: Nothing, indicates there is no pin   bits
+                   1:  AMON[0]  AMON1 in um term           [7:3] not used
+				   ...                                     [2]   0=active low, 1=active high 
+				   24: AMON[23] AMON24                     [1:0] 0 = unused
+				   25: DMON[0]  DMON1                            1 = input
+				   ...                                           2 = Active-Drain output
+				   32: DMON[7]  DMON8                            3 = Open-Drain output
+				   33: EN[0]    EN1
+				   ...
+				   64: EN[31]   EN32
+				   65: MAR[0]   MAR1
+				   ...
+				   80: MAR[7]   MAR8
+				   81: GPIO[0]  GPIO1
+				   ...
+				   88: GPIO[7]  GPIO8
+				   
+				   
+

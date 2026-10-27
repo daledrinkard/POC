@@ -49,8 +49,11 @@ void pwr_seq_poll_GPI(void)
 {
     PowerController.ctrl->GPI = 0;
     for (int i = 0; i < 32; i++)
+
     {
-        switch (PowerController.cfg->GPI_config.GPI[i].conf & 0x0F)
+        uint8_t ID = PowerController.cfg->GPI_config.GPI[i].id;            // monitor.MON[i] & 0x1f;
+        uint8_t conf = (PowerController.cfg->GPI_config.GPI[i].conf & 0x0F); // monitor.MON[i] >> 4;
+        if (0 == ID) switch (conf)
         { //@@@ could access 16 and mask upper
         /*  ACTIVE LOW   */
         case (1):                                                       /* input */
@@ -69,6 +72,7 @@ void pwr_seq_poll_GPI(void)
         default:
             break;
         }
+        else break;
     }
 }
 void pwr_seq_poll_Page(void)
@@ -95,7 +99,7 @@ typedef enum power_rail_state_e {
 } power_rail_state_t;
  */
     volatile power_rail_t *rail = PowerController.rails;  //@@@ volatile only for debugging, remove later
-    volatile power_rail_map_t *map = PowerController.map; //@@@ volatile only for debugging, remove later
+//@    volatile power_rail_map_t *map = PowerController.map; //@@@ volatile only for debugging, remove later
 }
 
 uint8_t record[DF_POWER_LARGEST_SIZE];
@@ -206,18 +210,18 @@ uint16_t pwr_seq_read_config(uint8_t *data, uint16_t len)
                                                                        //    memcpy(data,PowerController.cfg_store,sizeof(power_controller_cfg_t)); /* read from Dataflash */
     return sizeof(power_controller_cfg_t);
 }
-void pwr_seq_store_map(uint8_t *data, uint16_t len)
-{
-    uint32_t p;
-    p = DF_POWER_RAIL_PINMAP_ADDR;
-    pwr_dataflash_update((uint8_t *)p, data, len);
-}
-void pwr_seq_store_fault_config(uint8_t *data, uint16_t len)
-{
-    uint32_t p;
-    p = DF_POWER_RAIL_FLTMAP_ADDR;
-    pwr_dataflash_update((uint8_t *)p, data, len);
-}
+//@ void pwr_seq_store_map(uint8_t *data, uint16_t len)
+//@ {
+//@    uint32_t p;
+//@    p = DF_POWER_RAIL_PINMAP_ADDR;
+//@    pwr_dataflash_update((uint8_t *)p, data, len);
+//@ }
+//@ void pwr_seq_store_fault_config(uint8_t *data, uint16_t len)
+//@ {
+//@     uint32_t p;
+//@     p = DF_POWER_RAIL_FLTMAP_ADDR;
+//@     pwr_dataflash_update((uint8_t *)p, data, len);
+//@ }
 /*
     Reads the fault configuration record back from data flash at
     DF_POWER_RAIL_FLTMAP_ADDR into `data`. Data flash is memory-mapped for
@@ -226,11 +230,11 @@ void pwr_seq_store_fault_config(uint8_t *data, uint16_t len)
 
     Returns the number of bytes copied (DF_POWER_FLTMAP_SIZE).
 */
-uint16_t pwr_seq_read_fault_config(uint8_t *data)
-{
-    memcpy(data, (uint8_t *)DF_POWER_RAIL_FLTMAP_ADDR, 41); //@@@ can't use sizeof()
-    return 41;
-}
+//@ uint16_t pwr_seq_read_fault_config(uint8_t *data)
+//@ {
+//@     memcpy(data, (uint8_t *)DF_POWER_RAIL_FLTMAP_ADDR, 41); //@@@ can't use sizeof()
+//@     return 41;
+//@ }
 void pwr_seq_store_all(void)
 {
     pwr_seq_store_config((uint8_t *)PowerController.cfg, sizeof(power_controller_cfg_t));
@@ -254,24 +258,31 @@ void pwr_seq_configure(void)
     /* configure the monitor pins */
     for (int i = 0; i < PWR_MAX_MONITOR; i++)
     {
-        switch (i)
+        uint8_t PAGE = PowerController.cfg->monitor.MON[i] & 0x1f;
+        uint8_t conf = (PowerController.cfg->monitor.MON[i] & 0xe0) >> 5;
+        
+        switch (conf)
         {       // PowerController.cfg->monitor.MON[i]) {
         case 0: /* see table 26.8    No Monitor*/
             // PWR_PIN_CFG_INPUT(i);
             break;
         case 1: /* Analog */
             PWR_PIN_CFG_ANALOG(i);
+            PowerController.rails[PAGE].ctrl->voltage_monitor = NULL; //@@@ need to set this to the correct monitor object 
             break;
         case 2: /* Temperature */
             break;
         case 3: /* Current */
+            PWR_PIN_CFG_ANALOG(i);
+            PowerController.rails[PAGE].ctrl->current_monitor = NULL; //@@@ need to set this to the correct monitor object
             break;
         case 4: /* Voltage Comparator */
             break;
         case 5: /* Input voltage */
             break;
-        case 6: /* Digital voltage monitor */ //@@@ based off interrupts?  These are not DMON configurations are they?
+        case 6: /* Digital voltage monitor */ 
             PWR_PIN_CFG_INPUT(i);
+            //@@@ Here we neeed to figure out DMON.  Should we poll or interrupt?  
             break;
         default:
             break;
@@ -285,33 +296,36 @@ void pwr_seq_configure(void)
         if (ID)
             switch (conf)
             {
-            /* Active Low */
+            /* Active Low  so set initial condition high */
             case (0): /* unused */
                 break;
             case (1): /* input*/
                 break;
-            case (2):                        /* ACTIVE driven */
+            case (2): /* ACTIVE driven */
                 PWR_PIN_CFG_OUTPUT1(ID - 1); /* sets the pin as an output and initializes it high*/
                 break;
-            case (3):                    /* Open Drain */
+            case (3): /* Open Drain */
                 PWR_PIN_CFG_OD1(ID - 1); /* sets the pin as an open drain output and initializes it pulled high */
                 break;
-            /* Active High */
+
+            /* Active High   so set initial condition Low */
             case (4): /* unused */
                 break;
             case (5): /* input*/
                 break;
-            case (6):                        /* ACTIVE driven*/
+            case (6): /* ACTIVE driven*/
                 PWR_PIN_CFG_OUTPUT0(ID - 1); /* sets the pin as an output and drives it LOW */
                 break;
-            case (7):
+            case (7): /* Open Drain */
                 PWR_PIN_CFG_OD0(ID - 1); /* sets the pin as an open drain output and initializes it driven LOW */
                 break;
             }
+        else break; /* It is assumed that the configurator packs things in the lower slots */
+                    /* so we break on the first occurance of a non configured slot */
     }
 
     /* configure the GPI pins */
-    for (int i = 0; i < 32; i++) //@@@ hard coding 32 becaus that's the architecture.
+    for (int i = 0; i < PWR_GPI_SIZE; i++) //@@@ hard coding 32 becaus that's the architecture.
     {
         uint8_t ID = PowerController.cfg->GPI_config.GPI[i].id;
         uint8_t conf = (PowerController.cfg->GPI_config.GPI[i].conf & 0x07);
@@ -325,9 +339,10 @@ void pwr_seq_configure(void)
             default:
                 break;
             }
+        else break;
     }
     /* configure the GPO pins */
-    for (int i = 0; i < 16; i++) //@@@ arbitrary, 
+    for (int i = 0; i < PWR_GPO_SIZE; i++) //@@@ arbitrary, 
     {
         uint8_t ID = PowerController.cfg->GPO_config[i].GPO.id;           //GPIO_config.GPIO[i].id;
         uint8_t conf = (PowerController.cfg->GPO_config[i].GPO.conf & 0x07);
@@ -405,17 +420,16 @@ uint16_t pwr_seq_read_seqcfg(uint8_t rail_index, uint8_t *src)
 }
 void pwr_seq_update_railstate(uint8_t *src, uint16_t data_len)
 {
-    //@@@   power_controller_SEQCFG_t *p = &PowerController.rails[rail_index].cfg->SEQ_config;
-    //@@@  parameter check of data_len
-    uint8_t *p = (uint8_t *)&PowerController.cfg->railstate;
+    FSP_PARAMETER_NOT_USED(data_len);
+    uint8_t page = PowerController.ctrl->page;
+    uint8_t *p = (uint8_t *)&PowerController.rails[page].ctrl->railstate;
     p = p + 2; //@@@ skip the pad at the beginning of the data structure.
     memcpy((uint8_t *)p, src, 34);
 }
 uint16_t pwr_seq_read_railstate(uint8_t *src)
 {
-    //@@@   power_controller_SEQCFG_t *p = &PowerController.rails[rail_index].cfg->SEQ_config;
-    //@@@  parameter check of data_len
-    uint8_t *p = (uint8_t *)&PowerController.cfg->railstate;
+    uint8_t page = PowerController.ctrl->page;
+    uint8_t *p = (uint8_t *)&PowerController.rails[page].ctrl->railstate;
     p = p + 2; //@@@ skip the pad at the beginning of the data structure.
     memcpy(src, (uint8_t *)p, 34);
     return 34;
@@ -424,15 +438,17 @@ void pwr_seq_process_operation(uint8_t rail_index,uint8_t op)
 {
     uint8_t ID = PowerController.rails[rail_index].cfg->SEQ_config.ID;
     uint8_t conf = (PowerController.rails[rail_index].cfg->SEQ_config.ID_other & 0x07);
+    power_rail_cfg_t  *rail_cfg = PowerController.rails[rail_index].cfg;
+    power_rail_ctrl_t *rail_ctrl = PowerController.rails[rail_index].ctrl;
 
-    PowerController.ctrl->operation = op;
+    rail_cfg->operation = op;
     /*
           op:7 ON/OFF State
              6 Turn off behavior
-             5:4 Voltage command source
-             3:2 Marin fault response
-             1  Transistion control
-             0  RSVD
+             5:4 Voltage command source -------------> 00:   VOUT_COMMAND
+             3:2 Marin fault response ---> 01: fault   01:   VOUT_MARGIN_LOW
+             1  Transistion control        10: ignore  10:   VOUT_MARGIN_HIGH
+             0  RSVD                                   11:   VOUT_AVS
     */
    if (op&0x80) {               /* BIT 7: ON/OFF State */
      /* turn the rail ON*/

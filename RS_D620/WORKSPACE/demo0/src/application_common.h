@@ -64,18 +64,18 @@
 #define SYSFLG_PWR_READBACK    (0x00000010)
 //-->#define SYSFLG_xxx    (0x00000004)
 
-#define DF_POWER_BASE_ADDR        (0x08000000) 
-#define DF_POWER_PINMAP_SIZE      (0x80)  /* needs 128 bytes, 32 rails each having 4 bytes */
-#define DF_POWER_FLTMAP_SIZE      (0x80)  /* needs 57 bytes */
+#define DF_POWER_BASE_ADDR        (BSP_FEATURE_FLASH_DATA_FLASH_START)
+//#define DF_POWER_PINMAP_SIZE      (0x80)  /* needs 128 bytes, 32 rails each having 4 bytes */
+//#define DF_POWER_FLTMAP_SIZE      (0x80)  /* needs 57 bytes */
 #define DF_POWER_CONFIG_SIZE      (0x40)
 #define DF_POWER_RAIL_RECORD_SIZE (0x40)
-#define DF_POWER_LARGEST_SIZE     (DF_POWER_PINMAP_SIZE) /* choose largest consumer */
+#define DF_POWER_LARGEST_SIZE     (DF_POWER_CONFIG_SIZE) /* choose largest consumer */
 
 #define DF_SEQUENCER_CONFIG_ADDR  (DF_POWER_BASE_ADDR)  /* dataflash address for the power sequencer configuration */
-#define DF_MONITOR_CONFIG_ADDR    ()
-#define DF_POWER_RAIL_PINMAP_ADDR (DF_SEQUENCER_CONFIG_ADDR  + DF_POWER_CONFIG_SIZE)
-#define DF_POWER_RAIL_FLTMAP_ADDR (DF_POWER_RAIL_PINMAP_ADDR + DF_POWER_PINMAP_SIZE)
-#define DF_POWER_RAIL_CONFIG_ADDR (DF_POWER_RAIL_FLTMAP_ADDR + DF_POWER_FLTMAP_SIZE)  /* dataflash address for the power rail configurations */
+//#define DF_MONITOR_CONFIG_ADDR    ()
+//#define DF_POWER_RAIL_PINMAP_ADDR (DF_SEQUENCER_CONFIG_ADDR  + DF_POWER_CONFIG_SIZE)
+//#define DF_POWER_RAIL_FLTMAP_ADDR (DF_POWER_RAIL_PINMAP_ADDR + DF_POWER_PINMAP_SIZE)
+#define DF_POWER_RAIL_CONFIG_ADDR (DF_SEQUENCER_CONFIG_ADDR  + DF_POWER_CONFIG_SIZE)  /* dataflash address for the power rail configurations */
 
 /* APPLICATION STATE MACHINE */
 typedef enum app_state_e {
@@ -125,10 +125,7 @@ typedef struct s_app {
 extern app_t App;
 
 #if APP_HAS_DEBUG_IO
-#include "POP/pop.h"
-#endif
-#if APP_HAS_CONTROLPANEL
-//@@#include "cpan.h"
+#include "POP/pop.h" // IWYU pragma: keep
 #endif
 /* PUBLISHED functions */
 int app_event_flag_get(uint32_t msk,app_flag_ctl_t ctl, uint32_t timeout,uint32_t *flgs);

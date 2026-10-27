@@ -27,6 +27,10 @@
 #define PWR_MAX_EN           (32)
 #define PWR_MAX_GPIO         (8)
 #define PWR_MAX_MAR          (16)
+#define PWR_MAX_FAULT_GROUPS (4) /* ucd91320 1: up to 32 fault outputs, each can be mapped to any rail or rail group */
+
+#define PWR_GPI_SIZE         (32) /* This is a fundamental size, 32-bits used in uint32_t everywhere!*/
+#define PWR_GPO_SIZE         (16) /* This is a fundamental size, 16-bits used in uint16_t everywhere!*/
 #define PWR_IO_DATA_WORDS (PWR_MAX_MONITOR + PWR_MAX_DMON + PWR_MAX_EN + PWR_MAX_MAR + PWR_MAX_GPIO)
 
 #define PWR_MAX_FAULT_GROUP  (4)
@@ -123,10 +127,21 @@ typedef struct power_controller_RTC_s {
 } power_controller_RTC_t;
 typedef struct power_controller_GPI_s {
     uint8_t id;
-    uint8_t conf; //@@@ make this an enum
+    uint8_t conf; 
 }power_controller_GPI_t;
+typedef struct power_controller_railstate_s {
+    uint8_t spare[2]; /* for alignment */
+    uint8_t state_enables;
+    uint8_t soft_off_enables;
+    uint32_t system_state[8];
+}power_controller_railstate_t;
+
+
+
+
+
 typedef struct power_controller_GPICFG_s {
-   power_controller_GPI_t GPI[32];  /* id=0 | (1 to 88) : conf [7:3][2]:polarity[1..0]:mode*/
+   power_controller_GPI_t GPI[PWR_GPI_SIZE];  /* id=0 | (1 to 88) : conf [7:3][2]:polarity[1..0]:mode*/
    uint32_t fault_en;
    uint8_t LSCP;
    uint8_t MRG_EN;
@@ -212,9 +227,17 @@ typedef struct power_rail_cfg_s {
     /* USER SECTION */
 } power_rail_cfg_t;
 typedef struct power_rail_ctrl_s {
-    power_rail_state_t state;
+    power_rail_state_t state;   /* depending on -fshort-enums to pack enums */
     uint8_t             en_out;     
     uint8_t             dis_out;
+    power_controller_railstate_t railstate;
+
+    void*              voltage_monitor; /* points to the ADC value OR if digital, ??? */ //@@@ hmmmm, how to handle this
+    void*              current_monitor; /* pointer to the rail's analog or digital monitor object, if any */
+
+
+
+
     power_fault_type_t last_fault;
     uint16_t            monitor_mv;  /* last-read MONx value, in mV (0 if monitor_type == PWR_MON_NONE) */
     uint16_t            monitor_c;   /* last-read current value, in mA (0 if monitor_type == PWR_MON_NONE) */
@@ -272,7 +295,7 @@ typedef struct power_rail_map_s {
 }power_rail_map_t;
 
 typedef struct power_sequencer_monitor_s {
-    uint8_t MON[PWR_MAX_MONITOR + PWR_MAX_DMON];  //@@@ don't like this
+    uint8_t MON[PWR_MAX_MONITOR + PWR_MAX_DMON]; 
 }power_sequencer_monitor_t;
 
 typedef struct power_sequencer_reset_config_s {
@@ -313,18 +336,12 @@ typedef struct power_fault_log_s {
     bool                    black_box_valid; /* first-fault snapshot captured, must be cleared before reuse */
 } power_fault_log_t;
 typedef struct power_fault_output_s {
-  uint32_t fault_mask[4];  //@@@ arbitrary needs a define
-  uint16_t fault_pins[4];  //@@@
-  uint32_t GPI_mask[4];    //@@@
+  uint32_t fault_mask[PWR_MAX_FAULT_GROUPS]; 
+  uint16_t fault_pins[PWR_MAX_FAULT_GROUPS]; 
+  uint32_t GPI_mask[PWR_MAX_FAULT_GROUPS];   
   uint8_t other_mask;
-  uint8_t spare[3];
+  uint8_t spare[3]; /* alignment */
 } power_fault_output_t;
-typedef struct power_controller_railstate_s {
-    uint8_t spare[2]; /* for alignment */
-    uint8_t state_enables;
-    uint8_t soft_off_enables;
-    uint32_t system_state[8];
-}power_controller_railstate_t;
 /*
    _____            _             _ _           
   / ____|          | |           | | |          
@@ -338,8 +355,7 @@ typedef struct power_controller_cfg_s {
     power_sequencer_monitor_t monitor;
     power_fault_output_t      faults;
     power_controller_GPICFG_t GPI_config;
-    power_controller_GPOCFG_t GPO_config[16]; //@@@arbitrary
-    power_controller_railstate_t railstate;
+    power_controller_GPOCFG_t GPO_config[PWR_GPO_SIZE]; 
     uint32_t                  GPI;
     uint32_t                  resequence;
     power_sequencer_reset_config_t    reset_config;
@@ -389,7 +405,7 @@ typedef struct power_controller_s {
     power_controller_cfg_t  *cfg;
     power_controller_cfg_t  *cfg_store;
     power_controller_ctrl_t *ctrl;
-    power_rail_map_t        *map;   /* mapping data is in SRAM */
+//@    power_rail_map_t        *map;   /* mapping data is in SRAM */
     power_sequencer_IO_t    *GPIO;
     power_sequencer_CONST_t *CONSTANTS;
 
@@ -412,10 +428,10 @@ void pwr_seq_update_cfg(uint8_t *dest,uint8_t *src,uint16_t len);
 void pwr_seq_store_config(uint8_t *data,uint16_t len );
 uint16_t pwr_seq_read_config(uint8_t *data,uint16_t len );
 
-void pwr_seq_store_map(uint8_t *data,uint16_t len ); //@@@ this needs to die.
+//@ void pwr_seq_store_map(uint8_t *data,uint16_t len ); //@@@ this needs to die.
 
-void pwr_seq_store_fault_config(uint8_t *data,uint16_t len );
-uint16_t pwr_seq_read_fault_config(uint8_t *data);
+//@ void pwr_seq_store_fault_config(uint8_t *data,uint16_t len );
+//@ uint16_t pwr_seq_read_fault_config(uint8_t *data);
 
 void pwr_seq_store_all(void);
 void pwr_seq_restore_all(void);

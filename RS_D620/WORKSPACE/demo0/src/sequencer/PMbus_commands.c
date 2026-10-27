@@ -185,10 +185,7 @@ int PMbus_execute(pmbus_command_t command, uint8_t *data, uint16_t data_len, uin
 #endif
         /* UCD91320 manufacturer-specific commands (D0h-FDh) */
         /* must be set along with the GPI_CONFIG may change things... let's see */
-        case PMBUS_CMD_FAULT_PIN_CONFIG: /* 0xD0 */ //@@@ cannot use PWRSEQ_UPDATE macro because of alignment issues
-            if (RW) {pwr_seq_store_fault_config(data,data_len ); return data_len;}
-            else    { return pwr_seq_read_fault_config(data); }
-            break;
+        case PMBUS_CMD_FAULT_PIN_CONFIG:       /* 0xD0 */ PWRSEQ_UPDATE(RW,&PowerController.cfg->faults,4);
         case PMBUS_CMD_VOUT_CAL_MONITOR:       /* 0xD1 */ /* USER CODE */ break;
         case PMBUS_CMD_SYSTEM_RESET_CONFIG:    /* 0xD2 */ PWRSEQ_UPDATE(RW,&PowerController.cfg->reset_config,15);
         case PMBUS_CMD_SYSTEM_WATCHDOG_CONFIG: /* 0xD3 */ PWRSEQ_UPDATE(RW,&PowerController.cfg->watchdog_config,6);

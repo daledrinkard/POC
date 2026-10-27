@@ -46,8 +46,7 @@ const power_controller_t PowerController = {
     .cfg =       (power_controller_cfg_t *)   &controller_cfg_scratch,
     .cfg_store = (power_controller_cfg_t *)   DF_SEQUENCER_CONFIG_ADDR,
     .ctrl =      (power_controller_ctrl_t *)  &controller_ctrl_scratch,
-    .map =       (power_rail_map_t *)         DF_POWER_RAIL_PINMAP_ADDR,
-//@@@    .faults =    (power_fault_output_t *)     DF_POWER_RAIL_FLTMAP_ADDR,  /* moved to cfg */
+//@    .map =       (power_rail_map_t *)         DF_POWER_RAIL_PINMAP_ADDR,
    /*
         The following are const in Flash
    */
@@ -73,7 +72,7 @@ int app_func_reset   (void)
          pwr_rail_store_config(i,(uint8_t*)&power_digital_OFFLINE,sizeof(power_rail_cfg_t));
     }
     pwr_seq_store_config((uint8_t *)&power_controller_basic,sizeof(power_controller_cfg_t));
-    pwr_seq_store_map((uint8_t *)&power_rail_maps,sizeof(power_rail_maps)); //@@@ hard constant
+//@     pwr_seq_store_map((uint8_t *)&power_rail_maps,sizeof(power_rail_maps)); //@@@ hard constant
     #endif
 
     pwr_seq_restore_all(); /* cfg_store --> cfg */

@@ -29,7 +29,8 @@ const power_rail_cfg_t power_analog_3300 = {
         .GPO_seq_off_dep_msk = 0x0000000F
     },
     .operation = 0x80,
-    .spare = {0,0,0}
+    .spare = {0,0,0},
+
     /*,
     .nominal_mv = 3300,
     .ov_threshold_mv = 3400,
@@ -211,17 +212,16 @@ const power_rail_cfg_t power_digital_OFFLINE = {
 */
 const power_controller_cfg_t power_controller_basic = {
     .monitor = {
-        (PWR_MON_TYPE_ANALOG  | 0), /* Tie MON[0] to the voltage monitoring of rail[0]*/
-        (PWR_MON_TYPE_CURRENT | 0), /* MON[1] to the current monitoring of rail[0]*/  
-        (PWR_MON_TYPE_ANALOG  | 1), /* MON[2] to the voltage monitoring of rail[1]*/  
-        (PWR_MON_TYPE_ANALOG  | 2), /* MON[3] to the voltage monitoring of rail[0]*/  
-        (PWR_MON_TYPE_DIGITAL | 3), /* physically connected to SW2 on EK boards */
+        (PWR_MON_TYPE_ANALOG  | 1), /* Tie MON1 to the voltage monitoring of rail[0]*/
+        (PWR_MON_TYPE_ANALOG  | 2), /* MON2 to the current monitoring of rail[0]*/  
+        (PWR_MON_TYPE_ANALOG  | 3), /* MON3 to the voltage monitoring of rail[1]*/  
+        (PWR_MON_TYPE_NONE    | 0), /* MON4 to the voltage monitoring of rail[0]*/  
+        (PWR_MON_TYPE_NONE    | 0), /* physically connected to SW2 on EK boards */
         (PWR_MON_TYPE_NONE),        /* physically connected to SW1 on EK boards */
         (PWR_MON_TYPE_NONE),        /* BLUE LED */
         (PWR_MON_TYPE_NONE),        /* GREEN LED */
         (PWR_MON_TYPE_NONE),        /* RED LED */
-        (PWR_MON_TYPE_ANALOG  | 4), /* MON[9]*/
-        (PWR_MON_TYPE_CURRENT | 4), /* MON[10]*/
+        0xff,
         0xff,/* MON[11]*/
         0xff,/* MON[12]*/
         0xff,/* MON[13]*/
@@ -235,14 +235,14 @@ const power_controller_cfg_t power_controller_basic = {
         0xff,/* MON[21]*/
         0xff,/* MON[22]*/
         0xff,/* MON[23]*/
-//        0xff,/* MON[24]*/
-//        0xff,/* MON[25]*/
-//        0xff,/* MON[26]*/
-//        0xff,/* MON[27]*/
-//        0xff,/* MON[28]*/
-//        0xff,/* MON[29]*/
-//        0xff, /* MON[30]*/
-//        0xff /* MON[31]*/
+        0xff,/* MON[24]*/
+        0xff,/* MON[25]*/
+        0xff,/* MON[26]*/
+        0xff,/* MON[27]*/
+        0xff,/* MON[28]*/
+        0xff,/* MON[29]*/
+        0xff, /* MON[30]*/
+        0xff /* MON[31]*/
     },
     .faults = {
         .fault_mask = {0x00000000, 0x00000000, 0x00000000, 0x00000000},
@@ -345,12 +345,6 @@ const power_controller_cfg_t power_controller_basic = {
         .rsv = 0
     },
     .RTC_trim = 0,
-    .railstate = { //@@@ does this belong here????
-        .spare = {0},
-        .state_enables = 0x00,
-        .soft_off_enables = 0x00,
-        .system_state = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
-    },
     .MSCCFG = {
         .misc_cfg = 0x00, /* 7: no limit to how many times the device can be resequenced,*/
                           /* 6: Resequence abort if TOFF_MAX_WARN occurs */
@@ -391,6 +385,7 @@ const power_controller_cfg_t power_controller_basic = {
                                 | |   | |             __/ |
                                 |_|   |_|            |___/ 
 this structure is in dataflash*/
+#if 0 //@@@ no longer used
 const power_rail_map_t power_rail_maps[PWR_MAX_RAILS] = {
     {
         .en_port =    1,
@@ -469,7 +464,7 @@ const power_rail_map_t power_rail_maps[PWR_MAX_RAILS] = {
     { .en_port = 0, .en_pin_bit = 31, .ADC0_index = 31, .ADC1_index = 31 }
 };
 
-
+#endif
 
 /*
   _____                           _____       _ _     
@@ -520,101 +515,102 @@ R_PFS_Type *p;
 const power_sequencer_IO_t power_sequencer_IO = {
 .usage = {
 .MON = {
-IO_PFS(BSP_IO_PORT_00_PIN_00),   /* PIN ID 1 */
-IO_PFS(BSP_IO_PORT_00_PIN_01),
-IO_PFS(BSP_IO_PORT_00_PIN_02),
-IO_PFS(BSP_IO_PORT_00_PIN_03),
-IO_PFS(BSP_IO_PORT_00_PIN_04),
-IO_PFS(BSP_IO_PORT_00_PIN_05),
-IO_PFS(BSP_IO_PORT_00_PIN_06), /* BLUE LED */
-IO_PFS(BSP_IO_PORT_00_PIN_07), /* GREEN LED */
-IO_PFS(BSP_IO_PORT_00_PIN_08), /* RED LED */
-IO_PFS(BSP_IO_PORT_00_PIN_09),
-IO_PFS(BSP_IO_PORT_00_PIN_10),
-IO_PFS(BSP_IO_PORT_00_PIN_14),
-IO_PFS(BSP_IO_PORT_00_PIN_15),
-IO_PFS(BSP_IO_PORT_05_PIN_00),  /* used in USB on EK */
-IO_PFS(BSP_IO_PORT_05_PIN_01),  /* used in USB on EK */
-IO_PFS(BSP_IO_PORT_05_PIN_02),
-IO_PFS(BSP_IO_PORT_05_PIN_03),
-IO_PFS(BSP_IO_PORT_05_PIN_04),
-IO_PFS(BSP_IO_PORT_05_PIN_05),  /* this pin is pulled high with a 1k5 */
-IO_PFS(BSP_IO_PORT_05_PIN_06),  /* this pin is pulled high with a 1k5 */
-IO_PFS(BSP_IO_PORT_05_PIN_07),
-IO_PFS(BSP_IO_PORT_05_PIN_08),
-IO_PFS(BSP_IO_PORT_08_PIN_00),
-IO_PFS(BSP_IO_PORT_08_PIN_01),
+IO_PFS(BSP_IO_PORT_00_PIN_00),   /* ID 1 */    /* AN000 */
+IO_PFS(BSP_IO_PORT_00_PIN_01),                 /* AN001 */
+IO_PFS(BSP_IO_PORT_00_PIN_02),                 /* AN002 */
+IO_PFS(BSP_IO_PORT_00_PIN_03),                 /* AN003 */
+IO_PFS(BSP_IO_PORT_00_PIN_04),                 /* AN004 */
+IO_PFS(BSP_IO_PORT_00_PIN_05),                 /* AN005 */
+IO_PFS(BSP_IO_PORT_00_PIN_06),                 /* AN006 */ /* BLUE LED */
+IO_PFS(BSP_IO_PORT_00_PIN_07),                 /* AN007 */ /* GREEN LED */
+IO_PFS(BSP_IO_PORT_00_PIN_08),                 /* AN008 */ /* RED LED */
+IO_PFS(BSP_IO_PORT_00_PIN_09),                 /* AN009 */
+IO_PFS(BSP_IO_PORT_00_PIN_10), /* ID 11 */     /* AN010 */  //@@@ note there is no AN011???
+IO_PFS(BSP_IO_PORT_00_PIN_14),                 /* AN012 */
+IO_PFS(BSP_IO_PORT_00_PIN_15), /* ID 13 */     /* AN013 */
+
+IO_PFS(BSP_IO_PORT_05_PIN_00),                 /* AN116 */            /* used in USB on EK */
+IO_PFS(BSP_IO_PORT_05_PIN_01),                 /* AN117 */            /* used in USB on EK */
+IO_PFS(BSP_IO_PORT_05_PIN_02),                 /* AN118 */
+IO_PFS(BSP_IO_PORT_05_PIN_03),                 /* AN119 */
+IO_PFS(BSP_IO_PORT_05_PIN_04),                 /* AN120 */
+IO_PFS(BSP_IO_PORT_05_PIN_05),                 /* AN121 */ /* this pin is pulled high with a 1k5 */
+IO_PFS(BSP_IO_PORT_05_PIN_06),                 /* AN122 */ /* this pin is pulled high with a 1k5 */
+IO_PFS(BSP_IO_PORT_05_PIN_07),                 /* AN123 */
+IO_PFS(BSP_IO_PORT_05_PIN_08),                 /* AN124 */
+IO_PFS(BSP_IO_PORT_08_PIN_00),                 /* AN125 */
+IO_PFS(BSP_IO_PORT_08_PIN_01), /* ID 24 */     /* AN126 */           //@@@ NOTE  P802 and P803 are mapped to AN127 and AN128 
 },
 .DMON = {
-IO_PFS(BSP_IO_PORT_02_PIN_06), /* IRQ0 */ /* this has a 10k pull up on the board */ /* PIN ID 25 */
-IO_PFS(BSP_IO_PORT_02_PIN_05), /* IRQ1 */ /* this has a 10k pullup */
-IO_PFS(BSP_IO_PORT_02_PIN_03), /* IRQ2 */
-IO_PFS(BSP_IO_PORT_02_PIN_02), /* IRQ3 */
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF) },
+IO_PFS(BSP_IO_PORT_02_PIN_06), /* ID 25 */     /* IRQ0 */ /* this has a 10k pull up on the board */
+IO_PFS(BSP_IO_PORT_02_PIN_05), /* ID 26 */     /* IRQ1 */ /* this has a 10k pullup */
+IO_PFS(BSP_IO_PORT_02_PIN_03), /* ID 27 */     /* IRQ2 */
+IO_PFS(BSP_IO_PORT_02_PIN_02), /* ID 28 */     /* IRQ3 */
+IO_PFS(0xFFFF),                /* ID 29 */
+IO_PFS(0xFFFF),                /* ID 30 */
+IO_PFS(0xFFFF),                /* ID 31 */
+IO_PFS(0xFFFF) },              /* ID 32 */
 .EN = {  /* Ones with pullups route to OSPI */
-IO_PFS(BSP_IO_PORT_01_PIN_00),  /* IRQ2*/  /* this has a 10k pull up on the board */
-IO_PFS(BSP_IO_PORT_01_PIN_01),  /* IRQ1*/  /* this has a 10k pull up on the board */
-IO_PFS(BSP_IO_PORT_01_PIN_02),  /*     */  /* this has a 10k pull up on the board */
-IO_PFS(BSP_IO_PORT_01_PIN_03),  /*     */  /* this has a 10k pull up on the board */
-IO_PFS(BSP_IO_PORT_01_PIN_04),  /* IRQ1*/  /* this has a 10k pull up on the board */
-IO_PFS(BSP_IO_PORT_01_PIN_05),  /* IRQ0*/  /* this has a 10k pull up on the board */
-IO_PFS(BSP_IO_PORT_01_PIN_06),  /*     */  /* this has a 10k pull up on the board */
-IO_PFS(BSP_IO_PORT_01_PIN_07),  /*     */  /* this has a 10k pull up on the board */
+IO_PFS(BSP_IO_PORT_01_PIN_00), /* ID 33 */ /* IRQ2*/  /* this has a 10k pull up on the board */
+IO_PFS(BSP_IO_PORT_01_PIN_01), /* ID 34 */ /* IRQ1*/  /* this has a 10k pull up on the board */
+IO_PFS(BSP_IO_PORT_01_PIN_02), /* ID 35 */ /*     */  /* this has a 10k pull up on the board */
+IO_PFS(BSP_IO_PORT_01_PIN_03), /* ID 36 */ /*     */  /* this has a 10k pull up on the board */
+IO_PFS(BSP_IO_PORT_01_PIN_04), /* ID 37 */ /* IRQ1*/  /* this has a 10k pull up on the board */
+IO_PFS(BSP_IO_PORT_01_PIN_05), /* ID 38 */ /* IRQ0*/  /* this has a 10k pull up on the board */
+IO_PFS(BSP_IO_PORT_01_PIN_06), /* ID 39 */ /*     */  /* this has a 10k pull up on the board */
+IO_PFS(BSP_IO_PORT_01_PIN_07), /* ID 40 */ /*     */  /* this has a 10k pull up on the board */
 IO_PFS(0xFFFF), /* BSP_IO_PORT_01_PIN_08*/ /*     */  /* DEBUG SWDIO */
 IO_PFS(0xFFFF), /* BSP_IO_PORT_01_PIN_09*/ /*     */ /* DEBUG TDO */
-IO_PFS(0xFFFF), /* BSP_IO_PORT_01_PIN_10*//* IRQ3*/  /* DEBUG TDI */
-IO_PFS(BSP_IO_PORT_01_PIN_11), /* IRQ4*/ 
-IO_PFS(BSP_IO_PORT_01_PIN_12), /*     */ 
-IO_PFS(BSP_IO_PORT_01_PIN_13), /*     */ 
-IO_PFS(BSP_IO_PORT_01_PIN_14), /*     */ 
-IO_PFS(BSP_IO_PORT_01_PIN_15), /*     */ 
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
+IO_PFS(0xFFFF), /* BSP_IO_PORT_01_PIN_10*/ /* IRQ3*/  /* DEBUG TDI */
+IO_PFS(BSP_IO_PORT_01_PIN_11), /* ID 44 */ /* IRQ4*/ 
+IO_PFS(BSP_IO_PORT_01_PIN_12), /* ID 45 */ /*     */ 
+IO_PFS(BSP_IO_PORT_01_PIN_13), /* ID 46 */ /*     */ 
+IO_PFS(BSP_IO_PORT_01_PIN_14), /* ID 47 */ /*     */ 
+IO_PFS(BSP_IO_PORT_01_PIN_15), /* ID 48 */ /*     */ 
+IO_PFS(0xFFFF),                /* ID 49 */
+IO_PFS(0xFFFF),                /* ID 50 */
+IO_PFS(0xFFFF), /* ID 51 */
+IO_PFS(0xFFFF), /* ID 52 */
+IO_PFS(0xFFFF), /* ID 53 */
+IO_PFS(0xFFFF), /* ID 54 */
+IO_PFS(0xFFFF), /* ID 55 */
+IO_PFS(0xFFFF), /* ID 56 */
+IO_PFS(0xFFFF), /* ID 57 */
+IO_PFS(0xFFFF), /* ID 58 */
+IO_PFS(0xFFFF), /* ID 59 */
+IO_PFS(0xFFFF), /* ID 60 */
+IO_PFS(0xFFFF), /* ID 61 */
+IO_PFS(0xFFFF), /* ID 62 */
+IO_PFS(0xFFFF), /* ID 63 */
+IO_PFS(0xFFFF), /* ID 64 */
 } ,
 .MAR = {
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF)
+IO_PFS(0xFFFF), /* ID 65 */
+IO_PFS(0xFFFF), /* ID 66 */
+IO_PFS(0xFFFF), /* ID 67 */
+IO_PFS(0xFFFF), /* ID 68 */
+IO_PFS(0xFFFF), /* ID 69 */
+IO_PFS(0xFFFF), /* ID 70 */
+IO_PFS(0xFFFF), /* ID 71 */
+IO_PFS(0xFFFF), /* ID 72 */
+IO_PFS(0xFFFF), /* ID 73 */
+IO_PFS(0xFFFF), /* ID 74 */
+IO_PFS(0xFFFF), /* ID 75 */
+IO_PFS(0xFFFF), /* ID 76 */
+IO_PFS(0xFFFF), /* ID 77 */
+IO_PFS(0xFFFF), /* ID 78 */
+IO_PFS(0xFFFF), /* ID 79 */
+IO_PFS(0xFFFF)  /* ID 80 */
 },
 .GPIO = {
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF),
-IO_PFS(0xFFFF)
+IO_PFS(0xFFFF), /* ID 81 */
+IO_PFS(0xFFFF), /* ID 82 */
+IO_PFS(0xFFFF), /* ID 83 */
+IO_PFS(0xFFFF), /* ID 84 */
+IO_PFS(0xFFFF), /* ID 85 */
+IO_PFS(0xFFFF), /* ID 86 */
+IO_PFS(0xFFFF), /* ID 87 */
+IO_PFS(0xFFFF)  /* ID 88 */
 }
 }
 

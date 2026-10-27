@@ -17,7 +17,7 @@
 				   ...
 				   88: GPIO[7]  GPIO8
 --- Monitor pin config ( 0xD5)
-  Encoded:
+  Encoded: bits [7:5]   PAGE = bits [4:0] is the Page that this monitor is assigned.
   0 = No monitor
   1 = ADC
   2 = Temp
@@ -34,6 +34,7 @@ SRC0 D5P
 SWC0 F9 0501 0000 0000 0000 0000 0000 0000 0000P
 
 --- SEQ configuration for page 0 using pin 7 as an output 
+
 SWC0 00 00P
 SWC0 F6 07 06 01000000 00000000 00 00 00 00000000 00000000 00000000 0000 0000 00P
 
