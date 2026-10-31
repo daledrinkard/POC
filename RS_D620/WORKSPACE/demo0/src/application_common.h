@@ -21,10 +21,12 @@
 #define APP_ASSERT(_a_,_b_,_c_) if(_a_) {console_Print(_b_); console_Print("\n");} else {console_Print(_c_); console_Print("\n"); assert(false);}
 #define APP_INFO_PRINT(_a_) console_Print(_a_)
 #define APP_ERR_PRINT(_a_) { console_SetColor(CONSOLE_COLOR_RED); console_Print(_a_); console_SetColor(CONSOLE_COLOR_NORMAL); }
+#define APP_PRINT(_a_) console_Print(_a_) /* blocking print of a single null-terminated string */
 #else
 #define APP_ASSERT(_a_,_b_,_c_) assert(_a_)
 #define APP_INFO_PRINT(_a_)
 #define APP_ERR_PRINT(_a_)
+#define APP_PRINT(_a_)
 #endif
 
 
@@ -62,13 +64,14 @@
 #define SYSFLG_PWR_SERVICE     (0x00000004)
 #define SYSFLG_DATAFLASH_READY (0x00000008)
 #define SYSFLG_PWR_READBACK    (0x00000010)
+#define SYSFLG_PWR_PMBUS_DONE  (0x00000020)
 //-->#define SYSFLG_xxx    (0x00000004)
 
 #define DF_POWER_BASE_ADDR        (BSP_FEATURE_FLASH_DATA_FLASH_START)
 //#define DF_POWER_PINMAP_SIZE      (0x80)  /* needs 128 bytes, 32 rails each having 4 bytes */
 //#define DF_POWER_FLTMAP_SIZE      (0x80)  /* needs 57 bytes */
-#define DF_POWER_CONFIG_SIZE      (0x40)
-#define DF_POWER_RAIL_RECORD_SIZE (0x40)
+#define DF_POWER_CONFIG_SIZE      (0x400)
+#define DF_POWER_RAIL_RECORD_SIZE (0xC0)
 #define DF_POWER_LARGEST_SIZE     (DF_POWER_CONFIG_SIZE) /* choose largest consumer */
 
 #define DF_SEQUENCER_CONFIG_ADDR  (DF_POWER_BASE_ADDR)  /* dataflash address for the power sequencer configuration */
@@ -76,6 +79,10 @@
 //#define DF_POWER_RAIL_PINMAP_ADDR (DF_SEQUENCER_CONFIG_ADDR  + DF_POWER_CONFIG_SIZE)
 //#define DF_POWER_RAIL_FLTMAP_ADDR (DF_POWER_RAIL_PINMAP_ADDR + DF_POWER_PINMAP_SIZE)
 #define DF_POWER_RAIL_CONFIG_ADDR (DF_SEQUENCER_CONFIG_ADDR  + DF_POWER_CONFIG_SIZE)  /* dataflash address for the power rail configurations */
+
+/* PMBUS stuff */
+#define APP_PMBUS_PFS_SDA 0x07010400  //@@@ this might not be right and won't get tested until PMbus integration
+#define APP_PMBUS_PFS_SCL 0x07010400
 
 /* APPLICATION STATE MACHINE */
 typedef enum app_state_e {

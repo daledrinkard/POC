@@ -3,6 +3,7 @@
 */
 #include "PMbus_commands.h"
 #include "sequencer/power_module.h"
+#include "dbg_print.h"
 
 /* USER */
 /*
@@ -18,6 +19,7 @@ int PMbus_execute(pmbus_command_t command, uint8_t *data, uint16_t data_len, uin
 {
     (void) data;
     (void) data_len;
+    //@@@ print_pmbus_cmd(command);
     switch (command)
     {
         /* core PMBus commands (00h-CFh) */
@@ -28,8 +30,9 @@ int PMbus_execute(pmbus_command_t command, uint8_t *data, uint16_t data_len, uin
             else    {data[0] = PowerController.rails[PowerController.ctrl->page].cfg->operation;}
             return 1;
         case PMBUS_CMD_ON_OFF_CONFIG:              /* USER CODE */ 
-            break;
+            PWRSEQ_UPDATE(RW,&PowerController.rails[PowerController.ctrl->page].cfg->on_off_config,1);
         case PMBUS_CMD_CLEAR_FAULTS:               /* USER CODE */ 
+            //@@@ this takes an immediate action.  it is a send byte command write only
             break;
         case PMBUS_CMD_STORE_DEFAULT_ALL:          /* USER CODE */ 
             pwr_seq_store_all();
@@ -37,10 +40,45 @@ int PMbus_execute(pmbus_command_t command, uint8_t *data, uint16_t data_len, uin
         case PMBUS_CMD_CAPABILITY:                 /* USER CODE */ 
             break;
         case PMBUS_CMD_VOUT_MODE:                  /* USER CODE */ 
-            break;
+            PWRSEQ_UPDATE(RW,&PowerController.rails[PowerController.ctrl->page].cfg->vout_mode,1);
         case PMBUS_CMD_VOUT_COMMAND:               /* USER CODE */ 
-            break;
-
+            PWRSEQ_UPDATE(RW,&PowerController.rails[PowerController.ctrl->page].cfg->vout_command,2);
+        case PMBUS_CMD_VOUT_MARGIN_HIGH:           /* USER CODE */ 
+            PWRSEQ_UPDATE(RW,&PowerController.rails[PowerController.ctrl->page].cfg->vout_margin_high,2);
+        case PMBUS_CMD_VOUT_MARGIN_LOW:            /* USER CODE */ 
+            PWRSEQ_UPDATE(RW,&PowerController.rails[PowerController.ctrl->page].cfg->vout_margin_low,2);
+        case PMBUS_CMD_VOUT_SCALE_MONITOR:         /* USER CODE */ 
+            PWRSEQ_UPDATE(RW,&PowerController.rails[PowerController.ctrl->page].cfg->vout_scale_monitor,2);
+        case PMBUS_CMD_VOUT_OV_FAULT_LIMIT:        /* USER CODE */ 
+            PWRSEQ_UPDATE(RW,&PowerController.rails[PowerController.ctrl->page].cfg->vout_ov_fault_limit,2);
+        case PMBUS_CMD_VOUT_OV_WARN_LIMIT:         /* USER CODE */ 
+            PWRSEQ_UPDATE(RW,&PowerController.rails[PowerController.ctrl->page].cfg->vout_ov_warn_limit,2);
+        case PMBUS_CMD_VOUT_UV_WARN_LIMIT:         /* USER CODE */ 
+            PWRSEQ_UPDATE(RW,&PowerController.rails[PowerController.ctrl->page].cfg->vout_uv_warn_limit,2);
+        case PMBUS_CMD_VOUT_UV_FAULT_LIMIT:        /* USER CODE */ 
+            PWRSEQ_UPDATE(RW,&PowerController.rails[PowerController.ctrl->page].cfg->vout_uv_fault_limit,2);
+        case PMBUS_CMD_OT_FAULT_LIMIT:             /* USER CODE */ 
+            PWRSEQ_UPDATE(RW,&PowerController.rails[PowerController.ctrl->page].cfg->ot_fault_limit,2);
+        case PMBUS_CMD_OT_WARN_LIMIT:              /* USER CODE */ 
+            PWRSEQ_UPDATE(RW,&PowerController.rails[PowerController.ctrl->page].cfg->ot_warn_limit,2);
+        case PMBUS_CMD_TON_DELAY:                  /* USER CODE */ 
+            PWRSEQ_UPDATE(RW,&PowerController.rails[PowerController.ctrl->page].cfg->ton_delay,2);
+        case PMBUS_CMD_TOFF_DELAY:                  /* USER CODE */ 
+            PWRSEQ_UPDATE(RW,&PowerController.rails[PowerController.ctrl->page].cfg->toff_delay,2);
+        case PMBUS_CMD_TON_MAX_FAULT_LIMIT:          /* USER CODE */ 
+            PWRSEQ_UPDATE(RW,&PowerController.rails[PowerController.ctrl->page].cfg->ton_max_fault_limit,2);
+        case PMBUS_CMD_TOFF_MAX_WARN_LIMIT:          /* USER CODE */ 
+            PWRSEQ_UPDATE(RW,&PowerController.rails[PowerController.ctrl->page].cfg->toff_max_warn_limit,2);
+        case PMBUS_CMD_POWER_GOOD_ON:                /* USER CODE */ 
+            PWRSEQ_UPDATE(RW,&PowerController.rails[PowerController.ctrl->page].cfg->power_good_on,2);
+        case PMBUS_CMD_POWER_GOOD_OFF:               /* USER CODE */ 
+            PWRSEQ_UPDATE(RW,&PowerController.rails[PowerController.ctrl->page].cfg->power_good_off,2);
+        case PMBUS_CMD_STATUS_VOUT:                /* USER CODE */
+            PWRSEQ_UPDATE(RW,&PowerController.rails[PowerController.ctrl->page].cfg->status_vout,2);
+        case PMBUS_CMD_STATUS_IOUT:                /* USER CODE */
+            PWRSEQ_UPDATE(RW,&PowerController.rails[PowerController.ctrl->page].cfg->status_iout,2);
+        case PMBUS_CMD_STATUS_TEMPERATURE:           /* USER CODE */
+            PWRSEQ_UPDATE(RW,&PowerController.rails[PowerController.ctrl->page].cfg->status_temperature,2);
 
             //        case PMBUS_CMD_RESTORE_DEFAULT_ALL:        /* USER CODE */ break;
 //        case PMBUS_CMD_STORE_DEFAULT_CODE:         /* USER CODE */ break;
@@ -59,12 +97,9 @@ int PMbus_execute(pmbus_command_t command, uint8_t *data, uint16_t data_len, uin
         case PMBUS_CMD_VOUT_TRIM:                  /* USER CODE */ break;
         case PMBUS_CMD_VOUT_CAL_OFFSET:            /* USER CODE */ break;
         case PMBUS_CMD_VOUT_MAX:                   /* USER CODE */ break;
-        case PMBUS_CMD_VOUT_MARGIN_HIGH:           /* USER CODE */ break;
-        case PMBUS_CMD_VOUT_MARGIN_LOW:            /* USER CODE */ break;
         case PMBUS_CMD_VOUT_TRANSITION_RATE:       /* USER CODE */ break;
         case PMBUS_CMD_VOUT_DROOP:                 /* USER CODE */ break;
         case PMBUS_CMD_VOUT_SCALE_LOOP:            /* USER CODE */ break;
-        case PMBUS_CMD_VOUT_SCALE_MONITOR:         /* USER CODE */ break;
         case PMBUS_CMD_COEFFICIENTS:               /* USER CODE */ break;
         case PMBUS_CMD_POUT_MAX:                   /* USER CODE */ break;
         case PMBUS_CMD_MAX_DUTY:                   /* USER CODE */ break;
@@ -80,11 +115,7 @@ int PMbus_execute(pmbus_command_t command, uint8_t *data, uint16_t data_len, uin
         case PMBUS_CMD_FAN_CONFIG_3_4:             /* USER CODE */ break;
         case PMBUS_CMD_FAN_COMMAND_3:              /* USER CODE */ break;
         case PMBUS_CMD_FAN_COMMAND_4:              /* USER CODE */ break;
-        case PMBUS_CMD_VOUT_OV_FAULT_LIMIT:        /* USER CODE */ break;
         case PMBUS_CMD_VOUT_OV_FAULT_RESPONSE:     /* USER CODE */ break;
-        case PMBUS_CMD_VOUT_OV_WARN_LIMIT:         /* USER CODE */ break;
-        case PMBUS_CMD_VOUT_UV_WARN_LIMIT:         /* USER CODE */ break;
-        case PMBUS_CMD_VOUT_UV_FAULT_LIMIT:        /* USER CODE */ break;
         case PMBUS_CMD_VOUT_UV_FAULT_RESPONSE:     /* USER CODE */ break;
         case PMBUS_CMD_IOUT_OC_FAULT_LIMIT:        /* USER CODE */ break;
         case PMBUS_CMD_IOUT_OC_FAULT_RESPONSE:     /* USER CODE */ break;
@@ -93,7 +124,6 @@ int PMbus_execute(pmbus_command_t command, uint8_t *data, uint16_t data_len, uin
         case PMBUS_CMD_IOUT_OC_WARN_LIMIT:         /* USER CODE */ break;
         case PMBUS_CMD_IOUT_UC_FAULT_LIMIT:        /* USER CODE */ break;
         case PMBUS_CMD_IOUT_UC_FAULT_RESPONSE:     /* USER CODE */ break;
-        case PMBUS_CMD_OT_FAULT_LIMIT:             /* USER CODE */ break;
         case PMBUS_CMD_OT_FAULT_RESPONSE:          /* USER CODE */ break;
         case PMBUS_CMD_OT_WARN_LIMIT:              /* USER CODE */ break;
         case PMBUS_CMD_UT_WARN_LIMIT:              /* USER CODE */ break;
@@ -110,7 +140,6 @@ int PMbus_execute(pmbus_command_t command, uint8_t *data, uint16_t data_len, uin
         case PMBUS_CMD_IIN_OC_WARN_LIMIT:          /* USER CODE */ break;
         case PMBUS_CMD_POWER_GOOD_ON:              /* USER CODE */ break;
         case PMBUS_CMD_POWER_GOOD_OFF:             /* USER CODE */ break;
-        case PMBUS_CMD_TON_DELAY:                  /* USER CODE */ break;
         case PMBUS_CMD_TON_RISE:                   /* USER CODE */ break;
         case PMBUS_CMD_TON_MAX_FAULT_LIMIT:        /* USER CODE */ break;
         case PMBUS_CMD_TON_MAX_FAULT_RESPONSE:     /* USER CODE */ break;
@@ -123,8 +152,6 @@ int PMbus_execute(pmbus_command_t command, uint8_t *data, uint16_t data_len, uin
         case PMBUS_CMD_PIN_OP_WARN_LIMIT:          /* USER CODE */ break;
         case PMBUS_CMD_STATUS_BYTE:                /* USER CODE */ break;
         case PMBUS_CMD_STATUS_WORD:                /* USER CODE */ break;
-        case PMBUS_CMD_STATUS_VOUT:                /* USER CODE */ break;
-        case PMBUS_CMD_STATUS_IOUT:                /* USER CODE */ break;
         case PMBUS_CMD_STATUS_INPUT:               /* USER CODE */ break;
         case PMBUS_CMD_STATUS_TEMPERATURE:         /* USER CODE */ break;
         case PMBUS_CMD_STATUS_CML:                 /* USER CODE */ break;
@@ -212,16 +239,22 @@ int PMbus_execute(pmbus_command_t command, uint8_t *data, uint16_t data_len, uin
              if (RW) {return 0;} /* Read Only */
              else PWRSEQ_UPDATE(0,(uint8_t *) PowerController.CONSTANTS,8);
 
-        case PMBUS_CMD_PWM_SELECT:            /* 0xE0 */      /* USER CODE */ break;
-        case PMBUS_CMD_PWM_CONFIG:            /* 0xE1 */      /* USER CODE */ break;
+        case PMBUS_CMD_PWM_SELECT:            /* 0xE0 */      /* USER CODE */
+            PWRSEQ_UPDATE(RW,&PowerController.cfg->pwm_select,1);
+        case PMBUS_CMD_PWM_CONFIG:            /* 0xE1 */      /* Alignment */
+            if (RW) {pwr_seq_update_pwm_config(data,data_len); return data_len;}
+            else    {return pwr_seq_read_pwm_config(data);}
         case PMBUS_CMD_PARM_INFO:             /* 0xE2 */      /* USER CODE */ break;
         case PMBUS_CMD_PARM_VALUE:            /* 0xE3 */      /* USER CODE */ break;
-        case PMBUS_CMD_TEMPERATURE_CAL_GAIN:   /* 0xE4 */     /* USER CODE */ break;
-        case PMBUS_CMD_TEMPERATURE_CAL_OFFSET: /* 0xE5 */     /* USER CODE */ break;
+        case PMBUS_CMD_TEMPERATURE_CAL_GAIN:   /* 0xE4 */     /* USER CODE */
+            PWRSEQ_UPDATE(RW,&PowerController.rails[PowerController.ctrl->page].cfg->temperature_cal_gain,2);
+        case PMBUS_CMD_TEMPERATURE_CAL_OFFSET: /* 0xE5 */     /* USER CODE */
+            PWRSEQ_UPDATE(RW,&PowerController.rails[PowerController.ctrl->page].cfg->temperature_cal_offset,2);
         case PMBUS_CMD_SET_BREAKPOINTS:        /* 0xE6 */     /* USER CODE */ break;
         case PMBUS_CMD_DEBUG_CONTINUE:         /* 0xE7 */     /* USER CODE */ break;
 //        case 0xE8; break;
-        case PMBUS_CMD_FAULT_RESPONSES:        /* 0xE9 */      /* USER CODE */ break;
+        case PMBUS_CMD_FAULT_RESPONSES:        /* 0xE9 */      /* USER CODE */
+            PWRSEQ_UPDATE(RW,&PowerController.rails[PowerController.ctrl->page].cfg->fault_responses,9);
         case PMBUS_CMD_LOGGED_FAULTS:          /* 0xEA */      /* USER CODE */ break;
         case PMBUS_CMD_LOGGED_FAULT_DETAIL_INDEX: /* 0xEB */   /* USER CODE */ break;
         case PMBUS_CMD_LOGGED_FAULT_DETAIL:    /* 0xEC */      /* USER CODE */ break;
@@ -235,9 +268,10 @@ int PMbus_execute(pmbus_command_t command, uint8_t *data, uint16_t data_len, uin
         case PMBUS_CMD_SECURITY:                 /* 0xF1 */  /* USER CODE */ break;
         case PMBUS_CMD_SECURITY_BIT_MASK:        /* 0xF2 */  /* USER CODE */ break;
         case PMBUS_CMD_MFR_STATUS:               /* 0xF3 */  /* USER CODE */ break;
-        case PMBUS_CMD_GPI_FAULT_RESPONSES:      /* 0xF4 */  /* USER CODE */ break;
-        case PMBUS_CMD_MARGIN_CONFIG:            /* 0xF5 */  /* USER CODE */ break;
-
+        case PMBUS_CMD_GPI_FAULT_RESPONSES:      /* 0xF4 */  /* USER CODE */
+            PWRSEQ_UPDATE(RW,&PowerController.rails[PowerController.ctrl->page].cfg->gpi_fault_responses,sizeof(power_rail_gpi_fault_response_t));
+        case PMBUS_CMD_MARGIN_CONFIG:            /* 0xF5 */  /* USER CODE */
+            PWRSEQ_UPDATE(RW,&PowerController.rails[PowerController.ctrl->page].cfg->margin_config,2);
         case PMBUS_CMD_SEQ_CONFIG:               /* 0xF6 */             /* PAGE */ 
             if (RW) {pwr_seq_update_seqcfg(PowerController.ctrl->page,data,data_len); return data_len;}
             else    {return pwr_seq_read_seqcfg(PowerController.ctrl->page,data);}

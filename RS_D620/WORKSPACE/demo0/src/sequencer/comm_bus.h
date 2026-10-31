@@ -47,6 +47,7 @@ typedef struct PB_comm_s
     uint8_t flag;
     uint8_t data[COMM_DATA_SIZE];
 } PB_comm_t;
+extern PB_comm_t PB_Comm;
 
 /* USER ADDITIONAL PUBLIC FUNCTIONS */
 int comm_init(void);

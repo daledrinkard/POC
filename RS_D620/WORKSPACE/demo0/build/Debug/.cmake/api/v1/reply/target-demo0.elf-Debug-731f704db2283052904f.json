@@ -323,7 +323,8 @@
 				41,
 				42,
 				43,
-				44
+				44,
+				45
 			]
 		}
 	],
@@ -566,7 +567,8 @@
 				41,
 				42,
 				43,
-				44
+				44,
+				45
 			]
 		}
 	],
@@ -980,6 +982,16 @@
 			],
 			"compileGroupIndex" : 0,
 			"path" : "src/sequencer/comm_bus.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 3,
+			"backtraces" : 
+			[
+				3
+			],
+			"compileGroupIndex" : 0,
+			"path" : "src/sequencer/dbg_print.c",
 			"sourceGroupIndex" : 0
 		},
 		{

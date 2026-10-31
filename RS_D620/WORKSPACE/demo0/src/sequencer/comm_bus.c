@@ -182,6 +182,7 @@ void comm_cb(uart_callback_args_t *p_args)
                         case COMM_EOP:
                             PB_Comm.data_len = cx;
                             PB_Comm.state = comm_parse_command();
+                            app_event_flag_seti(SYSFLG_PWR_PMBUS_DONE,NULL);
                             break;
                         default:
                         if (bx == 1)

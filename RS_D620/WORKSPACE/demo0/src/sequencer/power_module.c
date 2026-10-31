@@ -253,13 +253,15 @@ void pwr_seq_restore_all(void)
     }
 }
 /*  This is called right after the dataflash is copied into working ram */
+volatile uint8_t PAGE;
+volatile uint8_t conf;
 void pwr_seq_configure(void)
 {
     /* configure the monitor pins */
     for (int i = 0; i < PWR_MAX_MONITOR; i++)
     {
-        uint8_t PAGE = PowerController.cfg->monitor.MON[i] & 0x1f;
-        uint8_t conf = (PowerController.cfg->monitor.MON[i] & 0xe0) >> 5;
+        PAGE = PowerController.cfg->monitor.MON[i] & 0x1f;
+        conf = (PowerController.cfg->monitor.MON[i] & 0xe0) >> 5;
         
         switch (conf)
         {       // PowerController.cfg->monitor.MON[i]) {
@@ -268,13 +270,13 @@ void pwr_seq_configure(void)
             break;
         case 1: /* Analog */
             PWR_PIN_CFG_ANALOG(i);
-            PowerController.rails[PAGE].ctrl->voltage_monitor = NULL; //@@@ need to set this to the correct monitor object 
+            PowerController.rails[PAGE].ctrl->voltage_monitor = power_sequencer_IO.usage.MON[i];
             break;
         case 2: /* Temperature */
             break;
         case 3: /* Current */
             PWR_PIN_CFG_ANALOG(i);
-            PowerController.rails[PAGE].ctrl->current_monitor = NULL; //@@@ need to set this to the correct monitor object
+            PowerController.rails[PAGE].ctrl->current_monitor = power_sequencer_IO.usage.MON[i];
             break;
         case 4: /* Voltage Comparator */
             break;
@@ -371,6 +373,15 @@ void pwr_seq_configure(void)
                 break;
             }
     }
+    /* configure the PMBUS pins */
+    *((uint32_t*) PowerController.GPIO->usage.PMBUS.SDA) =     PWR_PFS_PMBUS_SDA;
+    *((uint32_t*) PowerController.GPIO->usage.PMBUS.SCL) =     PWR_PFS_PMBUS_SCL;
+    *((uint32_t*) PowerController.GPIO->usage.PMBUS.ALERT) =   PWR_PFS_OD1;
+    *((uint32_t*) PowerController.GPIO->usage.PMBUS.CONTROL) = PWR_PFS_PULL;
+    *((uint32_t*) PowerController.GPIO->usage.PMBUS.SEL[0]) =  PWR_PFS_PULL;
+    *((uint32_t*) PowerController.GPIO->usage.PMBUS.SEL[1]) =  PWR_PFS_PULL;
+    *((uint32_t*) PowerController.GPIO->usage.PMBUS.SEL[2]) =  PWR_PFS_PULL;
+    
 }
 // void pwr_seq_update_monitor(uint8_t *data,uint16_t len)
 //{
@@ -425,6 +436,28 @@ void pwr_seq_update_railstate(uint8_t *src, uint16_t data_len)
     uint8_t *p = (uint8_t *)&PowerController.rails[page].ctrl->railstate;
     p = p + 2; //@@@ skip the pad at the beginning of the data structure.
     memcpy((uint8_t *)p, src, 34);
+}
+void pwr_seq_update_pwm_config(uint8_t *src, uint16_t data_len)
+{
+    FSP_PARAMETER_NOT_USED(data_len);
+    power_controller_pwm_config_t *p = (power_controller_pwm_config_t *)&PowerController.cfg->pwm_config;
+    p->duty_cycle = (src[0] | (src[1] << 8));
+    p->frequency = (src[2] | (src[3] << 8) | (src[4] << 16) | (src[5] << 24));
+    p->spare[0] = src[6];
+    p->spare[1] = src[7];
+}
+uint16_t pwr_seq_read_pwm_config(uint8_t *src)
+{
+    power_controller_pwm_config_t *p = (power_controller_pwm_config_t *)&PowerController.cfg->pwm_config;
+    src[0] = (p->duty_cycle & 0xFF);
+    src[1] = (p->duty_cycle >> 8);
+    src[2] = (p->frequency & 0xFF);
+    src[3] = (p->frequency >> 8) & 0xFF;
+    src[4] = (p->frequency >> 16) & 0xFF;
+    src[5] = (p->frequency >> 24) & 0xFF;
+    src[6] = p->spare[0];
+    src[7] = p->spare[1];
+    return 8;
 }
 uint16_t pwr_seq_read_railstate(uint8_t *src)
 {

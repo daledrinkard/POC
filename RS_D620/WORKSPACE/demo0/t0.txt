@@ -42,6 +42,8 @@ SRC0 00P
 		3,2:  Margin Fault response   01 = Do not shutdown due to fault   10 = Shutdown as normal
 		  1:  Transistion control     (see 12.1.5 of the PMbus specification)
 		  0: RESERVED
+SWC0 01 C0P
+SRC0 01P
 
   Select a rail
  (ID | conf) -------------------------------------------------

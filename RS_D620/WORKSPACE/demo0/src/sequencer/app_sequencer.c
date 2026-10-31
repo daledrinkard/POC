@@ -11,6 +11,7 @@
 #include "POP/pop.h"
 #include "simulator.h"
 #include "comm_bus.h"
+#include "dbg_print.h"  // IWYU pragma: keep
 extern bsp_leds_t g_bsp_leds;
 extern cpan_t *CP;
 extern const power_rail_cfg_t power_analog_3300;
@@ -60,8 +61,8 @@ int app_func_reset   (void)
     POP0();
 
 
-    #if 1 // only do this once, on first run, if the addresses of the dataflash segments change.
-    APP_INFO_PRINT("\n ******* \n      UPDATING DATAFLASH  \n    ***** \n");
+    #if 0 // only do this once, on first run, if the addresses of the dataflash segments change.
+    APP_INFO_PRINT("\n ******* \n      UPDATING DATAFLASH  \n ***** \n");
      pwr_rail_store_config(0,(uint8_t*) &power_analog_3300,sizeof(power_rail_cfg_t));
      pwr_rail_store_config(1,(uint8_t*) &power_analog_5000,sizeof(power_rail_cfg_t));
      pwr_rail_store_config(2,(uint8_t*) &power_analog_1200,sizeof(power_rail_cfg_t));
@@ -91,8 +92,7 @@ int app_func_reset   (void)
 
     CP = CPAN_open(&control_panel_initial);  /* open the control panel */
     comm_init();
-    R_PORT1->PCNTR3 = 0x00000000;
-    R_PORT1->PCNTR4 = 0x00000000; 
+    print_controller(4);
     return (CP == NULL) ? -1 : 0;
 }
 int app_func_startup (void)
@@ -106,6 +106,7 @@ int app_func_startup (void)
     R_ICU_ExternalIrqOpen(&g_SW1_ctrl, &g_SW1_cfg);
     R_ICU_ExternalIrqEnable(&g_SW1_ctrl);    
     DROP0();
+    
     return 0;
 }
 

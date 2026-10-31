@@ -8,6 +8,8 @@
 #include "hal_data.h"
 #include "sequencer/power_module.h"
 #include "simulator.h"
+#include "../dbg_print.h"
+#include "../comm_bus.h"
 #if   (APPCFG_RTOS == APPCFG_RTOS_NONE) /* Bare METAL */
 #elif (APPCFG_RTOS == APPCFG_RTOS_AZURE) /* Azure */
 #include "app_thread.h"
@@ -88,6 +90,13 @@ void app_entry(void) {
                 */
                 do { /* hang in this state */
                     /* USER code */
+#if 1 //@@@ debugging
+                    if (0 == app_event_flag_get(SYSFLG_PWR_PMBUS_DONE,APP_FLAG_OR_CLEAR,0,&event_flag))
+                    {
+                        print_pmbus_cmd(PB_Comm.command);
+                    }
+
+#endif                    
                     app_func_run();
                     simulator_run();
 #if APP_HAS_CONTROLPANEL

@@ -64,6 +64,15 @@
 #define PWR_PIN_ASSERT_OPEN(_a_)  *((uint32_t*) PowerController.GPIO->pin[_a_]) &= (uint32_t)  ~0x00000004;  /* clear PDR bit */ \
                                   *((uint32_t*) PowerController.GPIO->pin[_a_]) |= (uint32_t)  ~0x00000001;  /* clear PODR bit */
 #endif
+#define PWR_PFS_ANALOG   0x00018000  /* Set PMR and ASEL */ 
+#define PWR_PFS_INPUT    0x00000000  /* input no pull up */ 
+#define PWR_PFS_OUTPUT0  0x00000004  /* output drive low */ 
+#define PWR_PFS_OUTPUT1  0x00000005  /* output drive hi */ 
+#define PWR_PFS_PULL     0x00000010  /* input pull up */ 
+#define PWR_PFS_OD1      0x00000040  /* OD initially pulled hi input */ 
+#define PWR_PFS_OD0      0x00000044  /* OD initially driven low */ 
+#define PWR_PFS_PMBUS_SDA    APP_PMBUS_PFS_SDA /* configured in the application*/
+#define PWR_PFS_PMBUS_SCL    APP_PMBUS_PFS_SCL /* configured in the application*/
 
 #define PWR_PIN_ASSERT_LOW(_a_)   *(PWR_PIN_p_PFS(_a_)) |= (uint32_t)  0x00000004;  /* Set PDR bit */ \
                                   *(PWR_PIN_p_PFS(_a_)) &= (uint32_t) ~0x00000001;  /* clear PODR bit */
@@ -71,13 +80,13 @@
                                   *(PWR_PIN_p_PFS(_a_)) |= (uint32_t)  0x00000001;  /* Set PODR bit */
 #define PWR_PIN_ASSERT_OPEN(_a_)  *(PWR_PIN_p_PFS(_a_)) &= (uint32_t)  ~0x00000004;  /* clear PDR bit */ \
                                   *(PWR_PIN_p_PFS(_a_)) |= (uint32_t)  ~0x00000001;  /* clear PODR bit */
-#define PWR_PIN_CFG_ANALOG(_a_)   *(PWR_PIN_p_PFS(_a_))  = (uint32_t)  0x00018000;  /* Set PMR and ASEL */ 
-#define PWR_PIN_CFG_INPUT(_a_)    *(PWR_PIN_p_PFS(_a_))  = (uint32_t)  0x00000000;  /* input no pull up */ 
-#define PWR_PIN_CFG_OUTPUT0(_a_)  *(PWR_PIN_p_PFS(_a_))  = (uint32_t)  0x00000004;  /* output drive low */ 
-#define PWR_PIN_CFG_OUTPUT1(_a_)  *(PWR_PIN_p_PFS(_a_))  = (uint32_t)  0x00000005;  /* output drive hi */ 
-#define PWR_PIN_CFG_PULL(_a_)     *(PWR_PIN_p_PFS(_a_))  = (uint32_t)  0x00000010;  /* input pull up */ 
-#define PWR_PIN_CFG_OD1(_a_)      *(PWR_PIN_p_PFS(_a_))  = (uint32_t)  0x00000040;  /* OD initially pulled hi input */ 
-#define PWR_PIN_CFG_OD0(_a_)      *(PWR_PIN_p_PFS(_a_))  = (uint32_t)  0x00000044;  /* OD initially driven low */ 
+#define PWR_PIN_CFG_ANALOG(_a_)   *(PWR_PIN_p_PFS(_a_))  = (uint32_t)  PWR_PFS_ANALOG;  /* Set PMR and ASEL */ 
+#define PWR_PIN_CFG_INPUT(_a_)    *(PWR_PIN_p_PFS(_a_))  = (uint32_t)  PWR_PFS_INPUT;  /* input no pull up */ 
+#define PWR_PIN_CFG_OUTPUT0(_a_)  *(PWR_PIN_p_PFS(_a_))  = (uint32_t)  PWR_PFS_OUTPUT0;  /* output drive low */ 
+#define PWR_PIN_CFG_OUTPUT1(_a_)  *(PWR_PIN_p_PFS(_a_))  = (uint32_t)  PWR_PFS_OUTPUT1;  /* output drive hi */ 
+#define PWR_PIN_CFG_PULL(_a_)     *(PWR_PIN_p_PFS(_a_))  = (uint32_t)  PWR_PFS_PULL;  /* input pull up */ 
+#define PWR_PIN_CFG_OD1(_a_)      *(PWR_PIN_p_PFS(_a_))  = (uint32_t)  PWR_PFS_OD1;  /* OD initially pulled hi input */ 
+#define PWR_PIN_CFG_OD0(_a_)      *(PWR_PIN_p_PFS(_a_))  = (uint32_t)  PWR_PFS_OD0;  /* OD initially driven low */ 
 
 #define PWR_PIN_CFG_DVM(_a_)      *(PWR_PIN_p_PFS(_a_))  = (uint32_t)  0x00004000;  /* Set ISEL  */ 
 
@@ -135,10 +144,33 @@ typedef struct power_controller_railstate_s {
     uint8_t soft_off_enables;
     uint32_t system_state[8];
 }power_controller_railstate_t;
+typedef struct power_rail_fault_responses_s{
+    uint8_t vout_ov;
+    uint8_t vout_uv;
+    uint8_t iout_oc;
+    uint8_t iout_uc;
+    uint8_t ot;
+    uint8_t ton_max;
+    uint8_t time_to_retry;
+    uint8_t max_glitch_voltage_fault;
+    uint8_t max_glitch_voltage_no_fault;
+    uint8_t spare[3]; /* for alignment */
+} power_rail_fault_responses_t;
 
+typedef struct power_rail_gpi_fault_response_s {
+    uint8_t gpi_response[32];
+    uint8_t time_to_retry;
+    uint16_t max_glitch_GPI;
+    uint8_t profile_section_1;
+    uint8_t profile_section_2;
+    uint16_t block_out_period;
+} power_rail_gpi_fault_response_t;
 
-
-
+typedef struct power_controller_pwm_config_s {
+    uint16_t duty_cycle;
+    uint32_t frequency;
+    uint8_t spare[2]; /* for alignment */
+} power_controller_pwm_config_t;
 
 typedef struct power_controller_GPICFG_s {
    power_controller_GPI_t GPI[PWR_GPI_SIZE];  /* id=0 | (1 to 88) : conf [7:3][2]:polarity[1..0]:mode*/
@@ -202,8 +234,35 @@ typedef struct power_sequencer_MSCCFG_s {
 /* static, per-rail configuration (ucd91320 7.2.2: rail setup / monitoring / sequence / fault response / margining) */
 typedef struct power_rail_cfg_s {
     power_controller_SEQCFG_t SEQ_config;
+    power_rail_fault_responses_t fault_responses;
+    power_rail_gpi_fault_response_t gpi_fault_responses;
     uint8_t                  operation;
-    uint8_t                  spare[3];
+    uint8_t                  on_off_config;
+    uint8_t                  vout_mode;
+    uint8_t                  ton_max_fault_response;
+    uint16_t                  vout_command;
+    uint8_t  status_vout;
+    uint8_t  status_iout;
+    uint8_t  status_temperature;
+    uint16_t vout_margin_high;
+    uint16_t vout_margin_low;
+    uint16_t vout_scale_monitor;
+    uint16_t vout_ov_fault_limit;
+    uint16_t vout_ov_warn_limit;
+    uint16_t vout_uv_warn_limit;
+    uint16_t vout_uv_fault_limit;
+    uint16_t ot_fault_limit;
+    uint16_t ot_warn_limit;
+    uint16_t power_good_on;
+    uint16_t power_good_off;
+    uint16_t ton_delay;
+    uint16_t ton_max_fault_limit;
+    uint16_t toff_delay;
+    uint16_t toff_max_warn_limit;
+    uint16_t vout_cal_monitor;
+    uint16_t temperature_cal_gain;
+    uint16_t temperature_cal_offset;
+    uint16_t margin_config;
 
 #if 0
     uint16_t nominal_mv;         /* expected rail voltage, in mV */
@@ -265,6 +324,13 @@ typedef struct power_rail_s {
                  | |                               
                  |_|                               
 */
+typedef struct power_PMBUS_s {
+    void* SDA;
+    void* SCL;
+    void* SEL[3];
+    void* ALERT;
+    void* CONTROL;
+} power_PMBUS_t;
 typedef union power_sequencer_IO_u {
     struct {
         void* MON[PWR_MAX_MONITOR];
@@ -272,8 +338,9 @@ typedef union power_sequencer_IO_u {
         void* EN[PWR_MAX_EN];
         void* MAR[PWR_MAX_MAR];
         void* GPIO[PWR_MAX_GPIO];
+        power_PMBUS_t PMBUS;
     } usage;
-    void* pin[PWR_IO_DATA_WORDS];
+    void* pin[PWR_IO_DATA_WORDS + sizeof(power_PMBUS_t)/sizeof(void*)];
 } power_sequencer_IO_t;
 typedef struct power_sequencer_CONST_s {
     uint8_t max_digital_comp;
@@ -356,6 +423,7 @@ typedef struct power_controller_cfg_s {
     power_fault_output_t      faults;
     power_controller_GPICFG_t GPI_config;
     power_controller_GPOCFG_t GPO_config[PWR_GPO_SIZE]; 
+    power_controller_pwm_config_t pwm_config;
     uint32_t                  GPI;
     uint32_t                  resequence;
     power_sequencer_reset_config_t    reset_config;
@@ -369,12 +437,13 @@ typedef struct power_controller_cfg_s {
     uint8_t                  cascade_id;         /* 0..PWR_MAX_CASCADE-1 */
     uint8_t                  cascade_count;       /* number of devices in the cascade, 1 if standalone */
     uint16_t                 watchdog_timeout_ms;
+    uint8_t                  pwm_select;
     uint32_t                 gpi_mask;           /* general purpose input pin states */
     uint32_t                 gpo_mask;           /* command/logic controlled (LGPO) output pin states */
     bool                     watchdog_enabled;
     bool                     sync_clock_enabled; /* SYNC_CLK shared clock for cascaded devices */
     bool                     fault_pin_asserted; /* shared fault pin coordinating cascaded devices */
-    uint8_t                  spare1; /* for alignment */
+    uint8_t                  spare1; 
 
 } power_controller_cfg_t;
 typedef struct power_controller_ctrl_s {
@@ -447,5 +516,7 @@ uint16_t pwr_seq_read_GPIO_cfg(uint8_t *p);
 void pwr_seq_configure(void);
 
 void pwr_seq_process_operation(uint8_t rail_index,uint8_t op);
+void pwr_seq_update_pwm_config(uint8_t *src, uint16_t data_len);
+uint16_t pwr_seq_read_pwm_config(uint8_t *src);
 
 #endif /* POWER_MODULE_H_ */

@@ -1,6 +1,23 @@
 #include "application_common.h"
 #include "power_module.h"
 #include "ra/fsp/src/bsp/mcu/all/bsp_io.h"
+
+/*
+    Minimal PMBus LINEAR16/LINEAR11 encoders, used below to stub plausible
+    voltage/time/temperature register values for power_rail_cfg_t.
+
+    PMBUS_L16_MV assumes VOUT_MODE's exponent is fixed at -9 (the common TI
+    default - see .vout_mode = 0x17 below: mode=000 linear, exponent=0b10111
+    = -9), so mantissa = mV * 2^9 / 1000.
+
+    PMBUS_L11_N0 encodes a LINEAR11 value with exponent N=0 (plain integer
+    units, e.g. degrees C or a x1 gain). PMBUS_L11_MS encodes a LINEAR11
+    value with exponent N=-3 (1/8 ms units), used for the ms-based delay and
+    timeout fields.
+*/
+#define PMBUS_L16_MV(_mv_)   ((uint16_t) (((uint32_t)(_mv_) * 512u) / 1000u))
+#define PMBUS_L11_N0(_y_)    ((uint16_t) ((_y_) & 0x07FFu))
+#define PMBUS_L11_MS(_ms_)   ((uint16_t) (0xE800u | (((uint32_t)(_ms_) * 8u) & 0x07FFu)))
 /*_____       _ _    _____             __ _                       _   _                 
  |  __ \     (_) |  / ____|           / _(_)                     | | (_)                
  | |__) |__ _ _| | | |     ___  _ __ | |_ _  __ _ _   _ _ __ __ _| |_ _  ___  _ __  ___ 
@@ -28,8 +45,41 @@ const power_rail_cfg_t power_analog_3300 = {
         .GPO_seq_on_dep_msk = 0x0000000F,
         .GPO_seq_off_dep_msk = 0x0000000F
     },
+    .fault_responses = { /* 0x00 placeholders: TODO confirm FAULT_RESPONSE bit encoding against datasheet */
+        .vout_ov = 0x00, .vout_uv = 0x00, .iout_oc = 0x00, .iout_uc = 0x00, .ot = 0x00, .ton_max = 0x00,
+        .time_to_retry = 0, .max_glitch_voltage_fault = 0, .max_glitch_voltage_no_fault = 0, .spare = {0,0,0}
+    },
+    .gpi_fault_responses = { /* no GPI faults mapped */
+        .gpi_response = {0}, .time_to_retry = 0, .max_glitch_GPI = 0,
+        .profile_section_1 = 0, .profile_section_2 = 0, .block_out_period = 0
+    },
     .operation = 0x80,
-    .spare = {0,0,0},
+    .on_off_config = 0x00,          /* TODO confirm ON_OFF_CONFIG bit encoding against datasheet */
+    .vout_mode = 0x17,              /* linear mode, exponent -9 (see PMBUS_L16_MV above) */
+    .ton_max_fault_response = 0x00, /* TODO confirm FAULT_RESPONSE bit encoding against datasheet */
+    .vout_command      = PMBUS_L16_MV(3300),
+    .status_vout = 0x00,
+    .status_iout = 0x00,
+    .status_temperature = 0x00,
+    .vout_margin_high     = PMBUS_L16_MV(3465), /* +5% */
+    .vout_margin_low      = PMBUS_L16_MV(3135), /* -5% */
+    .vout_scale_monitor   = PMBUS_L11_N0(1),    /* x1, no attenuation */
+    .vout_ov_fault_limit  = PMBUS_L16_MV(3564), /* +8% */
+    .vout_ov_warn_limit   = PMBUS_L16_MV(3465), /* +5% */
+    .vout_uv_warn_limit   = PMBUS_L16_MV(3135), /* -5% */
+    .vout_uv_fault_limit  = PMBUS_L16_MV(3036), /* -8% */
+    .ot_fault_limit = PMBUS_L11_N0(105), /* degC */
+    .ot_warn_limit  = PMBUS_L11_N0(95),  /* degC */
+    .power_good_on  = PMBUS_L16_MV(3135), /* -5% */
+    .power_good_off = PMBUS_L16_MV(2970), /* -10% */
+    .ton_delay            = PMBUS_L11_MS(5),
+    .ton_max_fault_limit  = PMBUS_L11_MS(10),
+    .toff_delay           = PMBUS_L11_MS(5),
+    .toff_max_warn_limit  = PMBUS_L11_MS(50),
+    .vout_cal_monitor = 0,         /* no offset calibration */
+    .temperature_cal_gain = 0,     /* no gain calibration */
+    .temperature_cal_offset = 0,   /* no offset calibration */
+    .margin_config = 0x0000,       /* margining disabled / default pin */
 
     /*,
     .nominal_mv = 3300,
@@ -67,8 +117,41 @@ const power_rail_cfg_t power_analog_5000 = {
         .GPO_seq_on_dep_msk = 0x0000000F,
         .GPO_seq_off_dep_msk = 0x0000000F
     },
+    .fault_responses = { /* 0x00 placeholders: TODO confirm FAULT_RESPONSE bit encoding against datasheet */
+        .vout_ov = 0x00, .vout_uv = 0x00, .iout_oc = 0x00, .iout_uc = 0x00, .ot = 0x00, .ton_max = 0x00,
+        .time_to_retry = 0, .max_glitch_voltage_fault = 0, .max_glitch_voltage_no_fault = 0, .spare = {0,0,0}
+    },
+    .gpi_fault_responses = { /* no GPI faults mapped */
+        .gpi_response = {0}, .time_to_retry = 0, .max_glitch_GPI = 0,
+        .profile_section_1 = 0, .profile_section_2 = 0, .block_out_period = 0
+    },
     .operation = 0x80,
-    .spare = {0,0,0}
+    .on_off_config = 0x00,          /* TODO confirm ON_OFF_CONFIG bit encoding against datasheet */
+    .vout_mode = 0x17,              /* linear mode, exponent -9 (see PMBUS_L16_MV above) */
+    .ton_max_fault_response = 0x00, /* TODO confirm FAULT_RESPONSE bit encoding against datasheet */
+    .vout_command      = PMBUS_L16_MV(5000),
+    .status_vout = 0x00,
+    .status_iout = 0x00,
+    .status_temperature = 0x00,
+    .vout_margin_high     = PMBUS_L16_MV(5250), /* +5% */
+    .vout_margin_low      = PMBUS_L16_MV(4750), /* -5% */
+    .vout_scale_monitor   = PMBUS_L11_N0(1),    /* x1, no attenuation */
+    .vout_ov_fault_limit  = PMBUS_L16_MV(5400), /* +8% */
+    .vout_ov_warn_limit   = PMBUS_L16_MV(5250), /* +5% */
+    .vout_uv_warn_limit   = PMBUS_L16_MV(4750), /* -5% */
+    .vout_uv_fault_limit  = PMBUS_L16_MV(4600), /* -8% */
+    .ot_fault_limit = PMBUS_L11_N0(105), /* degC */
+    .ot_warn_limit  = PMBUS_L11_N0(95),  /* degC */
+    .power_good_on  = PMBUS_L16_MV(4750), /* -5% */
+    .power_good_off = PMBUS_L16_MV(4500), /* -10% */
+    .ton_delay            = PMBUS_L11_MS(10),
+    .ton_max_fault_limit  = PMBUS_L11_MS(100),
+    .toff_delay           = PMBUS_L11_MS(20),
+    .toff_max_warn_limit  = PMBUS_L11_MS(150),
+    .vout_cal_monitor = 0,         /* no offset calibration */
+    .temperature_cal_gain = 0,     /* no gain calibration */
+    .temperature_cal_offset = 0,   /* no offset calibration */
+    .margin_config = 0x0000,       /* margining disabled / default pin */
     /*
     .nominal_mv = 5000,
     .ov_threshold_mv = 5100,
@@ -105,8 +188,41 @@ const power_rail_cfg_t power_analog_1200 = {
         .GPO_seq_on_dep_msk = 0x0000000F,
         .GPO_seq_off_dep_msk = 0x0000000F
     },
+    .fault_responses = { /* 0x00 placeholders: TODO confirm FAULT_RESPONSE bit encoding against datasheet */
+        .vout_ov = 0x00, .vout_uv = 0x00, .iout_oc = 0x00, .iout_uc = 0x00, .ot = 0x00, .ton_max = 0x00,
+        .time_to_retry = 0, .max_glitch_voltage_fault = 0, .max_glitch_voltage_no_fault = 0, .spare = {0,0,0}
+    },
+    .gpi_fault_responses = { /* no GPI faults mapped */
+        .gpi_response = {0}, .time_to_retry = 0, .max_glitch_GPI = 0,
+        .profile_section_1 = 0, .profile_section_2 = 0, .block_out_period = 0
+    },
     .operation = 0x80,
-    .spare = {0,0,0}
+    .on_off_config = 0x00,          /* TODO confirm ON_OFF_CONFIG bit encoding against datasheet */
+    .vout_mode = 0x17,              /* linear mode, exponent -9 (see PMBUS_L16_MV above) */
+    .ton_max_fault_response = 0x00, /* TODO confirm FAULT_RESPONSE bit encoding against datasheet */
+    .vout_command      = PMBUS_L16_MV(12000),
+    .status_vout = 0x00,
+    .status_iout = 0x00,
+    .status_temperature = 0x00,
+    .vout_margin_high     = PMBUS_L16_MV(12600), /* +5% */
+    .vout_margin_low      = PMBUS_L16_MV(11400), /* -5% */
+    .vout_scale_monitor   = PMBUS_L11_N0(1),     /* x1, no attenuation */
+    .vout_ov_fault_limit  = PMBUS_L16_MV(12960), /* +8% */
+    .vout_ov_warn_limit   = PMBUS_L16_MV(12600), /* +5% */
+    .vout_uv_warn_limit   = PMBUS_L16_MV(11400), /* -5% */
+    .vout_uv_fault_limit  = PMBUS_L16_MV(11040), /* -8% */
+    .ot_fault_limit = PMBUS_L11_N0(105), /* degC */
+    .ot_warn_limit  = PMBUS_L11_N0(95),  /* degC */
+    .power_good_on  = PMBUS_L16_MV(11400), /* -5% */
+    .power_good_off = PMBUS_L16_MV(10800), /* -10% */
+    .ton_delay            = PMBUS_L11_MS(2),
+    .ton_max_fault_limit  = PMBUS_L11_MS(10),
+    .toff_delay           = PMBUS_L11_MS(30),
+    .toff_max_warn_limit  = PMBUS_L11_MS(80),
+    .vout_cal_monitor = 0,         /* no offset calibration */
+    .temperature_cal_gain = 0,     /* no gain calibration */
+    .temperature_cal_offset = 0,   /* no offset calibration */
+    .margin_config = 0x0000,       /* margining disabled / default pin */
     /*
     .nominal_mv = 12000,
     .ov_threshold_mv = 12010,
@@ -143,8 +259,41 @@ const power_rail_cfg_t power_digital_2400 = {
         .GPO_seq_on_dep_msk = 0x0000000F,
         .GPO_seq_off_dep_msk = 0x0000000F
     },
+    .fault_responses = { /* 0x00 placeholders: TODO confirm FAULT_RESPONSE bit encoding against datasheet */
+        .vout_ov = 0x00, .vout_uv = 0x00, .iout_oc = 0x00, .iout_uc = 0x00, .ot = 0x00, .ton_max = 0x00,
+        .time_to_retry = 0, .max_glitch_voltage_fault = 0, .max_glitch_voltage_no_fault = 0, .spare = {0,0,0}
+    },
+    .gpi_fault_responses = { /* no GPI faults mapped */
+        .gpi_response = {0}, .time_to_retry = 0, .max_glitch_GPI = 0,
+        .profile_section_1 = 0, .profile_section_2 = 0, .block_out_period = 0
+    },
     .operation = 0x80,
-    .spare = {0,0,0}
+    .on_off_config = 0x00,          /* TODO confirm ON_OFF_CONFIG bit encoding against datasheet */
+    .vout_mode = 0x17,              /* linear mode, exponent -9 (see PMBUS_L16_MV above) */
+    .ton_max_fault_response = 0x00, /* TODO confirm FAULT_RESPONSE bit encoding against datasheet */
+    .vout_command      = PMBUS_L16_MV(2400),
+    .status_vout = 0x00,
+    .status_iout = 0x00,
+    .status_temperature = 0x00,
+    .vout_margin_high     = PMBUS_L16_MV(2520), /* +5% */
+    .vout_margin_low      = PMBUS_L16_MV(2280), /* -5% */
+    .vout_scale_monitor   = PMBUS_L11_N0(1),    /* x1, no attenuation */
+    .vout_ov_fault_limit  = PMBUS_L16_MV(2592), /* +8% */
+    .vout_ov_warn_limit   = PMBUS_L16_MV(2520), /* +5% */
+    .vout_uv_warn_limit   = PMBUS_L16_MV(2280), /* -5% */
+    .vout_uv_fault_limit  = PMBUS_L16_MV(2208), /* -8% */
+    .ot_fault_limit = PMBUS_L11_N0(105), /* degC */
+    .ot_warn_limit  = PMBUS_L11_N0(95),  /* degC */
+    .power_good_on  = PMBUS_L16_MV(2280), /* -5% */
+    .power_good_off = PMBUS_L16_MV(2160), /* -10% */
+    .ton_delay            = PMBUS_L11_MS(60),
+    .ton_max_fault_limit  = PMBUS_L11_MS(50),
+    .toff_delay           = PMBUS_L11_MS(0),
+    .toff_max_warn_limit  = PMBUS_L11_MS(50),
+    .vout_cal_monitor = 0,         /* no offset calibration */
+    .temperature_cal_gain = 0,     /* no gain calibration */
+    .temperature_cal_offset = 0,   /* no offset calibration */
+    .margin_config = 0x0000,       /* margining disabled / default pin */
     /*
     .nominal_mv = 2400,
     .ov_threshold_mv = 2405,
@@ -178,8 +327,41 @@ const power_rail_cfg_t power_digital_OFFLINE = {
         .GPO_seq_on_dep_msk = 0x0000000C,
         .GPO_seq_off_dep_msk = 0x00000003
     },
+    .fault_responses = { /* 0x00 placeholders: TODO confirm FAULT_RESPONSE bit encoding against datasheet */
+        .vout_ov = 0x00, .vout_uv = 0x00, .iout_oc = 0x00, .iout_uc = 0x00, .ot = 0x00, .ton_max = 0x00,
+        .time_to_retry = 0, .max_glitch_voltage_fault = 0, .max_glitch_voltage_no_fault = 0, .spare = {0,0,0}
+    },
+    .gpi_fault_responses = { /* no GPI faults mapped */
+        .gpi_response = {0}, .time_to_retry = 0, .max_glitch_GPI = 0,
+        .profile_section_1 = 0, .profile_section_2 = 0, .block_out_period = 0
+    },
     .operation = 0x80,
-    .spare = {0,0,0}
+    .on_off_config = 0x00,          /* TODO confirm ON_OFF_CONFIG bit encoding against datasheet */
+    .vout_mode = 0x17,              /* linear mode, exponent -9 (see PMBUS_L16_MV above) */
+    .ton_max_fault_response = 0x00, /* TODO confirm FAULT_RESPONSE bit encoding against datasheet */
+    .vout_command      = PMBUS_L16_MV(2400),
+    .status_vout = 0x00,
+    .status_iout = 0x00,
+    .status_temperature = 0x00,
+    .vout_margin_high     = PMBUS_L16_MV(2520), /* +5% */
+    .vout_margin_low      = PMBUS_L16_MV(2280), /* -5% */
+    .vout_scale_monitor   = PMBUS_L11_N0(1),    /* x1, no attenuation */
+    .vout_ov_fault_limit  = PMBUS_L16_MV(2592), /* +8% */
+    .vout_ov_warn_limit   = PMBUS_L16_MV(2520), /* +5% */
+    .vout_uv_warn_limit   = PMBUS_L16_MV(2280), /* -5% */
+    .vout_uv_fault_limit  = PMBUS_L16_MV(2208), /* -8% */
+    .ot_fault_limit = PMBUS_L11_N0(105), /* degC */
+    .ot_warn_limit  = PMBUS_L11_N0(95),  /* degC */
+    .power_good_on  = PMBUS_L16_MV(2280), /* -5% */
+    .power_good_off = PMBUS_L16_MV(2160), /* -10% */
+    .ton_delay            = PMBUS_L11_MS(60),
+    .ton_max_fault_limit  = PMBUS_L11_MS(50),
+    .toff_delay           = PMBUS_L11_MS(0),
+    .toff_max_warn_limit  = PMBUS_L11_MS(50),
+    .vout_cal_monitor = 0,         /* no offset calibration */
+    .temperature_cal_gain = 0,     /* no gain calibration */
+    .temperature_cal_offset = 0,   /* no offset calibration */
+    .margin_config = 0x0000,       /* margining disabled / default pin */
 
     /*
     .nominal_mv = 2400,
@@ -221,28 +403,28 @@ const power_controller_cfg_t power_controller_basic = {
         (PWR_MON_TYPE_NONE),        /* BLUE LED */
         (PWR_MON_TYPE_NONE),        /* GREEN LED */
         (PWR_MON_TYPE_NONE),        /* RED LED */
-        0xff,
-        0xff,/* MON[11]*/
-        0xff,/* MON[12]*/
-        0xff,/* MON[13]*/
-        0xff,/* MON[14]*/
-        0xff,/* MON[15]*/
-        0xff,/* MON[16]*/
-        0xff,/* MON[17]*/
-        0xff,/* MON[18]*/
-        0xff,/* MON[19]*/
-        0xff,/* MON[20]*/
-        0xff,/* MON[21]*/
-        0xff,/* MON[22]*/
-        0xff,/* MON[23]*/
-        0xff,/* MON[24]*/
-        0xff,/* MON[25]*/
-        0xff,/* MON[26]*/
-        0xff,/* MON[27]*/
-        0xff,/* MON[28]*/
-        0xff,/* MON[29]*/
-        0xff, /* MON[30]*/
-        0xff /* MON[31]*/
+        (PWR_MON_TYPE_NONE),
+        (PWR_MON_TYPE_NONE),/* MON[11]*/
+        (PWR_MON_TYPE_NONE),/* MON[12]*/
+        (PWR_MON_TYPE_NONE),/* MON[13]*/
+        (PWR_MON_TYPE_NONE),/* MON[14]*/
+        (PWR_MON_TYPE_NONE),/* MON[15]*/
+        (PWR_MON_TYPE_NONE),/* MON[16]*/
+        (PWR_MON_TYPE_NONE),/* MON[17]*/
+        (PWR_MON_TYPE_NONE),/* MON[18]*/
+        (PWR_MON_TYPE_NONE),/* MON[19]*/
+        (PWR_MON_TYPE_NONE),/* MON[20]*/
+        (PWR_MON_TYPE_NONE),/* MON[21]*/
+        (PWR_MON_TYPE_NONE),/* MON[22]*/
+        (PWR_MON_TYPE_NONE),/* MON[23]*/
+        (PWR_MON_TYPE_NONE),/* MON[24]*/
+        (PWR_MON_TYPE_NONE),/* MON[25]*/
+        (PWR_MON_TYPE_NONE),/* MON[26]*/
+        (PWR_MON_TYPE_NONE),/* MON[27]*/
+        (PWR_MON_TYPE_NONE),/* MON[28]*/
+        (PWR_MON_TYPE_NONE),/* MON[29]*/
+        (PWR_MON_TYPE_NONE), /* MON[30]*/
+        (PWR_MON_TYPE_NONE) /* MON[31]*/
     },
     .faults = {
         .fault_mask = {0x00000000, 0x00000000, 0x00000000, 0x00000000},
@@ -375,96 +557,7 @@ const power_controller_cfg_t power_controller_basic = {
     .spare1 = 0xAA
 };
 
-/* 
-  _____       _ _   __  __                   _             
- |  __ \     (_) | |  \/  |                 (_)            
- | |__) |__ _ _| | | \  / | __ _ _ __  _ __  _ _ __   __ _ 
- |  _  // _` | | | | |\/| |/ _` | '_ \| '_ \| | '_ \ / _` |
- | | \ \ (_| | | | | |  | | (_| | |_) | |_) | | | | | (_| |
- |_|  \_\__,_|_|_| |_|  |_|\__,_| .__/| .__/|_|_| |_|\__, |
-                                | |   | |             __/ |
-                                |_|   |_|            |___/ 
-this structure is in dataflash*/
-#if 0 //@@@ no longer used
-const power_rail_map_t power_rail_maps[PWR_MAX_RAILS] = {
-    {
-        .en_port =    1,
-        .en_pin_bit = 11,
-        .ADC0_index = 0,
-        .ADC1_index = 1
-    },
-    {
-        .en_port =    1,
-        .en_pin_bit = 12,
-        .ADC0_index = 2,
-        .ADC1_index = 3
-    },
-    {
-        .en_port =    1,
-        .en_pin_bit = 15,
-        .ADC0_index = 0,
-        .ADC1_index = 0
-    },
-    {
-        .en_port = 0,
-        .en_pin_bit = 3,
-        .ADC0_index = 3,
-        .ADC1_index = 3
-    },
-    {
-        .en_port = 0,
-        .en_pin_bit = 4,
-        .ADC0_index = 4,
-        .ADC1_index = 4
-    },
-    {
-        .en_port = 0,
-        .en_pin_bit = 5,
-        .ADC0_index = 5,
-        .ADC1_index = 5
-    },
-    {
-        .en_port = 0,
-        .en_pin_bit = 6,
-        .ADC0_index = 6,
-        .ADC1_index = 6
-    },
-    {
-        .en_port = 0,
-        .en_pin_bit = 7,
-        .ADC0_index = 7,
-        .ADC1_index = 7
-    },
-    /* rails 8-31: not wired on this POC board yet - placeholder mapping,
-       continuing the en_pin_bit/ADC0_index/ADC1_index = i pattern from
-       rails 4-7 until real pin assignments are known */
-    { .en_port = 0, .en_pin_bit = 8,  .ADC0_index = 8,  .ADC1_index = 8  },
-    { .en_port = 0, .en_pin_bit = 9,  .ADC0_index = 9,  .ADC1_index = 9  },
-    { .en_port = 0, .en_pin_bit = 10, .ADC0_index = 10, .ADC1_index = 10 },
-    { .en_port = 0, .en_pin_bit = 11, .ADC0_index = 11, .ADC1_index = 11 },
-    { .en_port = 0, .en_pin_bit = 12, .ADC0_index = 12, .ADC1_index = 12 },
-    { .en_port = 0, .en_pin_bit = 13, .ADC0_index = 13, .ADC1_index = 13 },
-    { .en_port = 0, .en_pin_bit = 14, .ADC0_index = 14, .ADC1_index = 14 },
-    { .en_port = 0, .en_pin_bit = 15, .ADC0_index = 15, .ADC1_index = 15 },
-    { .en_port = 0, .en_pin_bit = 16, .ADC0_index = 16, .ADC1_index = 16 },
-    { .en_port = 0, .en_pin_bit = 17, .ADC0_index = 17, .ADC1_index = 17 },
-    { .en_port = 0, .en_pin_bit = 18, .ADC0_index = 18, .ADC1_index = 18 },
-    { .en_port = 0, .en_pin_bit = 19, .ADC0_index = 19, .ADC1_index = 19 },
-    { .en_port = 0, .en_pin_bit = 20, .ADC0_index = 20, .ADC1_index = 20 },
-    { .en_port = 0, .en_pin_bit = 21, .ADC0_index = 21, .ADC1_index = 21 },
-    { .en_port = 0, .en_pin_bit = 22, .ADC0_index = 22, .ADC1_index = 22 },
-    { .en_port = 0, .en_pin_bit = 23, .ADC0_index = 23, .ADC1_index = 23 },
-    { .en_port = 0, .en_pin_bit = 24, .ADC0_index = 24, .ADC1_index = 24 },
-    { .en_port = 0, .en_pin_bit = 25, .ADC0_index = 25, .ADC1_index = 25 },
-    { .en_port = 0, .en_pin_bit = 26, .ADC0_index = 26, .ADC1_index = 26 },
-    { .en_port = 0, .en_pin_bit = 27, .ADC0_index = 27, .ADC1_index = 27 },
-    { .en_port = 0, .en_pin_bit = 28, .ADC0_index = 28, .ADC1_index = 28 },
-    { .en_port = 0, .en_pin_bit = 29, .ADC0_index = 29, .ADC1_index = 29 },
-    { .en_port = 0, .en_pin_bit = 30, .ADC0_index = 30, .ADC1_index = 30 },
-    { .en_port = 0, .en_pin_bit = 31, .ADC0_index = 31, .ADC1_index = 31 }
-};
 
-#endif
 
 /*
   _____                           _____       _ _     
@@ -611,9 +704,17 @@ IO_PFS(0xFFFF), /* ID 85 */
 IO_PFS(0xFFFF), /* ID 86 */
 IO_PFS(0xFFFF), /* ID 87 */
 IO_PFS(0xFFFF)  /* ID 88 */
+},
+.PMBUS = {
+    .SDA = IO_PFS(BSP_IO_PORT_05_PIN_11),
+    .SCL = IO_PFS(BSP_IO_PORT_05_PIN_12),
+    .SEL = { IO_PFS(BSP_IO_PORT_06_PIN_00), 
+             IO_PFS(BSP_IO_PORT_06_PIN_01), 
+             IO_PFS(BSP_IO_PORT_06_PIN_03) },
+    .ALERT = IO_PFS(BSP_IO_PORT_06_PIN_04),
+    .CONTROL = IO_PFS(BSP_IO_PORT_06_PIN_05)
 }
 }
-
 };
 
 const power_sequencer_CONST_t power_sequencer_CONST = {
