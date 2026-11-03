@@ -624,9 +624,9 @@ static const char *pmbus_cmd_text(pmbus_command_t cmd)
     }
 }
 
-void print_pmbus_cmd(uint8_t x)
+void print_pmbus_cmd(uint8_t x, char c)
 {
     pmbus_command_t cmd = (pmbus_command_t) x;
-    sprintf(line, "  0x%02X  %s\n", x, pmbus_cmd_text(cmd));
+    sprintf(line, "  0x%02X  %s (%c)\n", x, pmbus_cmd_text(cmd), c);
     APP_PRINT(line);
 }

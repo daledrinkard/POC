@@ -54,6 +54,7 @@ const power_controller_t PowerController = {
     .GPIO =      (power_sequencer_IO_t *)     &power_sequencer_IO,
     .CONSTANTS = (power_sequencer_CONST_t *)  &power_sequencer_CONST
 };
+void app_sequencer_comm_cb(comm_event_t event, void *ctx);
 int app_func_reset   (void)
 {
    power_rail_t *p_rail;// = PowerController.rails;
@@ -61,7 +62,7 @@ int app_func_reset   (void)
     POP0();
 
 
-    #if 0 // only do this once, on first run, if the addresses of the dataflash segments change.
+    #if 1 // only do this once, on first run, if the addresses of the dataflash segments change.
     APP_INFO_PRINT("\n ******* \n      UPDATING DATAFLASH  \n ***** \n");
      pwr_rail_store_config(0,(uint8_t*) &power_analog_3300,sizeof(power_rail_cfg_t));
      pwr_rail_store_config(1,(uint8_t*) &power_analog_5000,sizeof(power_rail_cfg_t));
@@ -91,20 +92,24 @@ int app_func_reset   (void)
     POPB(); //@@@ turn on the blue led
 
     CP = CPAN_open(&control_panel_initial);  /* open the control panel */
-    comm_init();
+    comm_init(app_sequencer_comm_cb);
     print_controller(4);
     return (CP == NULL) ? -1 : 0;
 }
 int app_func_startup (void)
 {
     APP_INFO_PRINT("\nSEQUENCER STARTUP\n");
-/*  T0 sets the cadence for the system.  it is always running.*/
-    R_GPT_Open  (&g_T0_ctrl, &g_T0_cfg);
-    R_GPT_Enable(&g_T0_ctrl);
-    R_GPT_Start (&g_T0_ctrl);
 /*  SW1 starts the sequencer */    
     R_ICU_ExternalIrqOpen(&g_SW1_ctrl, &g_SW1_cfg);
     R_ICU_ExternalIrqEnable(&g_SW1_ctrl);    
+    R_ICU_ExternalIrqOpen(&g_SYNC_irq_ctrl, &g_SYNC_irq_cfg);
+    R_ICU_ExternalIrqEnable(&g_SYNC_irq_ctrl);
+    if (PowerController.ctrl->master_controller)
+    {
+        R_GPT_Open  (&g_T0_ctrl, &g_T0_cfg);
+        R_GPT_Enable(&g_T0_ctrl);
+        R_GPT_Start (&g_T0_ctrl);
+    }
     DROP0();
     
     return 0;
@@ -131,15 +136,18 @@ int app_func_run     (void)
    //power_rail_t *p_rail;// = PowerController.rails;
    //power_rail_map_t  *p_map;// = PowerController.map;
    bool loop_again = false;
-   if (app_event_flag_get(SYSFLG_PWR_READBACK,APP_FLAG_OR_CLEAR,0,NULL))
-   {
-      PowerController.ctrl->event |= PWR_FLAG_READBACK;
-   }
-   if (PowerController.ctrl->event & PWR_FLAG_READBACK)
+#if (0 == APP_PROCESSING)
+    while(0 == (PowerController.ctrl->event & PWR_FLAG_POLL))
+    {
+    /** WFI **/
+    }       
+#endif   
+   PowerController.ctrl->event &= (uint32_t) ~PWR_FLAG_POLL;
+   if (PowerController.ctrl->event & PWR_FLAG_SERVICE)
    {
         if (0 == comm_service())
         {
-            PowerController.ctrl->event &= (uint32_t) ~PWR_FLAG_READBACK;
+            PowerController.ctrl->event &= (uint32_t) ~PWR_FLAG_SERVICE;
         }
    }
    switch(PowerController.ctrl->state)
@@ -258,16 +266,25 @@ int app_func_run     (void)
     return 0;
 }
 
-/* once the ADCs are integrated, this will become the ADC callback */
+/* 
+     If this is the only controller, or the "master" controller, then this interrupt toggles the SYNC_CLK pin
+     and then calls SYNC_cb.  If this is a slave, then SYNC_cb is called from the pin interrupt.
+*/
+volatile uint32_t xPFS; //@@DBG
 void T0_cb(timer_callback_args_t *p_args)
 {
-    /* USER CODE: handle timer callback */
-    POP5();
-    pwr_mod_poll((uint16_t*) &ControlPanel.adc_value[0]); /* poll the ADC and update monitor_mv for each rail */
-    pwr_seq_poll_GPI();
-    pwr_seq_poll_Page();
-    DROP5();
-    app_event_flag_seti(SYSFLG_PWR_SERVICE,0);
+    uint32_t *p = (uint32_t*) PowerController.GPIO->usage.SYSPINS.SYNC_CLK;
+    external_irq_callback_args_t *p_args2 = (external_irq_callback_args_t *) p_args->p_context;
+    xPFS = *p; //@@DBG
+    if (*p & 0x00000002)
+    {
+        *p &= (uint32_t) ~0x00000005;
+    }
+    else
+    {
+        *p |= (uint32_t) 0x00000001;
+    }
+    SYNC_cb(p_args2);
 }
 
 /* Callback function */
@@ -283,7 +300,35 @@ void SW1_cb(external_irq_callback_args_t *p_args)
         PowerController.ctrl->event |= PWR_FLAG_ENABLE;
     }
 }
-
+void SYNC_cb(external_irq_callback_args_t *p_args)
+{
+    /* TODO: add your own code here */
+    pwr_mod_poll((uint16_t*) &ControlPanel.adc_value[0]); /* poll the ADC and update monitor_mv for each rail */
+    pwr_seq_poll_GPI();
+    pwr_seq_poll_Page();
+#if APP_PROCESSING
+    app_event_flag_seti(SYSFLG_PWR_FLAG_POLL,0);
+#endif
+    PowerController.ctrl->event |= PWR_FLAG_POLL; 
+}
+void app_sequencer_comm_cb(comm_event_t event, void *ctx)
+{
+    FSP_PARAMETER_NOT_USED(ctx);
+    switch (event)
+    {
+    case COMM_EVENT_EOP:
+#if APP_PROCESSING    /* tell the APP layer */
+        app_event_flag_seti(SYSFLG_PWR_FLAG_SERVICE, 0); /* this signals the main loop to service the read (transmitting data for us)*/
+#endif        
+        PowerController.ctrl->event |= PWR_FLAG_SERVICE; /* tell the app_sequencer layer*/
+        break;
+    case COMM_EVENT_ERROR:
+//        app_event_flag_seti(SYSFLG_PWR_PMBUS_ERROR, 0); /* this signals the main loop to service the read (transmitting data for us)*/
+        break;
+    default:
+        break;
+    }
+}
 /****  DATA FLASH MAP *****
 0x0800_0000: power_sequencer_cfg_t
 0x0800_0100: power_rail_0  cfg   (128 bytes)

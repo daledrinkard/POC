@@ -11,7 +11,7 @@
 #define APP_HAS_CONTROLPANEL (1)  /* adds a control panel for runtime manipulation of components */
 #define APP_HAS_CONSOLE      (1)  /* adds a console to support prints to UART and input command parsing */
 #define APP_HAS_CMD_SHELL    (0)  /* adds a command shell to support runtime commands */
-
+#define APP_PROCESSING       (1)  /* adds a processing loop to support runtime processing of events */
 
 #if APP_HAS_CONSOLE
 #include "console/console_port.h" //IWYU pragma: keep
@@ -22,7 +22,7 @@
 #define APP_INFO_PRINT(_a_) console_Print(_a_)
 #define APP_ERR_PRINT(_a_) { console_SetColor(CONSOLE_COLOR_RED); console_Print(_a_); console_SetColor(CONSOLE_COLOR_NORMAL); }
 #define APP_PRINT(_a_) console_Print(_a_) /* blocking print of a single null-terminated string */
-#else
+#else /*  APP does not have a console */
 #define APP_ASSERT(_a_,_b_,_c_) assert(_a_)
 #define APP_INFO_PRINT(_a_)
 #define APP_ERR_PRINT(_a_)
@@ -57,14 +57,14 @@
 //-->#define APPCFG_USB_IDLE_SLEEP  (100)  /* how many ticks to sleep whilst waiting to be told to start or check for detach */
 
 /*  SYSTEM FLAG DEFINITIONS */
-#define SYSFLG_APP_RESTART  (0x00000001)
+#define SYSFLG_APP_RESTART       (0x00000001)
 #if APP_HAS_CONSOLE
-#define SYSFLG_CONSOLE_DATA (0x00000002)
+#define SYSFLG_CONSOLE_DATA      (0x00000002)
 #endif
-#define SYSFLG_PWR_SERVICE     (0x00000004)
-#define SYSFLG_DATAFLASH_READY (0x00000008)
-#define SYSFLG_PWR_READBACK    (0x00000010)
-#define SYSFLG_PWR_PMBUS_DONE  (0x00000020)
+#define SYSFLG_PWR_FLAG_POLL     (0x00000004)
+#define SYSFLG_DATAFLASH_READY   (0x00000008)
+#define SYSFLG_PWR_READBACK      (0x00000010)
+#define SYSFLG_PWR_FLAG_SERVICE  (0x00000020)
 //-->#define SYSFLG_xxx    (0x00000004)
 
 #define DF_POWER_BASE_ADDR        (BSP_FEATURE_FLASH_DATA_FLASH_START)

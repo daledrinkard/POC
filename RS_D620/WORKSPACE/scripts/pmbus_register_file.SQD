@@ -69,3 +69,9 @@ SWC0EFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 SWC0D00000000000000000000000000000000000000000000000000000000000000000000000000000000000P    FAULT_PIN_CONFIG
 SWC0D5C0C1000000000000000000000000000000000000000000000000000000000000P    MONITOR_CONFIG
 SWC0DD00000000000000000000000000000000000000000000000000000000000000000000P    PSRS
+
+
+#define PWRSEQ_UPDATE(_a_,_b_,_c_)                                                                      \
+            if (_a_) {pwr_seq_update_cfg((uint8_t *) _b_,data,data_len); return data_len;}             \
+            else    {pwr_seq_update_cfg(data, (uint8_t *) _b_,_c_);                                   \
+                     return _c_;}

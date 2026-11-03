@@ -14,6 +14,18 @@ static uint16_t adc_raw_to_mv(uint16_t raw_counts, uint32_t scale_q16);
 /* CRC-16/CCITT-FALSE (poly 0x1021, init 0xFFFF) over data[0..len-1] */
 static void pwr_dataflash_update(uint8_t *p, uint8_t *data, uint16_t len);
 static uint16_t crc16_ccitt(const uint8_t *data, uint32_t len);
+
+const power_sequencer_CONST_t power_sequencer_CONST = { //@@@ needs to be flushed out  
+    .max_digital_comp = 8,
+    .max_GPOs = 16,
+    .max_GPIs = 32,
+    .max_pages = 32,
+    .max_fans = 0,
+    .max_monitors = 0,
+    .max_fault_entries = 8,
+    .max_PWMs = 0
+};
+
 static uint16_t crc16_ccitt(const uint8_t *data, uint32_t len)
 {
     uint16_t crc = 0xFFFF;
@@ -255,6 +267,7 @@ void pwr_seq_restore_all(void)
 /*  This is called right after the dataflash is copied into working ram */
 volatile uint8_t PAGE;
 volatile uint8_t conf;
+volatile uint32_t r_PFS;
 void pwr_seq_configure(void)
 {
     /* configure the monitor pins */
@@ -381,6 +394,19 @@ void pwr_seq_configure(void)
     *((uint32_t*) PowerController.GPIO->usage.PMBUS.SEL[0]) =  PWR_PFS_PULL;
     *((uint32_t*) PowerController.GPIO->usage.PMBUS.SEL[1]) =  PWR_PFS_PULL;
     *((uint32_t*) PowerController.GPIO->usage.PMBUS.SEL[2]) =  PWR_PFS_PULL;
+    r_PFS = *((uint32_t*) PowerController.GPIO->usage.SYSPINS.SYNC_CLK );
+    r_PFS |= (PWR_PFS_ISEL | PWR_PFS_INT_BOTH);
+    /* configure the SYNC_CLK */
+    if (PowerController.cfg->MSCCFG.misc_cfg & PWR_MISC_SLAVE)
+    {
+        PowerController.ctrl->master_controller = false;
+    }
+    else
+    {
+        PowerController.ctrl->master_controller = true;
+        r_PFS |= PWR_PFS_OUTPUT0;
+    }
+    *((uint32_t*) PowerController.GPIO->usage.SYSPINS.SYNC_CLK ) = r_PFS;
     
 }
 // void pwr_seq_update_monitor(uint8_t *data,uint16_t len)
@@ -515,3 +541,5 @@ void pwr_seq_process_operation(uint8_t rail_index,uint8_t op)
        }
     }
 }
+
+

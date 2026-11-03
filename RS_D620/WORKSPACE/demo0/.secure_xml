@@ -92,6 +92,7 @@
       <configSetting altId="iic1.sda.p511" configurationId="iic1.sda" peripheral="IIC1"/>
       <configSetting altId="iic2.scl.p415" configurationId="iic2.scl" peripheral="IIC2"/>
       <configSetting altId="iic2.sda.p414" configurationId="iic2.sda" peripheral="IIC2"/>
+      <configSetting altId="irq0.irq00.p400" configurationId="irq0.irq00" isUsedByDriver="true" peripheral="ICU0"/>
       <configSetting altId="irq0.irq10.p005" configurationId="irq0.irq10" isUsedByDriver="true" peripheral="ICU0"/>
       <configSetting altId="p000.gpio_mode.gpio_mode_an" configurationId="p000.gpio_mode"/>
       <configSetting altId="p001.gpio_mode.gpio_mode_an" configurationId="p001.gpio_mode"/>
@@ -135,10 +136,8 @@
       <configSetting altId="p311.output.low" configurationId="p311"/>
       <configSetting altId="p311.gpio_speed.gpio_speed_high" configurationId="p311.gpio_drivecapacity"/>
       <configSetting altId="p311.gpio_mode.gpio_mode_out.low" configurationId="p311.gpio_mode"/>
-      <configSetting altId="p400.input" configurationId="p400"/>
       <configSetting altId="p400.gpio_irq.gpio_irq_enabled" configurationId="p400.gpio_irq"/>
-      <configSetting altId="p400.gpio_mode.gpio_mode_in" configurationId="p400.gpio_mode"/>
-      <configSetting altId="p400.gpio_pupd.gpio_pupd_ip_up" configurationId="p400.gpio_pupd"/>
+      <configSetting altId="p400.gpio_mode.gpio_mode_irq" configurationId="p400.gpio_mode"/>
       <configSetting altId="p401.gpio_speed.gpio_speed_high" configurationId="p401.gpio_drivecapacity"/>
       <configSetting altId="p401.gpio_mode.gpio_mode_peripheral" configurationId="p401.gpio_mode"/>
       <configSetting altId="p402.gpio_speed.gpio_speed_high" configurationId="p402.gpio_drivecapacity"/>

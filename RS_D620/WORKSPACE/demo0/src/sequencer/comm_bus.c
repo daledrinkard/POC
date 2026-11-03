@@ -11,8 +11,9 @@
 
 PB_comm_t PB_Comm;
 uint8_t xbuffer[COMM_DATA_SIZE*2]; //@@@ for storing the ASCII hex that is echoed back to the host
-int comm_init(void)
+int comm_init(void* cb)
 {
+    PB_Comm.cb = cb;
     R_SCI_UART_Open(&g_comm_uart_ctrl, &g_comm_uart_cfg);
     return 0;
 }
@@ -50,6 +51,23 @@ int comm_service(void)
             if (PB_Comm.flag & COMM_FLAG_TX_DONE)
             {
                 PB_Comm.flag &= ~COMM_FLAG_TX_DONE;
+                PB_Comm.state = COMM_STATE_ACK;
+                PB_Comm.flag |= COMM_FLAG_TX_RDY;
+//@@@ adding an ack                return 0; /* 0 = we are finished */
+            }
+            break;
+        case COMM_STATE_ACK:
+            if (PB_Comm.flag & COMM_FLAG_TX_RDY)
+            {
+                xbuffer[0] = 'x';
+                R_SCI_UART_Write(&g_comm_uart_ctrl,xbuffer,1);
+                PB_Comm.flag &= (uint8_t) ~COMM_FLAG_TX_RDY;
+            }
+            if (PB_Comm.flag & COMM_FLAG_TX_DONE)
+            {
+                PB_Comm.flag &= ~COMM_FLAG_TX_DONE;
+                PB_Comm.state = COMM_STATE_IDLE;
+                PB_Comm.flag |= COMM_FLAG_TX_RDY;
                 return 0; /* 0 = we are finished */
             }
             break;
@@ -64,16 +82,18 @@ static comm_state_type_t comm_parse_command(void);
 static comm_state_type_t comm_parse_command(void)
 {
     uint8_t len;
+    uint8_t next_state;
     len = (uint8_t) PMbus_execute(PB_Comm.command,PB_Comm.data,PB_Comm.data_len,(PB_Comm.read_write == 'W') ? 1 : 0);
+    PB_Comm.flag |= COMM_FLAG_TX_RDY;
     switch(PB_Comm.read_write) {
-        case 'W': return COMM_STATE_IDLE;
+        case 'W': 
+            next_state = COMM_STATE_ACK; break;
         case 'R':
+            next_state = COMM_STATE_READ;
             PB_Comm.data_len = len;
-            PB_Comm.state = COMM_STATE_READ;
-            PB_Comm.flag |= COMM_FLAG_TX_RDY;
-            app_event_flag_seti(SYSFLG_PWR_READBACK,0); /* this signals the main loop to service the read (transmitting data for us)*/
-            return COMM_STATE_READ;
+            break;
     }
+    return next_state;
 }
 
 /**
@@ -107,7 +127,7 @@ void comm_cb(uart_callback_args_t *p_args)
             break;
         case UART_EVENT_TX_COMPLETE:   // = (1UL << 1), ///< Transmit complete event
             PB_Comm.flag |= COMM_FLAG_TX_DONE;
-            PB_Comm.state = COMM_STATE_IDLE;
+            //PB_Comm.state = COMM_STATE_IDLE;
             break;
         case UART_EVENT_RX_CHAR:       // = (1UL << 2), ///< Character received
             if ((data == ' ') || (data == '\n') || (data == '\r')) {
@@ -182,7 +202,7 @@ void comm_cb(uart_callback_args_t *p_args)
                         case COMM_EOP:
                             PB_Comm.data_len = cx;
                             PB_Comm.state = comm_parse_command();
-                            app_event_flag_seti(SYSFLG_PWR_PMBUS_DONE,NULL);
+                            PB_Comm.cb(COMM_EVENT_EOP, NULL);
                             break;
                         default:
                         if (bx == 1)
@@ -200,7 +220,7 @@ void comm_cb(uart_callback_args_t *p_args)
                         break;
                     /* USER CODE: handle data */
                     break;
-                case COMM_STATE_READ:
+                case COMM_STATE_READ: /* the read state processing is handled in the main loop*/
                     while(1); //@@@TRAP   This should never happen as interrupts for "reads" involves TX interrupts
                     break;
                 case COMM_STATE_FAULT:

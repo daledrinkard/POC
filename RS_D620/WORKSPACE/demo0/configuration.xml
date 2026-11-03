@@ -546,6 +546,16 @@
       <property id="module.driver.uart.tei_ipl" value="board.icu.common.irq.priority12"/>
       <property id="module.driver.uart.eri_ipl" value="board.icu.common.irq.priority12"/>
     </module>
+    <module id="module.driver.external_irq_on_icu.1596114254">
+      <property id="module.driver.external_irq.name" value="g_SYNC_irq"/>
+      <property id="module.driver.external_irq.channel" value="0"/>
+      <property id="module.driver.external_irq.trigger" value="module.driver.external_irq.trigger.trig_rising"/>
+      <property id="module.driver.external_irq.filter_enable" value="module.driver.external_irq.filter_enable.false"/>
+      <property id="module.driver.external_irq.filter_source" value="module.driver.external_irq.filter_source.pclk"/>
+      <property id="module.driver.external_irq.clock_source_div" value="module.driver.external_irq.clock_source_div.clock_source_div_by_64"/>
+      <property id="module.driver.external_irq.p_callback" value="SYNC_cb"/>
+      <property id="module.driver.external_irq.ipl" value="board.icu.common.irq.priority12"/>
+    </module>
     <context id="_hal.0">
       <stack module="module.driver.ioport_on_ioport.0"/>
       <stack module="module.driver.flash_on_flash_hp.1627949393"/>
@@ -555,6 +565,7 @@
       <stack module="module.driver.timer_on_gpt.757837856"/>
       <stack module="module.driver.external_irq_on_icu.55178980"/>
       <stack module="module.driver.uart_on_sci_uart.1009680281"/>
+      <stack module="module.driver.external_irq_on_icu.1596114254"/>
     </context>
     <config id="config.driver.flash_hp">
       <property id="config.driver.flash_hp.param_checking_enable" value="config.flash_hp.param_checking_enable.bsp"/>
@@ -703,6 +714,7 @@
       <configSetting altId="iic2.pairing.free" configurationId="iic2.pairing"/>
       <configSetting altId="iic2.scl.p415" configurationId="iic2.scl"/>
       <configSetting altId="iic2.sda.p414" configurationId="iic2.sda"/>
+      <configSetting altId="irq0.irq00.p400" configurationId="irq0.irq00"/>
       <configSetting altId="irq0.irq10.p005" configurationId="irq0.irq10"/>
       <configSetting altId="irq0.mode.enabled" configurationId="irq0.mode"/>
       <configSetting altId="ospi0.pairing.free" configurationId="ospi0.pairing"/>
@@ -765,10 +777,9 @@
       <configSetting altId="p311.output.low" configurationId="p311"/>
       <configSetting altId="p311.gpio_speed.gpio_speed_high" configurationId="p311.gpio_drivecapacity"/>
       <configSetting altId="p311.gpio_mode.gpio_mode_out.low" configurationId="p311.gpio_mode"/>
-      <configSetting altId="p400.input" configurationId="p400"/>
+      <configSetting altId="p400.irq0.irq00" configurationId="p400"/>
       <configSetting altId="p400.gpio_irq.gpio_irq_enabled" configurationId="p400.gpio_irq"/>
-      <configSetting altId="p400.gpio_mode.gpio_mode_in" configurationId="p400.gpio_mode"/>
-      <configSetting altId="p400.gpio_pupd.gpio_pupd_ip_up" configurationId="p400.gpio_pupd"/>
+      <configSetting altId="p400.gpio_mode.gpio_mode_irq" configurationId="p400.gpio_mode"/>
       <configSetting altId="p401.etherc0.rmii.mdc" configurationId="p401"/>
       <configSetting altId="p401.gpio_speed.gpio_speed_high" configurationId="p401.gpio_drivecapacity"/>
       <configSetting altId="p401.gpio_mode.gpio_mode_peripheral" configurationId="p401.gpio_mode"/>

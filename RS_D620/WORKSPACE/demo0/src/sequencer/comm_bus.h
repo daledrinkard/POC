@@ -30,12 +30,18 @@ typedef enum
 #endif
     COMM_STATE_DATA,
     COMM_STATE_FAULT,
-    COMM_STATE_READ
+    COMM_STATE_READ,
+    COMM_STATE_ACK
 } comm_state_type_t;
-
+typedef enum
+{
+  COMM_EVENT_EOP,
+  COMM_EVENT_ERROR
+} comm_event_t;
 /* USER INCLUDE */
 typedef struct PB_comm_s
 {
+    void (*cb)(comm_event_t event, void *ctx);
     comm_state_type_t state;
     uint8_t address;
     uint8_t command;
@@ -50,6 +56,6 @@ typedef struct PB_comm_s
 extern PB_comm_t PB_Comm;
 
 /* USER ADDITIONAL PUBLIC FUNCTIONS */
-int comm_init(void);
+int comm_init(void* cb);
 int comm_service(void);
 #endif /* COMM_BUS_H_ */

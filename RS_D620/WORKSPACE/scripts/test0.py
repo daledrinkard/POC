@@ -8,7 +8,9 @@ Sends command lines from an ASCII file to a COM port at 115200,8,N,1.
 <filename> is an ASCII text file read one line at a time. Any line that
 begins with 'S' has everything up to and including the first 'P' in that
 line sent out the serial port (and echoed to the terminal, followed by a
-CRLF), followed by a 10ms pause. Lines not starting with 'S' are ignored.
+CRLF). The script then waits for an 'x' character to be received before
+sending the next line, continuing anyway if none arrives within 1 second.
+Lines not starting with 'S' are ignored.
 Any bytes arriving from the COM port are echoed to the terminal as they
 arrive. After the last line of the file is processed, the script pauses
 for 1 second before closing the port.
@@ -24,11 +26,16 @@ try:
 except ImportError:
     sys.exit("This script requires pyserial. Install it with: pip install pyserial")
 
+ACK_CHAR = b'x'
+ACK_TIMEOUT_S = 1.0
 
-def reader_thread(ser, stop_event):
+
+def reader_thread(ser, stop_event, ack_event):
     while not stop_event.is_set():
         data = ser.read(ser.in_waiting or 1)
         if data:
+            if ACK_CHAR in data:
+                ack_event.set()
             sys.stdout.write(data.decode('ascii', errors='replace'))
             sys.stdout.flush()
 
@@ -50,7 +57,8 @@ def main():
     )
 
     stop_event = threading.Event()
-    thread = threading.Thread(target=reader_thread, args=(ser, stop_event), daemon=True)
+    ack_event = threading.Event()
+    thread = threading.Thread(target=reader_thread, args=(ser, stop_event, ack_event), daemon=True)
     thread.start()
 
     try:
@@ -64,10 +72,12 @@ def main():
                     print(f"[test0] no 'P' found in line, skipping: {line}")
                     continue
                 payload = line[:p_index + 1]
+                ack_event.clear()
                 ser.write(payload.encode('ascii'))
                 sys.stdout.write(payload + '\r\n')
                 sys.stdout.flush()
-                time.sleep(0.010)
+                if not ack_event.wait(ACK_TIMEOUT_S):
+                    print(f"[test0] no '{ACK_CHAR.decode()}' received within {ACK_TIMEOUT_S}s, continuing")
         time.sleep(1)
     finally:
         stop_event.set()

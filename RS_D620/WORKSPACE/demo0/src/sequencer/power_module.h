@@ -53,7 +53,9 @@
 /* USER DEFINE */
 
 #define PWR_FLAG_ENABLE     (0x00000001)
-#define PWR_FLAG_READBACK   (0x00000002) /* this flag enables the main loop to poll the comm during a read operation */
+#define PWR_FLAG_SERVICE    (0x00000002) /* this flag enables the main loop to poll the comm during a read operation */
+#define PWR_FLAG_PMBUS      (0x00000004) /* flag to indicate PMbus communication has completed*/
+#define PWR_FLAG_POLL       (0x00000008) /* flag to indicate polling is required */
 /* These are RA specific coding */
 #define PWR_PIN_p_PFS(_a_) (uint32_t*) PowerController.GPIO->pin[_a_]
 #if 0
@@ -71,6 +73,10 @@
 #define PWR_PFS_PULL     0x00000010  /* input pull up */ 
 #define PWR_PFS_OD1      0x00000040  /* OD initially pulled hi input */ 
 #define PWR_PFS_OD0      0x00000044  /* OD initially driven low */ 
+#define PWR_PFS_ISEL     0x00004000  /* Set ISEL  */
+#define PWR_PFS_INT_FALL 0x00002000 
+#define PWR_PFS_INT_RISE 0x00001000 
+#define PWR_PFS_INT_BOTH 0x00003000 
 #define PWR_PFS_PMBUS_SDA    APP_PMBUS_PFS_SDA /* configured in the application*/
 #define PWR_PFS_PMBUS_SCL    APP_PMBUS_PFS_SCL /* configured in the application*/
 
@@ -90,6 +96,13 @@
 
 #define PWR_PIN_CFG_DVM(_a_)      *(PWR_PIN_p_PFS(_a_))  = (uint32_t)  0x00004000;  /* Set ISEL  */ 
 
+#define PWR_MISC_RESEQ_FOREVER    (0x80) 
+#define PWR_MISC_RESEQ_ABORT      (0x40)
+#define PWR_MISC_RESEQ_MAX        (0x30)
+#define PWR_MISC_SLAVE            (0x08)
+#define PWR_MISC_FIFO_LOG_EN      (0x04)
+#define PWR_MISC_EXT_REF_EN       (0x02)
+#define PWR_MISC_EXT_CLK_EN       (0x01)
 /* how a rail's output is measured (ucd91320 4: MONx = analog or digital monitor, or GPIO) */
 typedef enum power_monitor_type_e {
     PWR_MON_NONE,
@@ -331,6 +344,9 @@ typedef struct power_PMBUS_s {
     void* ALERT;
     void* CONTROL;
 } power_PMBUS_t;
+typedef struct power_SYSPINS_s {
+    void* SYNC_CLK;
+} power_SYSPINS_t;
 typedef union power_sequencer_IO_u {
     struct {
         void* MON[PWR_MAX_MONITOR];
@@ -339,8 +355,9 @@ typedef union power_sequencer_IO_u {
         void* MAR[PWR_MAX_MAR];
         void* GPIO[PWR_MAX_GPIO];
         power_PMBUS_t PMBUS;
+        power_SYSPINS_t SYSPINS;
     } usage;
-    void* pin[PWR_IO_DATA_WORDS + sizeof(power_PMBUS_t)/sizeof(void*)];
+    void* pin[PWR_IO_DATA_WORDS + sizeof(power_PMBUS_t)/sizeof(void*)+ sizeof(power_SYSPINS_t)/sizeof(void*)];
 } power_sequencer_IO_t;
 typedef struct power_sequencer_CONST_s {
     uint8_t max_digital_comp;
@@ -438,6 +455,7 @@ typedef struct power_controller_cfg_s {
     uint8_t                  cascade_count;       /* number of devices in the cascade, 1 if standalone */
     uint16_t                 watchdog_timeout_ms;
     uint8_t                  pwm_select;
+    uint8_t                  pad;
     uint32_t                 gpi_mask;           /* general purpose input pin states */
     uint32_t                 gpo_mask;           /* command/logic controlled (LGPO) output pin states */
     bool                     watchdog_enabled;
@@ -456,7 +474,8 @@ typedef struct power_controller_ctrl_s {
     uint8_t                  ram_00;
     uint8_t                  GPIO_select;
     uint8_t                  GPIO_config;
-    uint8_t                  spare[3];
+    bool                     master_controller;  
+    uint8_t                  spare[2];
 
     uint32_t                 rails_ready;
     uint32_t                 rails_enabled;
@@ -481,7 +500,8 @@ typedef struct power_controller_s {
 } power_controller_t;
 
 extern const power_controller_t PowerController;
-/* USER ADDITIONAL PUBLIC FUNCTIONS */
+extern const power_sequencer_CONST_t power_sequencer_CONST;
+ /* USER ADDITIONAL PUBLIC FUNCTIONS */
 /* Scan ADC_data[i] (raw ADC counts, one per rail, same indexing as PowerController.rails[])
  * into each PWR_MON_ANALOG rail's monitor_mv. Call this once per ADC scan cycle. */
 void pwr_mod_poll(uint16_t *ADC_data);

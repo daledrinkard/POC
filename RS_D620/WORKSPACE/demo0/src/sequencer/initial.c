@@ -383,15 +383,14 @@ const power_rail_cfg_t power_digital_OFFLINE = {
     .enable_active_high = true */
 };
 /*
-   _____                                              _____             __ _                       _   _             
-  / ____|                                            / ____|           / _(_)                     | | (_)            
- | (___   ___  __ _ _   _  ___ _ __   ___ ___ _ __  | |     ___  _ __ | |_ _  __ _ _   _ _ __ __ _| |_ _  ___  _ __  
-  \___ \ / _ \/ _` | | | |/ _ \ '_ \ / __/ _ \ '__| | |    / _ \| '_ \|  _| |/ _` | | | | '__/ _` | __| |/ _ \| '_ \ 
-  ____) |  __/ (_| | |_| |  __/ | | | (_|  __/ |    | |___| (_) | | | | | | | (_| | |_| | | | (_| | |_| | (_) | | | |
- |_____/ \___|\__, |\__,_|\___|_| |_|\___\___|_|     \_____\___/|_| |_|_| |_|\__, |\__,_|_|  \__,_|\__|_|\___/|_| |_|
-                 | |                                                          __/ |                                  
-                 |_|                                                         |___/                                   
-*/
+   _____            _             _ _              _____             __ _                       _   _              
+  / ____|          | |           | | |            / ____|           / _(_)                     | | (_)             
+ | |     ___  _ __ | |_ _ __ ___ | | | ___ _ __  | |     ___  _ __ | |_ _  __ _ _   _ _ __ __ _| |_ _  ___  _ __   
+ | |    / _ \| '_ \| __| '__/ _ \| | |/ _ \ '__| | |    / _ \| '_ \|  _| |/ _` | | | | '__/ _` | __| |/ _ \| '_ \  
+ | |___| (_) | | | | |_| | | (_) | | |  __/ |    | |___| (_) | | | | | | | (_| | |_| | | | (_| | |_| | (_) | | | | 
+  \_____\___/|_| |_|\__|_|  \___/|_|_|\___|_|     \_____\___/|_| |_|_| |_|\__, |\__,_|_|  \__,_|\__|_|\___/|_| |_| 
+                                                                           __/ |                                   
+                                                                          |___/                                    */
 const power_controller_cfg_t power_controller_basic = {
     .monitor = {
         (PWR_MON_TYPE_ANALOG  | 1), /* Tie MON1 to the voltage monitoring of rail[0]*/
@@ -531,7 +530,7 @@ const power_controller_cfg_t power_controller_basic = {
         .misc_cfg = 0x00, /* 7: no limit to how many times the device can be resequenced,*/
                           /* 6: Resequence abort if TOFF_MAX_WARN occurs */
                           /* 5:4  maximum times to resequence 00=1 01=2 ... */
-                          /* 3:  Slave see table 26-46 */
+                          /* 3:  Slave 0=master 1=slave */
                           /* 2:  Enable FIFO Log */
                           /* 1:  External ADC reference enable */
                           /* 0:  SUB oscillator in use */
@@ -604,7 +603,16 @@ const R_PFS_PORT_Type *G = 0;
 R_PFS_Type *p;
 
 #define IO_PFS(_a_) (void*) (R_PFS_BASE + ((_a_ & 0xFF00)>>2) + (0x04 * (_a_ & 0x000F)))
-
+/*
+  _____ ____    __  __               ______ _  __     _____             __  __  __ _____  
+ |_   _/ __ \  |  \/  |             |  ____| |/ /    |  __ \     /\    / / |  \/  | ____| 
+   | || |  | | | \  / | __ _ _ __   | |__  | ' /_____| |__) |   /  \  / /_ | \  / | |__   
+   | || |  | | | |\/| |/ _` | '_ \  |  __| |  <______|  _  /   / /\ \| '_ \| |\/| |___ \  
+  _| || |__| | | |  | | (_| | |_) | | |____| . \     | | \ \  / ____ \ (_) | |  | |___) | 
+ |_____\____/  |_|  |_|\__,_| .__/  |______|_|\_\    |_|  \_\/_/    \_\___/|_|  |_|____/  
+                            | |                                                           
+                            |_|                                                           
+*/
 const power_sequencer_IO_t power_sequencer_IO = {
 .usage = {
 .MON = {
@@ -642,7 +650,8 @@ IO_PFS(BSP_IO_PORT_02_PIN_02), /* ID 28 */     /* IRQ3 */
 IO_PFS(0xFFFF),                /* ID 29 */
 IO_PFS(0xFFFF),                /* ID 30 */
 IO_PFS(0xFFFF),                /* ID 31 */
-IO_PFS(0xFFFF) },              /* ID 32 */
+IO_PFS(0xFFFF)                 /* ID 32 */
+},
 .EN = {  /* Ones with pullups route to OSPI */
 IO_PFS(BSP_IO_PORT_01_PIN_00), /* ID 33 */ /* IRQ2*/  /* this has a 10k pull up on the board */
 IO_PFS(BSP_IO_PORT_01_PIN_01), /* ID 34 */ /* IRQ1*/  /* this has a 10k pull up on the board */
@@ -712,18 +721,11 @@ IO_PFS(0xFFFF)  /* ID 88 */
              IO_PFS(BSP_IO_PORT_06_PIN_01), 
              IO_PFS(BSP_IO_PORT_06_PIN_03) },
     .ALERT = IO_PFS(BSP_IO_PORT_06_PIN_04),
-    .CONTROL = IO_PFS(BSP_IO_PORT_06_PIN_05)
-}
+},
+.SYSPINS = {
+    .SYNC_CLK  = IO_PFS(BSP_IO_PORT_04_PIN_00)
+    }
 }
 };
 
-const power_sequencer_CONST_t power_sequencer_CONST = {
-    .max_digital_comp = 8,
-    .max_GPOs = 16,
-    .max_GPIs = 32,
-    .max_pages = 32,
-    .max_fans = 0,
-    .max_monitors = 0,
-    .max_fault_entries = 8,
-    .max_PWMs = 0
-};
+

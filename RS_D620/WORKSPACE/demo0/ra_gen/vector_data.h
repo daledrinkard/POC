@@ -6,7 +6,7 @@
         #endif
                 /* Number of interrupts allocated */
         #ifndef VECTOR_DATA_IRQ_COUNT
-        #define VECTOR_DATA_IRQ_COUNT    (13)
+        #define VECTOR_DATA_IRQ_COUNT    (14)
         #endif
         /* ISR prototypes */
         void fcu_frdyi_isr(void);
@@ -45,8 +45,10 @@
         #define SCI0_TEI_IRQn          ((IRQn_Type) 11) /* SCI0 TEI (Transmit end) */
         #define VECTOR_NUMBER_SCI0_ERI ((IRQn_Type) 12) /* SCI0 ERI (Receive error) */
         #define SCI0_ERI_IRQn          ((IRQn_Type) 12) /* SCI0 ERI (Receive error) */
+        #define VECTOR_NUMBER_ICU_IRQ0 ((IRQn_Type) 13) /* ICU IRQ0 (External pin interrupt 0) */
+        #define ICU_IRQ0_IRQn          ((IRQn_Type) 13) /* ICU IRQ0 (External pin interrupt 0) */
         /* The number of entries required for the ICU vector table. */
-        #define BSP_ICU_VECTOR_NUM_ENTRIES (13)
+        #define BSP_ICU_VECTOR_NUM_ENTRIES (14)
 
         #ifdef __cplusplus
         }

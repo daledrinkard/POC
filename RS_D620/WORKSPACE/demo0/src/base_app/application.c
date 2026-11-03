@@ -90,13 +90,11 @@ void app_entry(void) {
                 */
                 do { /* hang in this state */
                     /* USER code */
-#if 1 //@@@ debugging
-                    if (0 == app_event_flag_get(SYSFLG_PWR_PMBUS_DONE,APP_FLAG_OR_CLEAR,0,&event_flag))
+                    if (0 == app_event_flag_get(SYSFLG_PWR_FLAG_SERVICE,APP_FLAG_OR_CLEAR,0,&event_flag))
                     {
-                        print_pmbus_cmd(PB_Comm.command);
+                        print_pmbus_cmd(PB_Comm.command, (char) PB_Comm.read_write);
                     }
 
-#endif                    
                     app_func_run();
                     simulator_run();
 #if APP_HAS_CONTROLPANEL
@@ -116,9 +114,8 @@ void app_entry(void) {
                         App.state = APP_STATE_RESTART;
                     }
                     /*** WFI  ***/
-                    while(0 != app_event_flag_get(SYSFLG_PWR_SERVICE,APP_FLAG_OR_CLEAR,0,&event_flag))
+                    while(0 != app_event_flag_get(SYSFLG_PWR_FLAG_POLL,APP_FLAG_OR_CLEAR,0,&event_flag))
                     {
-
                     }
                 } while(App.state == APP_STATE_RUNNING);
                 break;
