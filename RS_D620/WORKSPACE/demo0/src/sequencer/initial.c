@@ -543,7 +543,7 @@ const power_controller_cfg_t power_controller_basic = {
         
     },
     .active_rail_group = 0,
-    .pmbus_address = 0xC0,
+    .pmbus_address = 0xC0, /* dummy value.  gets written during initialization */
     .cascade_id = 0,
     .cascade_count = 1,
     .watchdog_timeout_ms = 0,
@@ -668,7 +668,7 @@ IO_PFS(BSP_IO_PORT_01_PIN_11), /* ID 44 */ /* IRQ4*/
 IO_PFS(BSP_IO_PORT_01_PIN_12), /* ID 45 */ /*     */ 
 IO_PFS(BSP_IO_PORT_01_PIN_13), /* ID 46 */ /*     */ 
 IO_PFS(BSP_IO_PORT_01_PIN_14), /* ID 47 */ /*     */ 
-IO_PFS(BSP_IO_PORT_01_PIN_15), /* ID 48 */ /*     */ 
+IO_PFS(BSP_IO_PORT_06_PIN_09), /* ID 48 */ /*     */ 
 IO_PFS(0xFFFF),                /* ID 49 */
 IO_PFS(0xFFFF),                /* ID 50 */
 IO_PFS(0xFFFF), /* ID 51 */
@@ -723,8 +723,18 @@ IO_PFS(0xFFFF)  /* ID 88 */
     .ALERT = IO_PFS(BSP_IO_PORT_06_PIN_04),
 },
 .SYSPINS = {
-    .SYNC_CLK  = IO_PFS(BSP_IO_PORT_04_PIN_00)
-    }
+    .SYNC_CLK  = IO_PFS(BSP_IO_PORT_04_PIN_00),
+    .UART_RX  = IO_PFS(BSP_IO_PORT_04_PIN_10),
+    .UART_TX  = IO_PFS(BSP_IO_PORT_04_PIN_11),
+},
+.DBGPINS = {
+        .START  = IO_PFS(BSP_IO_PORT_06_PIN_08),
+        .SW_1  = IO_PFS(BSP_IO_PORT_00_PIN_05),
+        .SW_2  = IO_PFS(BSP_IO_PORT_00_PIN_04),
+        .LEDR  = IO_PFS(BSP_IO_PORT_00_PIN_08),
+        .LEDB  = IO_PFS(BSP_IO_PORT_00_PIN_06),
+        .LEDG  = IO_PFS(BSP_IO_PORT_00_PIN_07)
+}
 }
 };
 

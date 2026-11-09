@@ -92,7 +92,14 @@ void app_entry(void) {
                     /* USER code */
                     if (0 == app_event_flag_get(SYSFLG_PWR_FLAG_SERVICE,APP_FLAG_OR_CLEAR,0,&event_flag))
                     {
-                        print_pmbus_cmd(PB_Comm.command, (char) PB_Comm.read_write);
+                        switch(PB_Comm.read_write) {
+                            case 'W':
+                                print_pmbus_cmd(PB_Comm.command, (char) PB_Comm.read_write, PB_Comm.data, PB_Comm.data_len);
+                                break;
+                            case 'R':
+                                print_pmbus_cmd(PB_Comm.command, (char) PB_Comm.read_write, (uint8_t*) &PB_Comm.data[1], PB_Comm.data[0]);
+                                break;
+                        }
                     }
 
                     app_func_run();

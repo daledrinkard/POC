@@ -76,9 +76,9 @@ int app_func_reset   (void)
     pwr_seq_store_config((uint8_t *)&power_controller_basic,sizeof(power_controller_cfg_t));
 //@     pwr_seq_store_map((uint8_t *)&power_rail_maps,sizeof(power_rail_maps)); //@@@ hard constant
     #endif
-
+DROP0();
     pwr_seq_restore_all(); /* cfg_store --> cfg */
-    pwr_seq_configure();
+    pwr_seq_configure();   /* cfg used to configure the IO pins*/
     PowerController.ctrl->event = 0;
     PowerController.ctrl->rails_ready = 0;
     PowerController.ctrl->rails_enabled = 0;
@@ -92,7 +92,7 @@ int app_func_reset   (void)
     POPB(); //@@@ turn on the blue led
 
     CP = CPAN_open(&control_panel_initial);  /* open the control panel */
-    comm_init(app_sequencer_comm_cb);
+    comm_init(PowerController.cfg->pmbus_address, app_sequencer_comm_cb, PowerController.GPIO->usage.SYSPINS.UART_TX);  /* open the comm bus */
     print_controller(4);
     return (CP == NULL) ? -1 : 0;
 }
@@ -100,15 +100,21 @@ int app_func_startup (void)
 {
     APP_INFO_PRINT("\nSEQUENCER STARTUP\n");
 /*  SW1 starts the sequencer */    
+POP0();
+#if 1 //@@DEBUG
     R_ICU_ExternalIrqOpen(&g_SW1_ctrl, &g_SW1_cfg);
     R_ICU_ExternalIrqEnable(&g_SW1_ctrl);    
-    R_ICU_ExternalIrqOpen(&g_SYNC_irq_ctrl, &g_SYNC_irq_cfg);
-    R_ICU_ExternalIrqEnable(&g_SYNC_irq_ctrl);
+#endif    
     if (PowerController.ctrl->master_controller)
     {
         R_GPT_Open  (&g_T0_ctrl, &g_T0_cfg);
         R_GPT_Enable(&g_T0_ctrl);
         R_GPT_Start (&g_T0_ctrl);
+    }  
+    else
+    {
+        R_ICU_ExternalIrqOpen(&g_SYNC_irq_ctrl, &g_SYNC_irq_cfg);
+        R_ICU_ExternalIrqEnable(&g_SYNC_irq_ctrl);
     }
     DROP0();
     
@@ -117,9 +123,6 @@ int app_func_startup (void)
 
 int app_func_restart (void)
 {
-    /* example: persist rail 0's configuration record to data flash on restart */
-    //data_flash_write_record(BSP_FEATURE_FLASH_DATA_FLASH_START, (const uint8_t *) &power_rail_cfgs[0],
-      //                       sizeof(power_rail_cfg_t));
     return 0;
 }
 /*
@@ -130,11 +133,6 @@ int app_func_restart (void)
 
 int app_func_run     (void)
 {
-    /*
-        The ADC has been scanned and values are stored in ???????
-    */
-   //power_rail_t *p_rail;// = PowerController.rails;
-   //power_rail_map_t  *p_map;// = PowerController.map;
    bool loop_again = false;
 #if (0 == APP_PROCESSING)
     while(0 == (PowerController.ctrl->event & PWR_FLAG_POLL))
@@ -270,12 +268,13 @@ int app_func_run     (void)
      If this is the only controller, or the "master" controller, then this interrupt toggles the SYNC_CLK pin
      and then calls SYNC_cb.  If this is a slave, then SYNC_cb is called from the pin interrupt.
 */
-volatile uint32_t xPFS; //@@DBG
+volatile uint32_t rPFS; //@@DBG
+volatile uint32_t *pPFS; //@@DBG
 void T0_cb(timer_callback_args_t *p_args)
 {
     uint32_t *p = (uint32_t*) PowerController.GPIO->usage.SYSPINS.SYNC_CLK;
     external_irq_callback_args_t *p_args2 = (external_irq_callback_args_t *) p_args->p_context;
-    xPFS = *p; //@@DBG
+    rPFS = *p; //@@DBG
     if (*p & 0x00000002)
     {
         *p &= (uint32_t) ~0x00000005;
@@ -288,21 +287,17 @@ void T0_cb(timer_callback_args_t *p_args)
 }
 
 /* Callback function */
-void SW1_cb(external_irq_callback_args_t *p_args)
+void SW1_cb(external_irq_callback_args_t *p_args) /* SW1 toggles the configured DBGPINS->START*/
 {
     /* TODO: add your own code here */
-    if (PowerController.ctrl->event & PWR_FLAG_ENABLE)
-    {
-        PowerController.ctrl->event &= (uint32_t) ~PWR_FLAG_ENABLE;
-    }
-    else
-    {
-        PowerController.ctrl->event |= PWR_FLAG_ENABLE;
-    }
+    FSP_PARAMETER_NOT_USED(p_args);
+    pPFS = ((uint32_t*) PowerController.GPIO->usage.DBGPINS.START);
+    *pPFS ^= (uint32_t) 0x00000001;
 }
 void SYNC_cb(external_irq_callback_args_t *p_args)
 {
     /* TODO: add your own code here */
+    FSP_PARAMETER_NOT_USED(p_args);
     pwr_mod_poll((uint16_t*) &ControlPanel.adc_value[0]); /* poll the ADC and update monitor_mv for each rail */
     pwr_seq_poll_GPI();
     pwr_seq_poll_Page();
@@ -329,8 +324,11 @@ void app_sequencer_comm_cb(comm_event_t event, void *ctx)
         break;
     }
 }
-/****  DATA FLASH MAP *****
-0x0800_0000: power_sequencer_cfg_t
-0x0800_0100: power_rail_0  cfg   (128 bytes)
-0x0800_0180: power_rail_1  cfg   (128 bytes)
-****************************/
+/*
+     PFS registers:
+     BASE ADDRESS: 0x4008_0800
+          INDEX:   0x       40
+     for(m=0;i<NUMBER_OF_PORTS)    
+       for(n=0)
+          address = BASE_ADDRESS + (0x40 * m) + (0x04 * n)
+*/

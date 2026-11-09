@@ -624,9 +624,22 @@ static const char *pmbus_cmd_text(pmbus_command_t cmd)
     }
 }
 
-void print_pmbus_cmd(uint8_t x, char c)
+void print_pmbus_cmd(uint8_t x, char c, const uint8_t *data, uint8_t len)
 {
     pmbus_command_t cmd = (pmbus_command_t) x;
-    sprintf(line, "  0x%02X  %s (%c)\n", x, pmbus_cmd_text(cmd), c);
+    int col = sprintf(line, "  0x%02X  %s (%c)", x, pmbus_cmd_text(cmd), c);
     APP_PRINT(line);
+    if (NULL != data)
+    {
+        for (; col < 40; col++)
+        {
+            APP_PRINT(" ");
+        }
+        for (uint8_t i = 0; i < len; i++)
+        {
+            sprintf(line, "%02X", data[i]);
+            APP_PRINT(line);
+        }
+    }
+    APP_PRINT("\n");
 }

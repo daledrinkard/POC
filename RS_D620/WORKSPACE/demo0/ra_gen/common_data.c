@@ -11,7 +11,7 @@ const icu_extended_cfg_t g_SYNC_irq_ext_cfg =
 const external_irq_cfg_t g_SYNC_irq_cfg =
 {
     .channel             = 0,
-    .trigger             = EXTERNAL_IRQ_TRIG_RISING,
+    .trigger             = EXTERNAL_IRQ_TRIG_BOTH_EDGE,
     .filter_enable       = false,
     .clock_source_div            = EXTERNAL_IRQ_CLOCK_SOURCE_DIV_64,
     .p_callback          = SYNC_cb,

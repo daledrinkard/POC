@@ -10,18 +10,37 @@
 
 
 PB_comm_t PB_Comm;
+//uint8_t PB_i2c_address;
+uint32_t PB_TX_PFS;
 uint8_t xbuffer[COMM_DATA_SIZE*2]; //@@@ for storing the ASCII hex that is echoed back to the host
-int comm_init(void* cb)
+int comm_init(uint8_t i2c_addr,void* cb,void *ctx)
 {
     PB_Comm.cb = cb;
+    PB_Comm.pmbus_address = i2c_addr;
+    PB_Comm.ctx = ctx;
     R_SCI_UART_Open(&g_comm_uart_ctrl, &g_comm_uart_cfg);
+    uint32_t* p_PFS_TX = ((uint32_t*) PB_Comm.ctx);
+    PB_Comm.r_PFS_TX_ON = *p_PFS_TX; /* save the TX pin configuration */
+    PB_Comm.r_PFS_TX_OFF = (PB_Comm.r_PFS_TX_ON & (uint32_t) ~0x00010004); /* create the TX off configuration */
+    PB_Comm.r_PFS_TX_OFF |= (uint32_t) 0x00000010; /* set the PULL up to on */
+    *p_PFS_TX = PB_Comm.r_PFS_TX_OFF; /* turn off the TX pin */
     return 0;
 }
 
-/* this function is "buzzed" in the .1mS main loop function when the comm mode is read */
+/* 
+  __  __       _          _                       
+ |  \/  |     (_)        | |                      
+ | \  / | __ _ _ _ __    | |     ___   ___  _ __  
+ | |\/| |/ _` | | '_ \   | |    / _ \ / _ \| '_ \ 
+ | |  | | (_| | | | | |  | |___| (_) | (_) | |_) |
+ |_|  |_|\__,_|_|_| |_|  |______\___/ \___/| .__/ 
+                                           | |    
+                                           |_|    
+*/
 int comm_service(void)
 {
     uint8_t t;
+    uint32_t* p_PFS_TX = ((uint32_t*) PB_Comm.ctx);
     switch (PB_Comm.state)
     {
         case COMM_STATE_IDLE:
@@ -45,6 +64,7 @@ int comm_service(void)
                     t = (PB_Comm.data[i] & 0x0F);
                     xbuffer[i*2+3] = ( t > 9) ? (t-10)+'A' : t+'0';
                 }
+                *p_PFS_TX = PB_Comm.r_PFS_TX_ON; /* turn on the TX pin */
                 R_SCI_UART_Write(&g_comm_uart_ctrl,xbuffer,(PB_Comm.data_len*2)+2);
                 PB_Comm.flag &= (uint8_t) ~COMM_FLAG_TX_RDY;
             }
@@ -68,6 +88,7 @@ int comm_service(void)
                 PB_Comm.flag &= ~COMM_FLAG_TX_DONE;
                 PB_Comm.state = COMM_STATE_IDLE;
                 PB_Comm.flag |= COMM_FLAG_TX_RDY;
+                *p_PFS_TX = PB_Comm.r_PFS_TX_OFF; /* turn off the TX pin */
                 return 0; /* 0 = we are finished */
             }
             break;
@@ -139,10 +160,7 @@ void comm_cb(uart_callback_args_t *p_args)
                     if (data == COMM_SOP) {
                         PB_Comm.address = 0;
                         PB_Comm.state = COMM_STATE_START;
-                    } else {
-                        POPR();
-                        PB_Comm.state = COMM_STATE_FAULT;
-                    }
+                    } 
                     break;
                 case COMM_STATE_START:
                     PB_Comm.read_write = data;
@@ -151,12 +169,12 @@ void comm_cb(uart_callback_args_t *p_args)
                     break;
                 case COMM_STATE_ADDRESS:
                     PB_Comm.address |= (data > '9') ? (data - 'A' + 10) : (data - '0');
-                    PB_Comm.address = PB_Comm.address << (4*bx);
+                    PB_Comm.address = (uint8_t) (PB_Comm.address << (4*bx));
                     if (bx == 0)
                     {
                         bx = 1;
                         PB_Comm.command = 0;
-                        PB_Comm.state = COMM_STATE_COMMAND;
+                        PB_Comm.state = (PB_Comm.pmbus_address == PB_Comm.address) ? COMM_STATE_COMMAND : COMM_STATE_IDLE;
                     }
                     else
                     {
@@ -222,6 +240,9 @@ void comm_cb(uart_callback_args_t *p_args)
                     break;
                 case COMM_STATE_READ: /* the read state processing is handled in the main loop*/
                     while(1); //@@@TRAP   This should never happen as interrupts for "reads" involves TX interrupts
+                    break;
+                case COMM_STATE_ACK: /* the ACK state processing is handled in the main loop*/
+                    while(1); //@@@TRAP   This should never happen as this state is handled in the main loop
                     break;
                 case COMM_STATE_FAULT:
                     /* USER CODE: handle fault */

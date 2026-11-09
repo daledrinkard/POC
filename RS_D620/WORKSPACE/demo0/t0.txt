@@ -35,6 +35,7 @@ SRC0 F9P
   Here we select page0 which corespondes to rail 1 of (1 to 32) rails.
 SWC0 00 00P
 SRC0 00P
+
   Next set the operation (0x01)
       bit 7:  ON/OFF state            0 = output is off,  1 = output is on
           6:  Turn off behavior       0 = turn off immediately  1 = use TOFF delay setting                                                  (IGNORED if bit 7 == 1)

@@ -2,17 +2,21 @@
 Convert a PMBus register CSV (e.g. a Fusion Power Designer export) to an SQD
 command file.
 
-Usage: python csv_to_sqd.py <file.csv>
+Usage: python csv_to_sqd.py <file.csv> <i2c_addr>
+
+<i2c_addr> is a 2-digit hex I2C address (e.g. "3C"), used to build the SWxx
+line prefix below.
 
 Each CSV line is: <command type>,<cmd code>,<value>[,<name>]
 Only "Byte Write", "Word Write" and "Block Write" lines are converted; all
 other lines are ignored. Output lines are:
 
-    SWC0 <cmd:2 hex> <data> P <spaces> <name> <CRLF>
+    SWxx <cmd:2 hex> <data> P <spaces> <name> <CRLF>
 
-where <data> is 2 hex digits for Byte Write, 4 for Word Write, and the raw
-hex string (0x stripped) for Block Write, and <name> is CSV field 4 (omitted
-with its spaces if empty). Output is written to <file>.SQD.
+where <xx> is the 2-digit hex I2C address, <data> is 2 hex digits for Byte
+Write, 4 for Word Write, and the raw hex string (0x stripped) for Block
+Write, and <name> is CSV field 4 (omitted with its spaces if empty). Output
+is written to <file>.SQD.
 """
 
 import csv
@@ -44,7 +48,7 @@ def fixed_hex(text, digits, lineno):
     return f"{value:0{digits}X}"
 
 
-def convert(in_path):
+def convert(in_path, i2c_addr):
     out_path = os.path.splitext(in_path)[0] + ".SQD"
     count = 0
 
@@ -64,7 +68,7 @@ def convert(in_path):
                 data = fixed_hex(row[2], width, lineno)
 
             name = row[3].strip() if len(row) > 3 else ""
-            line = f"SWC0{cmd}{data}P"
+            line = f"SW{i2c_addr}{cmd}{data}P"
             if name:
                 line += NAME_SEPARATOR + name
             fout.write(line + "\r\n")
@@ -74,10 +78,21 @@ def convert(in_path):
 
 
 def main():
-    if len(sys.argv) != 2:
-        print(f"usage: {os.path.basename(sys.argv[0])} <file.csv>")
+    if len(sys.argv) != 3:
+        print(f"usage: {os.path.basename(sys.argv[0])} <file.csv> <i2c_addr>")
         return 1
-    out_path, count = convert(sys.argv[1])
+
+    i2c_addr = sys.argv[2].strip()
+    try:
+        if len(i2c_addr) != 2:
+            raise ValueError
+        int(i2c_addr, 16)
+    except ValueError:
+        print(f"error: i2c_addr must be a 2-digit hex number, got {i2c_addr!r}")
+        return 1
+    i2c_addr = i2c_addr.upper()
+
+    out_path, count = convert(sys.argv[1], i2c_addr)
     print(f"wrote {count} lines to {out_path}")
     return 0
 

@@ -42,20 +42,29 @@ typedef enum
 typedef struct PB_comm_s
 {
     void (*cb)(comm_event_t event, void *ctx);
+    void *ctx;
+#if 1  /* if using a UART, this stores the TX pin configuration */
+    uint32_t r_PFS_TX_ON;
+    uint32_t r_PFS_TX_OFF;
+#endif    
     comm_state_type_t state;
     uint8_t address;
     uint8_t command;
 #if 0 //@@@ support of mfg_cmd needs #define    
 //    uint8_t mfg_cmd;    /* not supported in TI device */
+//    uint8_t sparex[3]; /* for alignment */
 #endif
     uint8_t data_len;
     uint8_t read_write;
     uint8_t flag;
+    uint8_t pmbus_address;
+    uint8_t spare; /* for alignment */
     uint8_t data[COMM_DATA_SIZE];
 } PB_comm_t;
 extern PB_comm_t PB_Comm;
 
+
 /* USER ADDITIONAL PUBLIC FUNCTIONS */
-int comm_init(void* cb);
+int comm_init(uint8_t i2c_addr,void* cb,void *ctx);
 int comm_service(void);
 #endif /* COMM_BUS_H_ */

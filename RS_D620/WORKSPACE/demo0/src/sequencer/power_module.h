@@ -346,7 +346,17 @@ typedef struct power_PMBUS_s {
 } power_PMBUS_t;
 typedef struct power_SYSPINS_s {
     void* SYNC_CLK;
+    void* UART_TX;
+    void* UART_RX;
 } power_SYSPINS_t;
+typedef struct power_DBGPINS_s {
+    void* START;
+    void* SW_1;
+    void* SW_2;
+    void* LEDR;
+    void* LEDB;
+    void* LEDG;
+} power_DBGPINS_t;
 typedef union power_sequencer_IO_u {
     struct {
         void* MON[PWR_MAX_MONITOR];
@@ -356,8 +366,12 @@ typedef union power_sequencer_IO_u {
         void* GPIO[PWR_MAX_GPIO];
         power_PMBUS_t PMBUS;
         power_SYSPINS_t SYSPINS;
+        power_DBGPINS_t DBGPINS;
     } usage;
-    void* pin[PWR_IO_DATA_WORDS + sizeof(power_PMBUS_t)/sizeof(void*)+ sizeof(power_SYSPINS_t)/sizeof(void*)];
+    void* pin[PWR_IO_DATA_WORDS + 
+              sizeof(power_PMBUS_t)/sizeof(void*)+ 
+              sizeof(power_SYSPINS_t)/sizeof(void*) +
+              sizeof(power_DBGPINS_t)/sizeof(void*) ];
 } power_sequencer_IO_t;
 typedef struct power_sequencer_CONST_s {
     uint8_t max_digital_comp;

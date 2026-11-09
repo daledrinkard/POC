@@ -15,6 +15,9 @@ static uint16_t adc_raw_to_mv(uint16_t raw_counts, uint32_t scale_q16);
 static void pwr_dataflash_update(uint8_t *p, uint8_t *data, uint16_t len);
 static uint16_t crc16_ccitt(const uint8_t *data, uint32_t len);
 
+const uint8_t i2c_add[8] = {
+    0x11,0x13,0x17,0x31,0x33,0x71,0x73,0x77
+};
 const power_sequencer_CONST_t power_sequencer_CONST = { //@@@ needs to be flushed out  
     .max_digital_comp = 8,
     .max_GPOs = 16,
@@ -267,7 +270,10 @@ void pwr_seq_restore_all(void)
 /*  This is called right after the dataflash is copied into working ram */
 volatile uint8_t PAGE;
 volatile uint8_t conf;
+volatile uint8_t ID;
 volatile uint32_t r_PFS;
+volatile uint32_t* p_PFS;
+
 void pwr_seq_configure(void)
 {
     /* configure the monitor pins */
@@ -307,7 +313,8 @@ void pwr_seq_configure(void)
     for (int i = 0; i < PWR_MAX_RAILS; i++)
     {
         uint8_t ID = PowerController.rails[i].cfg->SEQ_config.ID;
-        uint8_t conf = (PowerController.rails[i].cfg->SEQ_config.ID_other & 0x07);
+//        volatile uint8_t conf = (PowerController.rails[i].cfg->SEQ_config.ID_other & 0x07);
+// xID = PowerController.rails[i].cfg->SEQ_config.ID;
         if (ID)
             switch (conf)
             {
@@ -343,7 +350,7 @@ void pwr_seq_configure(void)
     for (int i = 0; i < PWR_GPI_SIZE; i++) //@@@ hard coding 32 becaus that's the architecture.
     {
         uint8_t ID = PowerController.cfg->GPI_config.GPI[i].id;
-        uint8_t conf = (PowerController.cfg->GPI_config.GPI[i].conf & 0x07);
+        conf = (PowerController.cfg->GPI_config.GPI[i].conf & 0x07);
         if (ID)
             switch (conf)
             {
@@ -407,7 +414,23 @@ void pwr_seq_configure(void)
         r_PFS |= PWR_PFS_OUTPUT0;
     }
     *((uint32_t*) PowerController.GPIO->usage.SYSPINS.SYNC_CLK ) = r_PFS;
-    
+    /* configure the debug pins */
+    *((uint32_t*) PowerController.GPIO->usage.DBGPINS.START) =   PWR_PFS_OUTPUT1;
+    *((uint32_t*) PowerController.GPIO->usage.DBGPINS.SW_1) =   PWR_PFS_ISEL | PWR_PFS_INT_FALL;
+    *((uint32_t*) PowerController.GPIO->usage.DBGPINS.SW_2) =   PWR_PFS_ISEL | PWR_PFS_INT_FALL;
+
+    /* Configure the I2C address*/
+    uint8_t idx = 0;
+    for(int i=0;i<3;i++)
+    {
+        p_PFS = (uint32_t*) PowerController.GPIO->usage.PMBUS.SEL[i];
+        r_PFS = *((uint32_t*) PowerController.GPIO->usage.PMBUS.SEL[i]);
+        if (r_PFS & 0x00000002)
+        {
+            idx |= (1 << i);
+        }
+    }
+   PowerController.cfg->pmbus_address = i2c_add[idx];
 }
 // void pwr_seq_update_monitor(uint8_t *data,uint16_t len)
 //{
